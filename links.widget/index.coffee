@@ -110,6 +110,13 @@ render: -> """
     </tr>
     <tr>
       <td>
+        <a href="https://web-new.budgetbakers.com/dashboard">
+          <img style="width:32px;margin-left:7px" src="links.widget/images/budgetbakers.svg">
+        </a>
+      </td>
+    </tr>
+    <tr>
+      <td>
         <a href="https://mimes.cultofbits.com/recordm/index.html#/cob.custom-resource/Dia a Dia/dash">
           <div class="logoCoB">  <div class="symbolCoB">*</div>  </div>
         </a>
