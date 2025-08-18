@@ -96,6 +96,14 @@ render: -> """
     </tr>
     <tr>
       <td>
+        <a href="zoommtg://zoom.us/join?confno=668244305&zc=2&browser=chrome&uname=Miguel">
+          <img style="width:32px;margin-left:7px" src="links.widget/images/zoom.us.png">
+        </a>
+      </td>
+    </tr>
+    <tr> <td> </td> </tr>
+    <tr>
+      <td>
         <a href="https://my.shelly.cloud/#dashboard">
           <img style="width:32px;margin-left:7px" src="links.widget/images/shelly.png">
         </a>
@@ -103,8 +111,8 @@ render: -> """
     </tr>
     <tr>
       <td>
-        <a href="zoommtg://zoom.us/join?confno=668244305&zc=2&browser=chrome&uname=Miguel">
-          <img style="width:32px;margin-left:7px" src="links.widget/images/zoom.us.png">
+        <a href="shortcuts://run-shortcut?name=Abrir%20AnyList">
+          <img style="width:39px;margin-left:4px" src="links.widget/images/anylist.png">
         </a>
       </td>
     </tr>
