@@ -18,7 +18,7 @@ IFS='|' read -r theArtist theName theId theApp <<<"$(osascript <<<'
     		return "NA" & "|" & "NA" & "|" & "NA" & "|" & "NA" & "| " & "NA" & "|" & "NA" & "|" & "NA"
     	end if
     on error e
-    	return e
+    	return "erro a obter musica"
     end try
 
 ')" &&
