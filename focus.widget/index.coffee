@@ -1,3 +1,5 @@
+refreshFrequency: 3600000
+
 afterRender: (domEl) ->
   widget = $(domEl)
 
@@ -5,19 +7,19 @@ afterRender: (domEl) ->
     container = widget.find('.container')
     links = widget.find('.links')
     reviewOptions = widget.find('.review-options')
-    reviewToggle = widget.find('.review-toggle')
+    reviewOpen = widget.find('.review-open')
 
     if state
       localStorage.setItem('planningMode', 'on')
       container.addClass 'planning'
       links.addClass 'hidden'
-      reviewToggle.addClass 'hidden'
+      reviewOpen.addClass 'hidden'
       reviewOptions.removeClass 'hidden'
     else
       localStorage.removeItem('planningMode')
       container.removeClass 'planning'
       links.removeClass 'hidden'
-      reviewToggle.removeClass 'hidden'
+      reviewOpen.removeClass 'hidden'
       reviewOptions.addClass 'hidden'
 
   # Set initial state from localStorage
@@ -26,14 +28,46 @@ afterRender: (domEl) ->
   else
     togglePlanningMode(false)
 
+  # togglePlanningMode(false)
+
   # Add click handlers
-  widget.find('.review-toggle').on 'click', (e) ->
-    e.preventDefault()
+  widget.find('.review-open').on 'click', (e) =>
     togglePlanningMode(true)
+    e.preventDefault()
+    @run "osascript focus.widget/review_open.scpt"
+    @run "osascript focus.widget/large_center.scpt"
 
-  widget.find('.review-close').on 'click', (e) ->
+
+  widget.find('.review-close').on 'click', (e) =>
     togglePlanningMode(false)
+    e.preventDefault()
+    @run "osascript focus.widget/review_close.scpt"
 
+  widget.find('.daily-review-trigger').on 'click', (e) =>
+    e.preventDefault()
+    @run "osascript focus.widget/review_daily.scpt"
+    @run "osascript focus.widget/large_center.scpt"
+
+  widget.find('.weekly-review-trigger').on 'click', (e) =>
+    e.preventDefault()
+    @run "osascript focus.widget/review_weekly.scpt"
+    @run "osascript focus.widget/large_center.scpt"
+
+  widget.find('.monthly-review-trigger').on 'click', (e) =>
+    e.preventDefault()
+    @run "osascript focus.widget/review_monthly.scpt"
+    @run "osascript focus.widget/large_center.scpt"
+
+  widget.find('.trimester-review-trigger').on 'click', (e) =>
+    e.preventDefault()
+    @run "osascript focus.widget/review_trimester.scpt"
+    @run "osascript focus.widget/large_center.scpt"
+
+  widget.find('.year-review-trigger').on 'click', (e) =>
+    e.preventDefault()
+    @run "osascript focus.widget/review_year.scpt"
+    @run "osascript focus.widget/large_center.scpt"
+    
 style: """
   top: 0px
   left: 0px
@@ -44,6 +78,8 @@ style: """
 
   .container
     display: none
+    z-index:998
+
   .container.planning
     display: block
     width: 100vw
@@ -55,6 +91,7 @@ style: """
     display: none
 
   .review-selector
+    z-index:999
     position: absolute
     bottom: 35px
     left: 15px
@@ -68,7 +105,7 @@ style: """
   .review-options.hidden
     display: none
 
-  .review-toggle.hidden
+  .review-open.hidden
     display: none
 
   .review-btn
@@ -87,46 +124,25 @@ style: """
 
   a
     text-decoration:none
-
-
-  .logoCoB
-    margin-left: 8px;
-    border-radius: 10px;
-    background-color: #d5184b;
-    text-align: center;
-    vertical-align: middle;
-    height: 32px;
-    width:32px;
-
-  .symbolCoB
-    margin-left: 1px;
-    padding-top: 2px;
-    font-size: 29px;
-    font-family: verdana;
-    color: #fff;
-    font-weight: bolder;
-
 """
 
 
 render: -> """
 <div>
 
-  <div  class="container" style="position:absolute; bottom:0px; left:0px; right:0px; top:0px;">
-  </div>
-
+  <div class="container" style="position:absolute; bottom:0px; left:0px; right:0px; top:0px;"></div>
+ 
   <div class="review-selector">
-    <a href="#" class="review-toggle review-btn">R</a>
+    <a href="#" class="review-btn review-open">R</a>
     <div class="review-options ">
-      <a href="shortcuts://run-shortcut?name=Things%20CLOSE%20Review" class="review-btn review-close">X</a>
-      <a href="shortcuts://run-shortcut?name=Things%20DAYLY%20Review" class="review-btn">D</a>
-      <a href="shortcuts://run-shortcut?name=Things%20WEEK%20Review" class="review-btn">W</a>
-      <a href="shortcuts://run-shortcut?name=Things%20MONTH%20Review" class="review-btn">M</a>
-      <a href="shortcuts://run-shortcut?name=Things%20TRiMESTER%20Review" class="review-btn">T</a>
-      <a href="shortcuts://run-shortcut?name=Things%20YEAR%20Review" class="review-btn">A</a>
+      <a href="#" class="review-btn review-close">X</a>
+      <a href="#" class="review-btn daily-review-trigger">D</a>
+      <a href="#" class="review-btn weekly-review-trigger">W</a>
+      <a href="#" class="review-btn monthly-review-trigger">M</a>
+      <a href="#" class="review-btn trimester-review-trigger">T</a>
+      <a href="#" class="review-btn year-review-trigger">A</a>
     </div>
   </div>
 
-  </div>
 </div>
 """
