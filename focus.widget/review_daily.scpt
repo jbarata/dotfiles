@@ -1,4 +1,4 @@
 tell application "Things3"
 	activate
-	open location "things:///show?id=someday&filter=Daily%20Review"
+	open location "things:///show?id=anytime&filter=NextDays"
 end tell
