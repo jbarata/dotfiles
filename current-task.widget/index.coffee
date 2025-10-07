@@ -6,7 +6,7 @@ echo '{ "area":"'$theArea'","project": "'$theProject'", "task": "'$theTask'", "t
 refreshFrequency: 3000
 
 style: """
-  bottom: 11px
+  bottom: 0px
   left:50%
   width:1000px
   margin-left:-500px
@@ -33,7 +33,7 @@ style: """
 
   .thing
     font-size: 30px
-    color:#ffffc7
+    color:white
 
   .project
     font-size: 18px
@@ -59,9 +59,9 @@ render: (output) ->
         <!-- p id="timelimit"style="display:none"/-->
         <div>
             <!--img id="toggl" style="vertical-align:3%" src="current-task.widget/images/Inactive-19.png"/-->
-            <br/> <a class="thing">thing</a>
-            <br/> <a class="project">project</a>
             <br/> <a class="area">area</a>
+            <br/> <a class="project">project</a>
+            <br/> <a class="thing">thing</a>
         </div>
       </div>
     """

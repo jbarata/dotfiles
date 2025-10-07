@@ -1,3 +1,5 @@
+refreshFrequency: 500
+
 style: """
   top: 10px
   left: 0px
@@ -7,7 +9,6 @@ style: """
 
   tr
     height: 50px
-
 
   .logoCoB
     margin-left: 8px;
@@ -75,8 +76,15 @@ render: -> """
       </tr>
       <tr>
         <td>
-          <a href="zoommtg://zoom.us/join?confno=668244305&zc=2&browser=chrome&uname=Miguel">
+          <a class="zoomLink" href="zoommtg://zoom.us/join?confno=668244305&zc=2&browser=chrome&uname=Miguel">
             <img style="width:32px;margin-left:7px" src="links.widget/images/zoom.us.png">
+          </a>
+        </td>
+      </tr>
+      <tr>
+        <td>
+          <a class="chatgptLink"  href="https://chatgpt.com/pt-PT">
+            <img style="width:26px;margin-left:10px;background-color: #ffffff50;" src="links.widget/images/chat.png">
           </a>
         </td>
       </tr>
@@ -97,7 +105,7 @@ render: -> """
       </tr>
       <tr>
         <td>
-          <a href="https://web-new.budgetbakers.com/dashboard">
+          <a href="https://web-new.budget-bakers.com/dashboard">
             <img style="width:32px;margin-left:7px" src="links.widget/images/budgetbakers.svg">
           </a>
         </td>
@@ -111,3 +119,31 @@ render: -> """
       </tr>
     </table>
 """
+
+command: """
+# Lança o servidor nc só uma vez (se ainda não estiver a correr)
+if ! pgrep -f "nc -lk 5555" > /dev/null; then
+  nohup nc -lk 5555 > /tmp/uber-listener.log 2>/dev/null &
+fi
+
+# Lê a última linha do log
+content=$(tail -n 1 /tmp/uber-listener.log | tr -d '\0')
+
+# Se o comando for relevante, limpa o log e devolve o comando
+if [ "$content" = "zoom" ] || [ "$content" = "chatgpt" ]; then
+  echo "" > /tmp/uber-listener.log
+  echo "$content"
+fi
+"""
+
+update: (output, domEl) ->
+  command = output.trim()
+  
+  if command == "zoom"
+    console.log("links.widget a processar o comando: ", command)
+    link = domEl.querySelector('.zoomLink')
+    link?.click()
+  else if command == "chatgpt"
+    console.log("links.widget a processar o comando: ", command)
+    link = domEl.querySelector('.chatgptLink')
+    link?.click()

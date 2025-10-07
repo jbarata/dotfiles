@@ -87,7 +87,7 @@ style: """
   top: 45%
   left: 50%
   top: 87px
-  left: 712px
+  left: 50%
   font-family: 'Ubuntu', sans-serif
   font-size: 16px
   line-height: 1
