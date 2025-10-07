@@ -368,8 +368,8 @@ render: -> """
         </div>
       </div>
     <div class="os-links">
-      <a href="#" class="calendar-trigger"><div class="shortcut badge-style"><span>Calendar </span><span class="unread-count events-today hidden"></span></div></a>
       <a href="#" class="mail-trigger"><div class="shortcut badge-style"><span>Mail </span><span class="unread-count unread-total hidden"></span></div></a>
+      <a href="#" class="calendar-trigger"><div class="shortcut badge-style"><span>Calendar </span><span class="unread-count events-today hidden"></span></div></a>
       <a href="#" class="safari-trigger"><div class="shortcut badge-style"><span>DF Plan</span></div></a>
     </div>
     </div>
@@ -389,8 +389,8 @@ render: -> """
         </div>
       </div>
     <div class="os-links">
-      <a href="#" class="calendar-trigger"><div class="shortcut badge-style"><span>Calendar </span><span class="unread-count events-today hidden"></span></div></a>
       <a href="#" class="mail-trigger"><div class="shortcut badge-style"><span>Mail </span><span class="unread-count unread-total hidden"></span></div></a>
+      <a href="#" class="calendar-trigger"><div class="shortcut badge-style"><span>Calendar </span><span class="unread-count events-today hidden"></span></div></a>
       <a href="#" class="safari-trigger"><div class="shortcut badge-style"><span>DF Plan</span></div></a>
     </div>
     </div>
