@@ -6,10 +6,11 @@ echo '{ "area":"'$theArea'","project": "'$theProject'", "task": "'$theTask'", "t
 refreshFrequency: 3000
 
 style: """
-  bottom: 0px
-  left:50%
-  width:1000px
-  margin-left:-500px
+  bottom: -5px
+  left: 50%
+  transform: translateX(-50%)
+  max-width: calc(100% - 540px)
+  padding: 0 20px
   border-radius:10px
 
   text-align:center
@@ -100,4 +101,3 @@ update: (output, domEl) ->
 
 
 updateStatus: (resultArray) ->
-
