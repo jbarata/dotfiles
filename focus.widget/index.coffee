@@ -161,8 +161,8 @@ style: """
   .review-selector
     z-index:999
     position: absolute
-    bottom: 15px
-    left: 15px
+    bottom: 7px
+    left: 7px
     text-align: center
 
   .review-options
@@ -225,9 +225,11 @@ style: """
     position: absolute
     top: 5px
     left: 0
-    width: 100%
-    text-align: center
+    width: calc(100% * 5 / 6)
+    text-align: right
     height: auto
+    padding-right: 24px
+    box-sizing: border-box
 
   .review-title span
     display: inline-block
