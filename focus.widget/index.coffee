@@ -18,6 +18,18 @@ afterRender: (domEl) ->
     hideAllOverlays()
     overlays[type]?.removeClass 'hidden'
 
+  updateUnreadCount = =>
+    @run("osascript focus.widget/get_unread_count.scpt").then (output) ->
+      count = parseInt(output.trim())
+      unreadEls = domEl.querySelectorAll('.unread-total')
+      for unreadEl in unreadEls
+        if unreadEl
+          if !isNaN(count) && count > 0
+            unreadEl.innerText = count
+            unreadEl.classList.remove('hidden')
+          else
+            unreadEl.classList.add('hidden')
+
   togglePlanningMode = (state) ->
     container = widget.find('.container')
     links = widget.find('.links')
@@ -75,12 +87,14 @@ afterRender: (domEl) ->
   widget.find('.today-plan-trigger').on 'click', (e) =>
     e.preventDefault()
     showOverlay('today')
+    updateUnreadCount()
     @run "osascript focus.widget/review_open.scpt"
     @run "osascript focus.widget/large_center.scpt"
 
   widget.find('.daily-review-trigger').on 'click', (e) =>
     e.preventDefault()
     showOverlay('daily')
+    updateUnreadCount()
     @run "osascript focus.widget/review_daily.scpt"
     @run "osascript focus.widget/large_center.scpt"
 
@@ -267,11 +281,8 @@ style: """
     margin-left: 6px
     line-height: 1
 
-  .unread-inbox
+  .unread-total
     background-color: #d5184b
-
-  .unread-archive
-    background-color: #555
     
   .unread-count.hidden
     display: none
@@ -289,130 +300,124 @@ style: """
 """
 
 render: -> """
-<div>
-  <div class="container" style="position:absolute; bottom:0px; left:0px; right:0px; top:0px;"></div>
+  <div>
+    <div class="container" style="position:absolute; bottom:0px; left:0px; right:0px; top:0px;"></div>
 
-  <div class="review-overlay today-plan-overlay hidden">
-    <div class="review-title"><span>Today Plan</span></div>
-    <div class="content-wrapper">
-      <div class="left-content">
-        <a href="#" class="calendar-trigger" style="pointer-events: all;"><div class="shortcut left"><span><kbd>C</kbd> Calendar</span></div></a>
-        <a href="#" class="mail-trigger" style="pointer-events: all;"><div class="shortcut left"><span><kbd>M</kbd> Mail </span><span class="unread-count unread-inbox hidden"></span><span class="unread-count unread-archive hidden"></span></div></a>
-        <a href="#" class="safari-trigger" style="pointer-events: all; margin-bottom:20px;"><div class="shortcut left"><span><kbd>S</kbd> DF Plan</span></div></a>
-      </div>
-      <div class="right-content">
-        <div class="shortcut right"><span>Review TOMORROW</span> <kbd>CMD+R</kbd></div>
-        <div class="shortcut right"><span>Review Next Week</span> <kbd>CTRL+W</kbd></div>
-        <div class="shortcut right"><span>Review Next Month</span> <kbd>CTRL+M</kbd></div>
-        <div class="shortcut right"><span>Review Next Trimester</span> <kbd>CTRL+T</kbd></div>
-        <div class="shortcut right"><span>Review Next Year</span> <kbd>CTRL+Y</kbd></div>
+    <div class="review-overlay today-plan-overlay hidden">
+      <div class="review-title"><span>Today Plan</span></div>
+      <div class="content-wrapper">
+        <div class="left-content">
+          <a href="#" class="calendar-trigger" style="pointer-events: all;"><div class="shortcut left"><span><kbd>C</kbd> Calendar</span></div></a>
+          <a href="#" class="mail-trigger" style="pointer-events: all;"><div class="shortcut left"><span><kbd>M</kbd> Mail </span><span class="unread-count unread-total hidden"></span></div></a>
+          <a href="#" class="safari-trigger" style="pointer-events: all; margin-bottom:20px;"><div class="shortcut left"><span><kbd>S</kbd> DF Plan</span></div></a>
+        </div>
+        <div class="right-content">
+          <div class="shortcut right"><span>Review TOMORROW</span> <kbd>CMD+R</kbd></div>
+          <div class="shortcut right"><span>Review Next Week</span> <kbd>CTRL+W</kbd></div>
+          <div class="shortcut right"><span>Review Next Month</span> <kbd>CTRL+M</kbd></div>
+          <div class="shortcut right"><span>Review Next Trimester</span> <kbd>CTRL+T</kbd></div>
+          <div class="shortcut right"><span>Review Next Year</span> <kbd>CTRL+Y</kbd></div>
+        </div>
       </div>
     </div>
-  </div>
 
-  <div class="review-overlay daily-review-overlay hidden">
-    <div class="review-title"><span>Daily Review</span></div>
-    <div class="content-wrapper">
-      <div class="left-content">
-        <a href="#" class="calendar-trigger" style="pointer-events: all;"><div class="shortcut left"><span><kbd>C</kbd> Calendar</span></div></a>
-        <a href="#" class="mail-trigger" style="pointer-events: all;"><div class="shortcut left"><span><kbd>M</kbd> Mail </span></div></a>
-        <a href="#" class="safari-trigger" style="pointer-events: all; margin-bottom:20px;"><div class="shortcut left"><span><kbd>S</kbd> DF Plan</span></div></a>
-        <div class="shortcut left"><kbd>CMD+t</kbd> <span>DO TODAY</span></div>
+    <div class="review-overlay daily-review-overlay hidden">
+      <div class="review-title"><span>Daily Review</span></div>
+      <div class="content-wrapper">
+        <div class="left-content">
+          <a href="#" class="calendar-trigger" style="pointer-events: all;"><div class="shortcut left"><span><kbd>C</kbd> Calendar</span></div></a>
+          <a href="#" class="mail-trigger" style="pointer-events: all;"><div class="shortcut left"><span><kbd>M</kbd> Mail </span><span class="unread-count unread-total hidden"></span></div></a>
+          <a href="#" class="safari-trigger" style="pointer-events: all; margin-bottom:20px;"><div class="shortcut left"><span><kbd>S</kbd> DF Plan</span></div></a>
+          <div class="shortcut left"><kbd>CMD+t</kbd> <span>DO TODAY</span></div>
+        </div>
+        <div class="right-content">
+          <div class="shortcut right"><span>Review TOMORROW</span> <kbd>CMD+R</kbd></div>
+          <div class="shortcut right"><span>Review Next Week</span> <kbd>CTRL+W</kbd></div>
+          <div class="shortcut right"><span>Review Next Month</span> <kbd>CTRL+M</kbd></div>
+          <div class="shortcut right"><span>Review Next Trimester</span> <kbd>CTRL+T</kbd></div>
+          <div class="shortcut right"><span>Review Next Year</span> <kbd>CTRL+Y</kbd></div>
+        </div>
       </div>
-      <div class="right-content">
-        <div class="shortcut right"><span>Review TOMORROW</span> <kbd>CMD+R</kbd></div>
-        <div class="shortcut right"><span>Review Next Week</span> <kbd>CTRL+W</kbd></div>
-        <div class="shortcut right"><span>Review Next Month</span> <kbd>CTRL+M</kbd></div>
-        <div class="shortcut right"><span>Review Next Trimester</span> <kbd>CTRL+T</kbd></div>
-        <div class="shortcut right"><span>Review Next Year</span> <kbd>CTRL+Y</kbd></div>
+    </div>
+    <div class="review-overlay weekly-review-overlay hidden">
+      <div class="review-title"><span>Weekly Review</span></div>
+      <div class="content-wrapper">
+        <div class="left-content">
+          <div class="shortcut left"><span><kbd>CTRL+N</kbd> Review Everyday</span></div>
+        </div>
+        <div class="right-content">
+          <div class="shortcut right"><span>Review Next Month</span><kbd>CTRL+M</kbd></div>
+          <div class="shortcut right"><span>Review Next Trimester</span><kbd>CTRL+T</kbd></div>
+          <div class="shortcut right"><span>Review Next Year</span><kbd>CTRL+Y</kbd></div>
+        </div>
+      </div>
+    </div>
+    <div class="review-overlay monthly-review-overlay hidden">
+      <div class="review-title"><span>Monthly Review</span></div>
+      <div class="content-wrapper">
+        <div class="left-content">
+          <div class="shortcut left"><span><kbd>CTRL+N</kbd> Review Everyday</span></div>
+          <div class="shortcut left"><span><kbd>CTRL+W</kbd> Review Next Week</span></div>
+        </div>
+        <div class="right-content">
+          <div class="shortcut right"><span>Review Next Trimester</span><kbd>CTRL+T</kbd></div>
+          <div class="shortcut right"><span>Review Next Year</span><kbd>CTRL+Y</kbd></div>
+        </div>
+      </div>
+    </div>
+    <div class="review-overlay trimester-review-overlay hidden">
+      <div class="review-title"><span>Trimester Review</span></div>
+      <div class="content-wrapper">
+        <div class="left-content">
+          <div class="shortcut left"><span><kbd>CTRL+N</kbd> Review Everyday</span></div>
+          <div class="shortcut left"><span><kbd>CTRL+W</kbd> Review Next Week</span></div>
+          <div class="shortcut left"><span><kbd>CTRL+M</kbd> Review Next Month</span></div>
+        </div>
+        <div class="right-content">
+          <div class="shortcut right"><span>Review Next Year</span><kbd>CTRL+Y</kbd></div>
+        </div>
+      </div>
+    </div>
+    <div class="review-overlay year-review-overlay hidden">
+      <div class="review-title"><span>Year Review</span></div>
+      <div class="content-wrapper">
+        <div class="left-content">
+          <div class="shortcut left"><span><kbd>CTRL+N</kbd> Review Everyday</span></div>
+          <div class="shortcut left"><span><kbd>CTRL+W</kbd> Review Next Week</span></div>
+          <div class="shortcut left"><span><kbd>CTRL+M</kbd> Review Next Month</span></div>
+          <div class="shortcut left"><span><kbd>CTRL+T</kbd> Review Next Trimester</span></div>
+        </div>
+        <div class="right-content"></div>
+      </div>
+    </div>
+    <div class="review-selector">
+      <a href="#" class="review-btn review-open">R</a>
+      <div class="review-options ">
+        <a href="#" class="review-btn review-close" style="background-color:purple;">X</a>
+        <a href="#" class="review-btn today-plan-trigger">H</a>
+        <a href="#" class="review-btn daily-review-trigger">D</a>
+        <a href="#" class="review-btn weekly-review-trigger">W</a>
+        <a href="#" class="review-btn monthly-review-trigger">M</a>
+        <a href="#" class="review-btn trimester-review-trigger">T</a>
+        <a href="#" class="review-btn year-review-trigger">A</a>
       </div>
     </div>
   </div>
-  <div class="review-overlay weekly-review-overlay hidden">
-    <div class="review-title"><span>Weekly Review</span></div>
-    <div class="content-wrapper">
-      <div class="left-content">
-        <div class="shortcut left"><span><kbd>CTRL+N</kbd> Review Everyday</span></div>
-      </div>
-      <div class="right-content">
-        <div class="shortcut right"><span>Review Next Month</span><kbd>CTRL+M</kbd></div>
-        <div class="shortcut right"><span>Review Next Trimester</span><kbd>CTRL+T</kbd></div>
-        <div class="shortcut right"><span>Review Next Year</span><kbd>CTRL+Y</kbd></div>
-      </div>
-    </div>
-  </div>
-  <div class="review-overlay monthly-review-overlay hidden">
-    <div class="review-title"><span>Monthly Review</span></div>
-    <div class="content-wrapper">
-      <div class="left-content">
-        <div class="shortcut left"><span><kbd>CTRL+N</kbd> Review Everyday</span></div>
-        <div class="shortcut left"><span><kbd>CTRL+W</kbd> Review Next Week</span></div>
-      </div>
-      <div class="right-content">
-        <div class="shortcut right"><span>Review Next Trimester</span><kbd>CTRL+T</kbd></div>
-        <div class="shortcut right"><span>Review Next Year</span><kbd>CTRL+Y</kbd></div>
-      </div>
-    </div>
-  </div>
-  <div class="review-overlay trimester-review-overlay hidden">
-    <div class="review-title"><span>Trimester Review</span></div>
-    <div class="content-wrapper">
-      <div class="left-content">
-        <div class="shortcut left"><span><kbd>CTRL+N</kbd> Review Everyday</span></div>
-        <div class="shortcut left"><span><kbd>CTRL+W</kbd> Review Next Week</span></div>
-        <div class="shortcut left"><span><kbd>CTRL+M</kbd> Review Next Month</span></div>
-      </div>
-      <div class="right-content">
-        <div class="shortcut right"><span>Review Next Year</span><kbd>CTRL+Y</kbd></div>
-      </div>
-    </div>
-  </div>
-  <div class="review-overlay year-review-overlay hidden">
-    <div class="review-title"><span>Year Review</span></div>
-    <div class="content-wrapper">
-      <div class="left-content">
-        <div class="shortcut left"><span><kbd>CTRL+N</kbd> Review Everyday</span></div>
-        <div class="shortcut left"><span><kbd>CTRL+W</kbd> Review Next Week</span></div>
-        <div class="shortcut left"><span><kbd>CTRL+M</kbd> Review Next Month</span></div>
-        <div class="shortcut left"><span><kbd>CTRL+T</kbd> Review Next Trimester</span></div>
-      </div>
-      <div class="right-content"></div>
-    </div>
-  </div>
-  <div class="review-selector">
-    <a href="#" class="review-btn review-open">R</a>
-    <div class="review-options ">
-      <a href="#" class="review-btn review-close" style="background-color:purple;">X</a>
-      <a href="#" class="review-btn today-plan-trigger">H</a>
-      <a href="#" class="review-btn daily-review-trigger">D</a>
-      <a href="#" class="review-btn weekly-review-trigger">W</a>
-      <a href="#" class="review-btn monthly-review-trigger">M</a>
-      <a href="#" class="review-btn trimester-review-trigger">T</a>
-      <a href="#" class="review-btn year-review-trigger">A</a>
-    </div>
-  </div>
-</div>
 """
 
 command: """
-# --- NC Listener ---
-# Lança o servidor nc só uma vez (se ainda não estiver a correr)
-if ! pgrep -f "nc -lk 5555" > /dev/null; then
-  nohup nc -lk 5555 > /tmp/uber-listener.log 2>/dev/null &
-fi
+  # --- NC Listener ---
+  # Lança o servidor nc só uma vez (se ainda não estiver a correr)
+  if ! pgrep -f "nc -lk 5555" > /dev/null; then
+    nohup nc -lk 5555 > /tmp/uber-listener.log 2>/dev/null &
+  fi
 
-# Lê a última linha do log e, se for "review", consome-a.
-content=$(tail -n 1 /tmp/uber-listener.log | tr -d '\0')
-if [ "$content" = "review" ]; then
-  echo "" > /tmp/uber-listener.log
-  echo "CMD:review"
-fi
-
-# --- Mail Unread Count ---
-# Obtém a contagem de não lidos da caixa de entrada do Mail.app
-INBOX_COUNT=$(osascript -e 'tell application "Mail" to return the unread count of inbox' 2>/dev/null)
-echo "MAIL_INBOX:$INBOX_COUNT"
-
+  # Lê a última linha do log e, se for "review", consome-a.
+  content=$(tail -n 1 /tmp/uber-listener.log | tr -d '\0')
+  if [ "$content" = "review" ]; then
+    echo "" > /tmp/uber-listener.log
+    echo "CMD:review"
+  fi
 """
 
 update: (output, domEl) ->
@@ -430,23 +435,3 @@ update: (output, domEl) ->
           reviewClose?.click()
         else
           reviewOpen?.click()
-
-    else if line.startsWith('MAIL_INBOX:')
-      count = parseInt(line.replace('MAIL_INBOX:', '').trim())
-      unreadEl = domEl.querySelector('.unread-inbox')
-      if unreadEl
-        if !isNaN(count) && count > 0
-          unreadEl.innerText = count
-          unreadEl.classList.remove('hidden')
-        else
-          unreadEl.classList.add('hidden')
-          
-    else if line.startsWith('MAIL_ARCHIVE:')
-      count = parseInt(line.replace('MAIL_ARCHIVE:', '').trim())
-      unreadEl = domEl.querySelector('.unread-archive')
-      if unreadEl
-        if !isNaN(count) && count > 0
-          unreadEl.innerText = count
-          unreadEl.classList.remove('hidden')
-        else
-          unreadEl.classList.add('hidden')
