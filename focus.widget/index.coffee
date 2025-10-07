@@ -30,6 +30,18 @@ afterRender: (domEl) ->
           else
             unreadEl.classList.add('hidden')
 
+  updateEventsCount = =>
+    @run("osascript focus.widget/get_today_events_count.scpt").then (output) ->
+      count = parseInt(output.trim())
+      eventEls = domEl.querySelectorAll('.events-today')
+      for eventEl in eventEls
+        if eventEl
+          if !isNaN(count) && count > 0
+            eventEl.innerText = count
+            eventEl.classList.remove('hidden')
+          else
+            eventEl.classList.add('hidden')
+
   togglePlanningMode = (state) ->
     container = widget.find('.container')
     links = widget.find('.links')
@@ -88,6 +100,7 @@ afterRender: (domEl) ->
     e.preventDefault()
     showOverlay('today')
     updateUnreadCount()
+    updateEventsCount()
     @run "osascript focus.widget/review_open.scpt"
     @run "osascript focus.widget/large_center.scpt"
 
@@ -95,6 +108,7 @@ afterRender: (domEl) ->
     e.preventDefault()
     showOverlay('daily')
     updateUnreadCount()
+    updateEventsCount()
     @run "osascript focus.widget/review_daily.scpt"
     @run "osascript focus.widget/large_center.scpt"
 
@@ -283,6 +297,9 @@ style: """
 
   .unread-total
     background-color: #d5184b
+
+  .events-today
+    background-color: #4A90E2
     
   .unread-count.hidden
     display: none
@@ -303,11 +320,11 @@ render: -> """
   <div>
     <div class="container" style="position:absolute; bottom:0px; left:0px; right:0px; top:0px;"></div>
 
-    <div class="review-overlay today-plan-overlay hidden">
-      <div class="review-title"><span>Today Plan</span></div>
-      <div class="content-wrapper">
-        <div class="left-content">
-          <a href="#" class="calendar-trigger" style="pointer-events: all;"><div class="shortcut left"><span><kbd>C</kbd> Calendar</span></div></a>
+  <div class="review-overlay today-plan-overlay hidden">
+    <div class="review-title"><span>Today Plan</span></div>
+    <div class="content-wrapper">
+      <div class="left-content">
+        <a href="#" class="calendar-trigger" style="pointer-events: all;"><div class="shortcut left"><span><kbd>C</kbd> Calendar </span><span class="unread-count events-today hidden"></span></div></a>
           <a href="#" class="mail-trigger" style="pointer-events: all;"><div class="shortcut left"><span><kbd>M</kbd> Mail </span><span class="unread-count unread-total hidden"></span></div></a>
           <a href="#" class="safari-trigger" style="pointer-events: all; margin-bottom:20px;"><div class="shortcut left"><span><kbd>S</kbd> DF Plan</span></div></a>
         </div>
@@ -321,11 +338,11 @@ render: -> """
       </div>
     </div>
 
-    <div class="review-overlay daily-review-overlay hidden">
-      <div class="review-title"><span>Daily Review</span></div>
-      <div class="content-wrapper">
-        <div class="left-content">
-          <a href="#" class="calendar-trigger" style="pointer-events: all;"><div class="shortcut left"><span><kbd>C</kbd> Calendar</span></div></a>
+  <div class="review-overlay daily-review-overlay hidden">
+    <div class="review-title"><span>Daily Review</span></div>
+    <div class="content-wrapper">
+      <div class="left-content">
+        <a href="#" class="calendar-trigger" style="pointer-events: all;"><div class="shortcut left"><span><kbd>C</kbd> Calendar </span><span class="unread-count events-today hidden"></span></div></a>
           <a href="#" class="mail-trigger" style="pointer-events: all;"><div class="shortcut left"><span><kbd>M</kbd> Mail </span><span class="unread-count unread-total hidden"></span></div></a>
           <a href="#" class="safari-trigger" style="pointer-events: all; margin-bottom:20px;"><div class="shortcut left"><span><kbd>S</kbd> DF Plan</span></div></a>
           <div class="shortcut left"><kbd>CMD+t</kbd> <span>DO TODAY</span></div>
