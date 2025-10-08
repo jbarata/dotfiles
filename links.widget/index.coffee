@@ -84,14 +84,21 @@ render: -> """
       <tr>
         <td>
           <a class="chatgptLink"  href="https://chatgpt.com/pt-PT">
-            <img style="width:26px;margin-left:10px;background-color: #ffffff50;" src="links.widget/images/chat.png">
+            <img style="width:26px;margin-left:10px;background-color:#fff;padding:2px;border-radius:7px;" src="links.widget/images/chat.png">
           </a>
         </td>
       </tr>
       <tr>
         <td>
           <a class="visualcodeLink"  href="vscode://">
-            <img style="width:26px;margin-left:10px;background-color: #ffffff50;" src="links.widget/images/vc.png">
+            <img style="width:26px;margin-left:10px;background-color:#fff;padding:2px;border-radius:7px;" src="links.widget/images/vc.png">
+          </a>
+        </td>
+      </tr>
+      <tr>
+        <td>
+          <a class="slackLink" href="slack://open?team=T02J1N4KH">
+            <img style="width:24px;margin-left:10px;background-color:#fff;padding:2px;border-radius:7px;" src="links.widget/images/slack.png">
           </a>
         </td>
       </tr>
@@ -137,7 +144,7 @@ fi
 content=$(tail -n 1 /tmp/uber-listener.log | tr -d '\0')
 
 # Se o comando for relevante, limpa o log e devolve o comando
-if [ "$content" = "zoom" ] || [ "$content" = "chatgpt" ] || [ "$content" = "visualcode" ]; then
+if [ "$content" = "zoom" ] || [ "$content" = "chatgpt" ] || [ "$content" = "visualcode" ] || [ "$content" = "slack" ]; then
   echo "" > /tmp/uber-listener.log
   echo "$content"
 fi
@@ -154,4 +161,7 @@ update: (output, domEl) ->
     link?.click()
   else if command == "visualcode"
     link = domEl.querySelector('.visualcodeLink')
+    link?.click()
+  else if command == "slack"
+    link = domEl.querySelector('.slackLink')
     link?.click()
