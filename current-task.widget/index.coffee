@@ -60,7 +60,7 @@ render: (output) ->
         <!-- p id="timelimit"style="display:none"/-->
         <div>
             <!--img id="toggl" style="vertical-align:3%" src="current-task.widget/images/Inactive-19.png"/-->
-            <br/> <a class="area">area</a>
+            <!--br/> <a class="area">area</a-->
             <br/> <a class="project">project</a>
             <br/> <a class="thing">thing</a>
         </div>
@@ -78,8 +78,8 @@ update: (output, domEl) ->
   $(".thing").attr("href","things:///show?id=today");
   $(".project").text(data.project);
   $(".project").attr("href","things:///show?query="+data.project);
-  $(".area").text(data.area);
-  $(".area").attr("href","things:///show?query="+data.area);
+  # $(".area").text(data.area);
+  # $(".area").attr("href","things:///show?query="+data.area);
 
   tg = /\[TimeGoal:\s*([^\]]*)\]/.exec(data.notes);
   if(tg)
