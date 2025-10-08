@@ -329,6 +329,9 @@ style: """
     position: relative
     top: -1px
 
+  .badge-daily kbd, .badge-today kbd
+    background-color: green
+
   .unread-count
     display: inline-block
     color: white
