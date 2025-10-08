@@ -100,7 +100,7 @@ afterRender: (domEl) ->
     e.preventDefault()
     showOverlay('today')
     updateUnreadCount()
-    updateEventsCount()
+    # updateEventsCount()
     @run "osascript focus.widget/review_open.scpt"
     @run "osascript focus.widget/large_center.scpt"
 
@@ -108,7 +108,7 @@ afterRender: (domEl) ->
     e.preventDefault()
     showOverlay('daily')
     updateUnreadCount()
-    updateEventsCount()
+    # updateEventsCount()
     @run "osascript focus.widget/review_daily.scpt"
     @run "osascript focus.widget/large_center.scpt"
 
