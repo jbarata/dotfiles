@@ -259,17 +259,17 @@ style: """
     text-shadow: 0 1px 1px rgba(0,0,0,0.2)
 
   .today-plan-overlay
-    background-color: rgba(121, 255, 121, 0.42) // Lightest Green
+    background-color: rgba(121, 255, 121, 0.3) // Lightest Green
   .daily-review-overlay
     background-color: rgba(31, 136, 194, 0.32) // Green-Blue
   .weekly-review-overlay
-    background-color: rgba(170, 128, 0, 0.5) // Yellow-Orange
+    background-color: rgba(170, 128, 0, 0.3) // Yellow-Orange
   .monthly-review-overlay
-    background-color: rgba(200, 80, 0, 0.5) // Orange-Red
+    background-color: rgba(200, 80, 0, 0.3) // Orange-Red
   .trimester-review-overlay
-    background-color: rgba(225, 40, 0, 0.5) // Red
+    background-color: rgba(225, 50, 0, 0.3) // Red
   .year-review-overlay
-    background-color: rgba(255, 0, 0, 0.6) // Darkest Red
+    background-color: rgba(255, 0, 0, 0.3) // Darkest Red
   .review-title
     position: absolute
     top: 5px
@@ -335,7 +335,7 @@ style: """
     font-size: 11px
     margin-right: 2px
 
-  .badge-daily kbd, .badge-today kbd
+  .badge-daily kbd, .badge-today kbd, , kbd.badge-daily
     background-color: orange
 
   .unread-count
@@ -413,12 +413,12 @@ render: -> """
       <div class="review-title"><span>This Week</span></div>
       <div class="content-wrapper">
         <div class="left-content">
-            <div class="shortcut left badge-style badge-today"><kbd>CMD+T</kbd> <span>Today</span></div>
-          </div>
-          <div class="right-content">
-            <div class="shortcut right badge-style badge-daily"><span>Not Today</span> <kbd>CMD+R</kbd> </div>
-            <div class="shortcut right badge-style badge-weekly"><span>Maybe Next Week</span> <kbd>CTRL+W</kbd></div>
-          </div>
+          <div class="shortcut left badge-style badge-today"><kbd>CMD+T</kbd> <span>Today</span></div>
+        </div>
+        <div class="right-content">
+          <div class="shortcut right badge-style badge-daily"><span>Not Today</span> <kbd>CMD+R</kbd> </div>
+          <div class="shortcut right badge-style badge-weekly"><span>Maybe Next Week</span> <kbd>CTRL+W</kbd> <kbd class="badge-daily">CMD+O</kbd></div>
+        </div>
         </div>
         <div class="os-links">
           <a href="#" class="mail-trigger"><div class="shortcut badge-style"><span>Mail </span><span class="unread-count unread-total hidden"></span></div></a>
