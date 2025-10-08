@@ -250,6 +250,15 @@ style: """
   .review-overlay.hidden
     display: none
 
+  .review-schedule
+    position: absolute
+    bottom: 5px
+    right: 10px
+    font-size: 18px
+    font-weight: 200
+    color: rgba(255, 255, 255, 0.7)
+    text-shadow: 0 1px 1px rgba(0,0,0,0.2)
+
   .today-plan-overlay
     background-color: rgba(121, 255, 121, 0.42) // Lightest Green
   .daily-review-overlay
@@ -360,6 +369,10 @@ style: """
     margin-left: 5px
     margin-right: 0px
 
+  .shortcut.left kbd
+    margin-left: 0px
+    margin-right: 5px
+
   .os-links
     z-index: 1000
     position: absolute
@@ -387,7 +400,7 @@ render: -> """
         <div class="left-content">
           </div>
           <div class="right-content">
-            <div class="shortcut right badge-style badge-daily"><span>  Maybe Tomorrow</span> <kbd>CMD+R</kbd></div>
+            <div class="shortcut right badge-style badge-daily"><span> Not Today</span> <kbd>CMD+R</kbd></div>
           </div>
         </div>
       <div class="os-links">
@@ -395,6 +408,7 @@ render: -> """
         <a href="#" class="calendar-trigger"><div class="shortcut badge-style badge-today"><span>Calendar </span><span class="unread-count events-today hidden"></span></div></a>
         <a href="#" class="safari-trigger"><div class="shortcut badge-style badge-today"><span>DF Plan</span></div></a>
       </div>
+      <div class="review-schedule">Muitas vezes ao dia</div>
     </div>
     <div class="review-overlay daily-review-overlay hidden">
       <div class="review-title"><span>This Week</span></div>
@@ -403,6 +417,7 @@ render: -> """
             <div class="shortcut left badge-style badge-today"><kbd>CMD+T</kbd> <span>Today</span></div>
           </div>
           <div class="right-content">
+            <div class="shortcut right badge-style badge-daily"><span>Not Today</span> <kbd>CMD+R</kbd> </div>
             <div class="shortcut right badge-style badge-weekly"><span>Maybe Next Week</span> <kbd>CTRL+W</kbd></div>
           </div>
         </div>
@@ -411,6 +426,7 @@ render: -> """
           <a href="#" class="calendar-trigger"><div class="shortcut badge-style"><span>Calendar </span><span class="unread-count events-today hidden"></span></div></a>
           <a href="#" class="safari-trigger"><div class="shortcut badge-style"><span>DF Plan</span></div></a>
       </div>
+      <div class="review-schedule">Day Review: todos os dias às 9h00</div>
     </div>
     <div class="review-overlay weekly-review-overlay hidden">
       <div class="review-title"><span>Maybe Next Week</span></div>
@@ -422,6 +438,7 @@ render: -> """
           <div class="shortcut right badge-style badge-monthly"><span>Maybe Next Month</span><kbd>CTRL+M</kbd></div>
         </div>
       </div>
+      <div class="review-schedule">Week Review: todas as Segundas às 8h30</div>
     </div>
     <div class="review-overlay monthly-review-overlay hidden">
       <div class="review-title"><span>Maybe Next Month</span></div>
@@ -433,6 +450,7 @@ render: -> """
           <div class="shortcut right badge-style badge-trimester"><span>Maybe Next Trimester</span><kbd>CTRL+T</kbd></div>
         </div>
       </div>
+      <div class="review-schedule">Month Review: todos os dias 28</div>
     </div>
     <div class="review-overlay trimester-review-overlay hidden">
       <div class="review-title"><span>Maybe Next Trimester</span></div>
@@ -444,6 +462,7 @@ render: -> """
           <div class="shortcut right badge-style badge-year"><span>Maybe Next Year</span><kbd>CTRL+Y</kbd></div>
         </div>
       </div>
+      <div class="review-schedule">Trimester Review: 23 Jan | 23 Abr | 23 Jul | 23 Out</div>
     </div>
     <div class="review-overlay year-review-overlay hidden">
       <div class="review-title"><span>Maybe Next Year</span></div>
@@ -453,6 +472,7 @@ render: -> """
         </div>
         <div class="right-content"></div>
       </div>
+      <div class="review-schedule">Year Review: 20 Dez</div>
     </div>
     <div class="review-selector">
       <a href="#" class="review-btn review-open">R</a>
