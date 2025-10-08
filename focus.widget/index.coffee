@@ -178,17 +178,31 @@ style: """
 
   .review-btn
     display: inline-block
-    width: 15px
+    width: 24px
     height: 15px
     line-height:15px
     border-radius: 4px
-    background-color: #d5184b
     color: #fff
     font-family: verdana
     font-weight: bolder
     font-size: 10px
     text-align: center
     cursor: pointer
+
+  .review-btn.review-open
+    background-color: #d5184b
+  .review-btn.today-plan-trigger
+    background-color: rgb(0, 128, 0)
+  .review-btn.daily-review-trigger
+    background-color: rgb(100, 128, 0)
+  .review-btn.weekly-review-trigger
+    background-color: rgb(170, 128, 0)
+  .review-btn.monthly-review-trigger
+    background-color: rgb(200, 80, 0)
+  .review-btn.trimester-review-trigger
+    background-color: rgb(225, 40, 0)
+  .review-btn.year-review-trigger
+    background-color: rgb(255, 0, 0)
 
   .badge-style
     display: inline-flex
@@ -201,9 +215,21 @@ style: """
   .os-links .badge-style
     background-color: rgba(0,0,0,0.5)
 
-
   .badge-style:hover
     background-color: rgba(0,0,0,0.4)
+
+  .badge-today
+    background-color: rgba(0, 128, 0, 0.7)
+  .badge-daily
+    background-color: rgba(31, 136, 194, 0.7)
+  .badge-weekly
+    background-color: rgba(170, 128, 0, 0.7)
+  .badge-monthly
+    background-color: rgba(200, 80, 0, 0.7)
+  .badge-trimester
+    background-color: rgba(225, 40, 0, 0.7)
+  .badge-year
+    background-color: rgba(255, 0, 0, 0.7)
 
   a
     text-decoration:none
@@ -354,93 +380,88 @@ render: -> """
   <div>
     <div class="container" style="position:absolute; bottom:0px; left:0px; right:0px; top:0px;"></div>
 
-  <div class="review-overlay today-plan-overlay hidden">
-    <div class="review-title"><span>Today Plan</span></div>
-    <div class="content-wrapper">
-      <div class="left-content">
-        </div>
-        <div class="right-content">
-          <div class="shortcut right badge-style"><span>Review TOMORROW</span> <kbd>CMD+R</kbd></div>
-          <div class="shortcut right badge-style"><span>Review Next Week</span> <kbd>CTRL+W</kbd></div>
-          <div class="shortcut right badge-style"><span>Review Next Month</span> <kbd>CTRL+M</kbd></div>
-          <div class="shortcut right badge-style"><span>Review Next Trimester</span> <kbd>CTRL+T</kbd></div>
-          <div class="shortcut right badge-style"><span>Review Next Year</span> <kbd>CTRL+Y</kbd></div>
-        </div>
-      </div>
-    <div class="os-links">
-      <a href="#" class="mail-trigger"><div class="shortcut badge-style"><span>Mail </span><span class="unread-count unread-total hidden"></span></div></a>
-      <a href="#" class="calendar-trigger"><div class="shortcut badge-style"><span>Calendar </span><span class="unread-count events-today hidden"></span></div></a>
-      <a href="#" class="safari-trigger"><div class="shortcut badge-style"><span>DF Plan</span></div></a>
-    </div>
-    </div>
-
-  <div class="review-overlay daily-review-overlay hidden">
-    <div class="review-title"><span>Daily Review</span></div>
-    <div class="content-wrapper">
-      <div class="left-content">
-          <div class="shortcut left badge-style"><kbd>CMD+t</kbd> <span>DO TODAY</span></div>
-        </div>
-        <div class="right-content">
-          <div class="shortcut right badge-style"><span>Review TOMORROW</span> <kbd>CMD+R</kbd></div>
-          <div class="shortcut right badge-style"><span>Review Next Week</span> <kbd>CTRL+W</kbd></div>
-          <div class="shortcut right badge-style"><span>Review Next Month</span> <kbd>CTRL+M</kbd></div>
-          <div class="shortcut right badge-style"><span>Review Next Trimester</span> <kbd>CTRL+T</kbd></div>
-          <div class="shortcut right badge-style"><span>Review Next Year</span> <kbd>CTRL+Y</kbd></div>
-        </div>
-      </div>
-    <div class="os-links">
-      <a href="#" class="mail-trigger"><div class="shortcut badge-style"><span>Mail </span><span class="unread-count unread-total hidden"></span></div></a>
-      <a href="#" class="calendar-trigger"><div class="shortcut badge-style"><span>Calendar </span><span class="unread-count events-today hidden"></span></div></a>
-      <a href="#" class="safari-trigger"><div class="shortcut badge-style"><span>DF Plan</span></div></a>
-    </div>
-    </div>
-    <div class="review-overlay weekly-review-overlay hidden">
-      <div class="review-title"><span>Weekly Review</span></div>
+    <div class="review-overlay today-plan-overlay hidden">
+      <div class="review-title"><span>Today</span></div>
       <div class="content-wrapper">
         <div class="left-content">
-          <div class="shortcut left badge-style"><span><kbd>CTRL+N</kbd> Review Everyday</span></div>
+          </div>
+          <div class="right-content">
+            <div class="shortcut right badge-style badge-daily"><span>Maybe This Week</span> <kbd>CMD+R</kbd></div>
+          </div>
+        </div>
+      <div class="os-links">
+        <a href="#" class="mail-trigger"><div class="shortcut badge-style badge-today"><span>Mail </span><span class="unread-count unread-total hidden"></span></div></a>
+        <a href="#" class="calendar-trigger"><div class="shortcut badge-style badge-today"><span>Calendar </span><span class="unread-count events-today hidden"></span></div></a>
+        <a href="#" class="safari-trigger"><div class="shortcut badge-style badge-today"><span>DF Plan</span></div></a>
+      </div>
+    </div>
+    <div class="review-overlay daily-review-overlay hidden">
+      <div class="review-title"><span>This Week</span></div>
+      <div class="content-wrapper">
+        <div class="left-content">
+            <div class="shortcut left badge-style badge-today"><span>Today</span><kbd>CMD+T</kbd></div>
+          </div>
+          <div class="right-content">
+            <div class="shortcut right badge-style badge-weekly"><span>Maybe Next Week</span> <kbd>CTRL+W</kbd></div>
+            <div class="shortcut right badge-style badge-monthly"><span>Maybe Next Month</span> <kbd>CTRL+M</kbd></div>
+            <div class="shortcut right badge-style badge-trimester"><span>Maybe Next Trimester</span> <kbd>CTRL+T</kbd></div>
+            <div class="shortcut right badge-style badge-year"><span>Maybe Next Year</span> <kbd>CTRL+Y</kbd></div>
+            <div class="shortcut right badge-style"><span>Followed by</span> <kbd>CMD+O</kbd></div>
+          </div>
+        </div>
+        <div class="os-links">
+          <a href="#" class="mail-trigger"><div class="shortcut badge-style"><span>Mail </span><span class="unread-count unread-total hidden"></span></div></a>
+          <a href="#" class="calendar-trigger"><div class="shortcut badge-style"><span>Calendar </span><span class="unread-count events-today hidden"></span></div></a>
+          <a href="#" class="safari-trigger"><div class="shortcut badge-style"><span>DF Plan</span></div></a>
+      </div>
+    </div>
+    <div class="review-overlay weekly-review-overlay hidden">
+      <div class="review-title"><span>Maybe Next Week</span></div>
+      <div class="content-wrapper">
+        <div class="left-content">
+          <div class="shortcut left badge-style badge-daily"><span>Maybe This Week</span><kbd>CMD+R</kbd></div>
         </div>
         <div class="right-content">
-          <div class="shortcut right badge-style"><span>Review Next Month</span><kbd>CTRL+M</kbd></div>
-          <div class="shortcut right badge-style"><span>Review Next Trimester</span><kbd>CTRL+T</kbd></div>
-          <div class="shortcut right badge-style"><span>Review Next Year</span><kbd>CTRL+Y</kbd></div>
+          <div class="shortcut right badge-style badge-monthly"><span>Maybe Next Month</span><kbd>CTRL+M</kbd></div>
+          <div class="shortcut right badge-style badge-trimester"><span>Maybe Next Trimester</span><kbd>CTRL+T</kbd></div>
+          <div class="shortcut right badge-style badge-year"><span>Maybe Next Year</span><kbd>CTRL+Y</kbd></div>
         </div>
       </div>
     </div>
     <div class="review-overlay monthly-review-overlay hidden">
-      <div class="review-title"><span>Monthly Review</span></div>
+      <div class="review-title"><span>Maybe Next Month</span></div>
       <div class="content-wrapper">
         <div class="left-content">
-          <div class="shortcut left badge-style"><span><kbd>CTRL+N</kbd> Review Everyday</span></div>
-          <div class="shortcut left badge-style"><span><kbd>CTRL+W</kbd> Review Next Week</span></div>
+          <div class="shortcut left badge-style badge-daily"><span>Maybe This Week</span><kbd>CTRL+N</kbd></div>
+          <div class="shortcut left badge-style badge-weekly"><span>Maybe Next Week</span><kbd>CTRL+W</kbd></div>
         </div>
         <div class="right-content">
-          <div class="shortcut right badge-style"><span>Review Next Trimester</span><kbd>CTRL+T</kbd></div>
-          <div class="shortcut right badge-style"><span>Review Next Year</span><kbd>CTRL+Y</kbd></div>
+          <div class="shortcut right badge-style badge-trimester"><span>Maybe Next Trimester</span><kbd>CTRL+T</kbd></div>
+          <div class="shortcut right badge-style badge-year"><span>Maybe Next Year</span><kbd>CTRL+Y</kbd></div>
         </div>
       </div>
     </div>
     <div class="review-overlay trimester-review-overlay hidden">
-      <div class="review-title"><span>Trimester Review</span></div>
+      <div class="review-title"><span>Maybe Next Trimester</span></div>
       <div class="content-wrapper">
         <div class="left-content">
-          <div class="shortcut left badge-style"><span><kbd>CTRL+N</kbd> Review Everyday</span></div>
-          <div class="shortcut left badge-style"><span><kbd>CTRL+W</kbd> Review Next Week</span></div>
-          <div class="shortcut left badge-style"><span><kbd>CTRL+M</kbd> Review Next Month</span></div>
+          <div class="shortcut left badge-style badge-daily"><span>Maybe This Week</span><kbd>CTRL+N</kbd></div>
+          <div class="shortcut left badge-style badge-weekly"><span>Maybe Next Week</span><kbd>CTRL+W</kbd></div>
+          <div class="shortcut left badge-style badge-monthly"><span>Maybe Next Month</span><kbd>CTRL+M</kbd></div>
         </div>
         <div class="right-content">
-          <div class="shortcut right badge-style"><span>Review Next Year</span><kbd>CTRL+Y</kbd></div>
+          <div class="shortcut right badge-style badge-year"><span>Maybe Next Year</span><kbd>CTRL+Y</kbd></div>
         </div>
       </div>
     </div>
     <div class="review-overlay year-review-overlay hidden">
-      <div class="review-title"><span>Year Review</span></div>
+      <div class="review-title"><span>Maybe Next Year</span></div>
       <div class="content-wrapper">
         <div class="left-content">
-          <div class="shortcut left badge-style"><span><kbd>CTRL+N</kbd> Review Everyday</span></div>
-          <div class="shortcut left badge-style"><span><kbd>CTRL+W</kbd> Review Next Week</span></div>
-          <div class="shortcut left badge-style"><span><kbd>CTRL+M</kbd> Review Next Month</span></div>
-          <div class="shortcut left badge-style"><span><kbd>CTRL+T</kbd> Review Next Trimester</span></div>
+          <div class="shortcut left badge-style badge-daily"><span>Maybe This Week</span><kbd>CTRL+N</kbd></div>
+          <div class="shortcut left badge-style badge-weekly"><span>Maybe Next Week</span><kbd>CTRL+W</kbd></div>
+          <div class="shortcut left badge-style badge-monthly"><span>Maybe Next Month</span><kbd>CTRL+M</kbd></div>
+          <div class="shortcut left badge-style badge-trimester"><span>Maybe Next Trimester</span><kbd>CTRL+T</kbd></div>
         </div>
         <div class="right-content"></div>
       </div>
@@ -449,12 +470,12 @@ render: -> """
       <a href="#" class="review-btn review-open">R</a>
       <div class="review-options ">
         <a href="#" class="review-btn review-close" style="background-color:purple;">X</a>
-        <a href="#" class="review-btn today-plan-trigger">H</a>
-        <a href="#" class="review-btn daily-review-trigger">D</a>
-        <a href="#" class="review-btn weekly-review-trigger">W</a>
-        <a href="#" class="review-btn monthly-review-trigger">M</a>
-        <a href="#" class="review-btn trimester-review-trigger">T</a>
-        <a href="#" class="review-btn year-review-trigger">A</a>
+        <a href="#" class="review-btn today-plan-trigger">T</a>
+        <a href="#" class="review-btn daily-review-trigger">DR</a>
+        <a href="#" class="review-btn weekly-review-trigger">WR</a>
+        <a href="#" class="review-btn monthly-review-trigger">MR</a>
+        <a href="#" class="review-btn trimester-review-trigger">TR</a>
+        <a href="#" class="review-btn year-review-trigger">YR</a>
       </div>
     </div>
   </div>
