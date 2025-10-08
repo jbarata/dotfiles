@@ -386,7 +386,7 @@ render: -> """
         <div class="left-content">
           </div>
           <div class="right-content">
-            <div class="shortcut right badge-style badge-daily"><span>Maybe This Week</span> <kbd>CMD+R</kbd></div>
+            <div class="shortcut right badge-style badge-daily"><span>Not longer today</span> <kbd>CMD+R</kbd></div>
           </div>
         </div>
       <div class="os-links">
@@ -399,14 +399,13 @@ render: -> """
       <div class="review-title"><span>This Week</span></div>
       <div class="content-wrapper">
         <div class="left-content">
-            <div class="shortcut left badge-style badge-today"><span>Today</span><kbd>CMD+T</kbd></div>
+            <div class="shortcut left badge-style badge-today"><kbd>CMD+T</kbd> <span>Maybe Today</span></div>
           </div>
           <div class="right-content">
             <div class="shortcut right badge-style badge-weekly"><span>Maybe Next Week</span> <kbd>CTRL+W</kbd></div>
             <div class="shortcut right badge-style badge-monthly"><span>Maybe Next Month</span> <kbd>CTRL+M</kbd></div>
             <div class="shortcut right badge-style badge-trimester"><span>Maybe Next Trimester</span> <kbd>CTRL+T</kbd></div>
             <div class="shortcut right badge-style badge-year"><span>Maybe Next Year</span> <kbd>CTRL+Y</kbd></div>
-            <div class="shortcut right badge-style"><span>Followed by</span> <kbd>CMD+O</kbd></div>
           </div>
         </div>
         <div class="os-links">
@@ -419,7 +418,7 @@ render: -> """
       <div class="review-title"><span>Maybe Next Week</span></div>
       <div class="content-wrapper">
         <div class="left-content">
-          <div class="shortcut left badge-style badge-daily"><span>Maybe This Week</span><kbd>CMD+R</kbd></div>
+          <div class="shortcut left badge-style badge-daily"><kbd>CMD+R</kbd> <span>Maybe This Week</span></div>
         </div>
         <div class="right-content">
           <div class="shortcut right badge-style badge-monthly"><span>Maybe Next Month</span><kbd>CTRL+M</kbd></div>
@@ -432,8 +431,8 @@ render: -> """
       <div class="review-title"><span>Maybe Next Month</span></div>
       <div class="content-wrapper">
         <div class="left-content">
-          <div class="shortcut left badge-style badge-daily"><span>Maybe This Week</span><kbd>CTRL+N</kbd></div>
-          <div class="shortcut left badge-style badge-weekly"><span>Maybe Next Week</span><kbd>CTRL+W</kbd></div>
+          <div class="shortcut left badge-style badge-daily"><kbd>CMD+R</kbd> <span>Maybe This Week</span></div>
+          <div class="shortcut left badge-style badge-weekly"><kbd>CTRL+W</kbd> <span>Maybe Next Week</span></div>
         </div>
         <div class="right-content">
           <div class="shortcut right badge-style badge-trimester"><span>Maybe Next Trimester</span><kbd>CTRL+T</kbd></div>
@@ -445,9 +444,9 @@ render: -> """
       <div class="review-title"><span>Maybe Next Trimester</span></div>
       <div class="content-wrapper">
         <div class="left-content">
-          <div class="shortcut left badge-style badge-daily"><span>Maybe This Week</span><kbd>CTRL+N</kbd></div>
-          <div class="shortcut left badge-style badge-weekly"><span>Maybe Next Week</span><kbd>CTRL+W</kbd></div>
-          <div class="shortcut left badge-style badge-monthly"><span>Maybe Next Month</span><kbd>CTRL+M</kbd></div>
+          <div class="shortcut left badge-style badge-daily"><kbd>CMD+R</kbd> <span>Maybe This Week</span></div>
+          <div class="shortcut left badge-style badge-weekly"><kbd>CTRL+W</kbd> <span>Maybe Next Week</span></div>
+          <div class="shortcut left badge-style badge-monthly"><kbd>CTRL+M</kbd> <span>Maybe Next Month</span></div>
         </div>
         <div class="right-content">
           <div class="shortcut right badge-style badge-year"><span>Maybe Next Year</span><kbd>CTRL+Y</kbd></div>
@@ -458,10 +457,10 @@ render: -> """
       <div class="review-title"><span>Maybe Next Year</span></div>
       <div class="content-wrapper">
         <div class="left-content">
-          <div class="shortcut left badge-style badge-daily"><span>Maybe This Week</span><kbd>CTRL+N</kbd></div>
-          <div class="shortcut left badge-style badge-weekly"><span>Maybe Next Week</span><kbd>CTRL+W</kbd></div>
-          <div class="shortcut left badge-style badge-monthly"><span>Maybe Next Month</span><kbd>CTRL+M</kbd></div>
-          <div class="shortcut left badge-style badge-trimester"><span>Maybe Next Trimester</span><kbd>CTRL+T</kbd></div>
+          <div class="shortcut left badge-style badge-daily"><kbd>CMD+R</kbd> <span>Maybe This Week</span></div>
+          <div class="shortcut left badge-style badge-weekly"><kbd>CTRL+W</kbd> <span>Maybe Next Week</span></div>
+          <div class="shortcut left badge-style badge-monthly"><kbd>CTRL+M</kbd> <span>Maybe Next Month</span></div>
+          <div class="shortcut left badge-style badge-trimester"><kbd>CTRL+T</kbd> <span>Maybe Next Trimester</span></div>
         </div>
         <div class="right-content"></div>
       </div>
