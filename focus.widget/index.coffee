@@ -326,11 +326,9 @@ style: """
     font-family: "Courier New", monospace
     font-size: 11px
     margin-right: 2px
-    position: relative
-    top: -1px
 
   .badge-daily kbd, .badge-today kbd
-    background-color: green
+    background-color: orange
 
   .unread-count
     display: inline-block
