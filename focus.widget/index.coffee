@@ -375,7 +375,7 @@ style: """
   .os-links
     z-index: 1000
     position: absolute
-    bottom: 2px
+    bottom: 5px
     left: 0
     width: 100%
     text-align: center
@@ -387,6 +387,7 @@ style: """
 
   .os-links .shortcut
     margin-bottom: 0
+    padding:0px 10px 2px 10px
 """
 
 render: -> """
@@ -405,7 +406,7 @@ render: -> """
       <div class="os-links">
         <a href="#" class="mail-trigger"><div class="shortcut badge-style badge-today"><span>Mail </span><span class="unread-count unread-total hidden"></span></div></a>
         <a href="#" class="calendar-trigger"><div class="shortcut badge-style badge-today"><span>Calendar </span><span class="unread-count events-today hidden"></span></div></a>
-        <a href="#" class="safari-trigger"><div class="shortcut badge-style badge-today"><span>DF Plan</span></div></a>
+        <a href="#" class="safari-trigger"><div class="shortcut badge-style badge-today"><span>Dogfooding</span></div></a>
       </div>
       <div class="review-schedule">Muitas vezes ao dia</div>
     </div>
@@ -423,7 +424,7 @@ render: -> """
         <div class="os-links">
           <a href="#" class="mail-trigger"><div class="shortcut badge-style"><span>Mail </span><span class="unread-count unread-total hidden"></span></div></a>
           <a href="#" class="calendar-trigger"><div class="shortcut badge-style"><span>Calendar </span><span class="unread-count events-today hidden"></span></div></a>
-          <a href="#" class="safari-trigger"><div class="shortcut badge-style"><span>DF Plan</span></div></a>
+          <a href="#" class="safari-trigger"><div class="shortcut badge-style"><span>Dogfooding</span></div></a>
       </div>
       <div class="review-schedule">Day Review: todos os dias às 9h00</div>
     </div>
