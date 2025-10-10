@@ -3,10 +3,17 @@ tell application "System Events" to (name of processes) contains "Things3"
 if result is true then
 	tell application "Things3"
 		set OList to to dos of list "Today"
-		set RList to reverse of OList
-		repeat with theTodo in OList
-			if status of theTodo is open then exit repeat
+		set theTodo to missing value
+		repeat with aTodo in OList
+			if status of aTodo is open then
+				set theTodo to aTodo
+				exit repeat
+			end if
 		end repeat
+		
+		if theTodo is missing value then
+			return ""
+		end if
 		
 		set theAreaName to ""
 		set theNotesText to ""
@@ -57,4 +64,3 @@ if result is true then
 else
 	return "No focus (Things closed)!"
 end if
-
