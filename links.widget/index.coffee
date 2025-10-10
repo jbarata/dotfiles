@@ -1,8 +1,23 @@
 refreshFrequency: 500
 
 style: """
-  top: 10px
-  left: 0px
+  top: 0
+  left: 0
+  height: 100%
+  width: 20px
+
+  table
+    position: absolute
+    top: 10px
+    left: 0
+    transform: translateX(-100%)
+    transition: transform 0.2s ease-in-out
+    background-color: rgba(0,0,0,0.2)
+    padding: 10px 5px
+    border-radius: 0 10px 10px 0
+
+  &:hover table
+    transform: translateX(0)
 
   a
     text-decoration:none
