@@ -1,7 +1,7 @@
-command: "sysctl -n vm.loadavg|awk '{print $2}'"
+command: "echo \"scale=4; $(sysctl -n vm.loadavg | awk '{print $2}') / $(sysctl -n hw.ncpu)\" | bc"
 refreshFrequency: 9500
 render: (_) -> """
-  <progress class='bar' value='0' max='6'></progress>
+  <progress class='bar' value='0' max='1'></progress>
 """
 
 update: (output, domEl) ->
@@ -11,10 +11,10 @@ update: (output, domEl) ->
   $bar.css width: $(domEl).height()
   $bar.attr 'value': val
   colorclass = switch
-    when val > 4 then 'urgent'
-    when val > 3 then 'important'
-    when val > 2 then 'high'
-    when val > 1 then 'normal'
+    when val > 1 then 'urgent'
+    when val > 0.75 then 'important'
+    when val > 0.5 then 'high'
+    when val > 0.25 then 'normal'
     else 'low'
   $bar.addClass colorclass
 
