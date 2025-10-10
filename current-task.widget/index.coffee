@@ -6,7 +6,7 @@ echo '{ "area":"'$theArea'","project": "'$theProject'", "task": "'$theTask'", "t
 refreshFrequency: 3000
 
 style: """
-  bottom: -5px
+  bottom: 0px
   left: 50%
   transform: translateX(-50%)
   max-width: calc(100% - 540px)
@@ -33,7 +33,7 @@ style: """
     color:rgba(255,255,255,0.4)
 
   .thing
-    font-size: 30px
+    font-size: 20px
     color:white
 
   .project
