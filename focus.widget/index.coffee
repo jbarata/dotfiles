@@ -438,7 +438,7 @@ render: -> """
           <div class="shortcut right badge-style badge-monthly"><span>Maybe Next Month</span><kbd>CTRL+M</kbd></div>
         </div>
       </div>
-      <div class="review-schedule">Week Review: todas as Segundas às 8h30</div>
+      <div class="review-schedule">Week Review: todas as Segundas às 8h45</div>
     </div>
     <div class="review-overlay monthly-review-overlay hidden">
       <div class="review-title"><span>Maybe Next Month</span></div>
@@ -450,7 +450,7 @@ render: -> """
           <div class="shortcut right badge-style badge-trimester"><span>Maybe Next Trimester</span><kbd>CTRL+T</kbd></div>
         </div>
       </div>
-      <div class="review-schedule">Month Review: todos os dias 28</div>
+      <div class="review-schedule">Month Review: todos os dias 1 | 8h30</div>
     </div>
     <div class="review-overlay trimester-review-overlay hidden">
       <div class="review-title"><span>Maybe Next Trimester</span></div>
@@ -462,7 +462,7 @@ render: -> """
           <div class="shortcut right badge-style badge-year"><span>Maybe Next Year</span><kbd>CTRL+Y</kbd></div>
         </div>
       </div>
-      <div class="review-schedule">Trimester Review: 23 Dex | 23 Mar | 23 Jun | 23 Set</div>
+      <div class="review-schedule">Trimester Review: 2 Jan | 2 Abr | 2 Jul | 2 Out | 09:30</div>
     </div>
     <div class="review-overlay year-review-overlay hidden">
       <div class="review-title"><span>Maybe Next Year</span></div>
@@ -472,7 +472,7 @@ render: -> """
         </div>
         <div class="right-content"></div>
       </div>
-      <div class="review-schedule">Year Review: 20 Dez</div>
+      <div class="review-schedule">Year Review: 2 Jan</div>
     </div>
     <div class="review-selector">
       <a href="#" class="review-btn review-open">R</a>
