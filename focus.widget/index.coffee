@@ -462,7 +462,7 @@ render: -> """
           <div class="shortcut right badge-style badge-year"><span>Maybe Next Year</span><kbd>CTRL+Y</kbd></div>
         </div>
       </div>
-      <div class="review-schedule">Trimester Review: 23 Jan | 23 Abr | 23 Jul | 23 Out</div>
+      <div class="review-schedule">Trimester Review: 23 Dex | 23 Mar | 23 Jun | 23 Set</div>
     </div>
     <div class="review-overlay year-review-overlay hidden">
       <div class="review-title"><span>Maybe Next Year</span></div>
