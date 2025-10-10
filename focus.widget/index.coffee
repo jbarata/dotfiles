@@ -54,6 +54,7 @@ afterRender: (domEl) ->
       links.addClass 'hidden'
       reviewOpen.addClass 'hidden'
       reviewOptions.removeClass 'hidden'
+      showOverlay('today')
     else
       localStorage.removeItem('planningMode')
       container.removeClass 'planning'
@@ -86,7 +87,6 @@ afterRender: (domEl) ->
 
   widget.find('.review-open').on 'click', (e) =>
     togglePlanningMode(true)
-    showOverlay('today')
     e.preventDefault()
     @run "osascript focus.widget/review_open.scpt"
     @run "osascript focus.widget/large_center.scpt"
