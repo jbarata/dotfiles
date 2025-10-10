@@ -56,14 +56,14 @@ render: -> """
       <tr>
         <td>
           <a href="https://github.com/cob">
-            <img style="width:47px;" src="links.widget/images/github.png">
+            <img style="width:35px;margin-left:6px;background-color:#ffffff40;padding:3px 0px 0px 0px;border-radius:7px;" src="links.widget/images/github.png">
           </a>
         </td>
       </tr>
       <tr>
         <td>
           <a href="https://gitlab.com/cob">
-            <img style="width:32px;margin-left:7px" src="links.widget/images/gitlab.svg">
+            <img style="width:25px;margin-left:7px;background-color:#ffffff40;padding:4px;border-radius:7px;" src="links.widget/images/gitlab.svg">
           </a>
         </td>
       </tr>

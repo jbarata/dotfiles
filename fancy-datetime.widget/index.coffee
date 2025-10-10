@@ -20,7 +20,7 @@ settings =
     colors:
       default: 'rgba(0, 0, 0, .75)'
       accent: 'rgba(255, 255, 255, .75)'
-      background: 'rgba(255, 255, 255, .1)'
+      background: 'rgba(255, 255, 255, .15)'
     shadows:
       box: '0 0 1.25em rgba(0, 0, 0, .5)'
       text: '0 0 0.625em rgba(0, 0, 0, .25)'
