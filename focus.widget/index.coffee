@@ -17,6 +17,9 @@ afterRender: (domEl) ->
   showOverlay = (type) ->
     hideAllOverlays()
     overlays[type]?.removeClass 'hidden'
+    if(type == 'today' || type == 'daily')
+      updateUnreadCount()
+      updateEventsCount()
 
   updateUnreadCount = =>
     @run("osascript focus.widget/get_unread_count.scpt").then (output) ->
@@ -33,7 +36,7 @@ afterRender: (domEl) ->
   updateEventsCount = =>
     # brew install gcalcli
     # gcalcli list
-    @run('/opt/homebrew/bin/gcalcli agenda now "3 days" | tail -n +2 | wc -l').then (output) ->
+    @run('/opt/homebrew/bin/gcalcli agenda now midnight --tsv | tail -n +2 | wc -l').then (output) ->
       count = parseInt(output.trim())
       eventEls = domEl.querySelectorAll('.events-today')
       for eventEl in eventEls
@@ -101,16 +104,12 @@ afterRender: (domEl) ->
   widget.find('.today-plan-trigger').on 'click', (e) =>
     e.preventDefault()
     showOverlay('today')
-    updateUnreadCount()
-    updateEventsCount()
     @run "osascript focus.widget/review_open.scpt"
     @run "osascript focus.widget/large_center.scpt"
 
   widget.find('.daily-review-trigger').on 'click', (e) =>
     e.preventDefault()
     showOverlay('daily')
-    updateUnreadCount()
-    updateEventsCount()
     @run "osascript focus.widget/review_daily.scpt"
     @run "osascript focus.widget/large_center.scpt"
 
