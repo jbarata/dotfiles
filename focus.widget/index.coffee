@@ -31,7 +31,9 @@ afterRender: (domEl) ->
             unreadEl.classList.add('hidden')
 
   updateEventsCount = =>
-    @run("osascript focus.widget/get_today_events_count.scpt").then (output) ->
+    # brew install gcalcli
+    # gcalcli list
+    @run('/opt/homebrew/bin/gcalcli agenda now "3 days" | tail -n +2 | wc -l').then (output) ->
       count = parseInt(output.trim())
       eventEls = domEl.querySelectorAll('.events-today')
       for eventEl in eventEls
@@ -100,7 +102,7 @@ afterRender: (domEl) ->
     e.preventDefault()
     showOverlay('today')
     updateUnreadCount()
-    # updateEventsCount()
+    updateEventsCount()
     @run "osascript focus.widget/review_open.scpt"
     @run "osascript focus.widget/large_center.scpt"
 
@@ -108,7 +110,7 @@ afterRender: (domEl) ->
     e.preventDefault()
     showOverlay('daily')
     updateUnreadCount()
-    # updateEventsCount()
+    updateEventsCount()
     @run "osascript focus.widget/review_daily.scpt"
     @run "osascript focus.widget/large_center.scpt"
 
