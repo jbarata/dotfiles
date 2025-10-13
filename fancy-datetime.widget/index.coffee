@@ -86,7 +86,7 @@ refreshFrequency: 1000
 style: """
   top: 45%
   left: 50%
-  top: 87px
+  top: 86px
   left: 50%
   font-family: 'Ubuntu', sans-serif
   font-size: 16px
@@ -122,11 +122,11 @@ style: """
     color: #{ settings.colors.accent }
 
   .txt-small
-    font-size: 2rem
+    font-size: 1rem
     font-weight: 500
 
   .txt-large
-    font-size: 7rem
+    font-size: 3rem
     font-weight: 700
 
   .divider
