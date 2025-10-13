@@ -131,7 +131,7 @@ style: """
 
   .divider
     display: block
-    width: 1rem
+    width: 0.5rem
     height: 100%
     margin: 0 1rem
     background: #{ settings.colors.accent }
