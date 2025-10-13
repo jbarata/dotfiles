@@ -86,7 +86,7 @@ refreshFrequency: 1000
 style: """
   top: 45%
   left: 50%
-  top: 86px
+  top: 80px
   left: 50%
   font-family: 'Ubuntu', sans-serif
   font-size: 16px
@@ -98,7 +98,7 @@ style: """
     position: relative
     display: table
     height: 100%
-    padding: 1rem 2rem
+    padding: 0.7rem 1.5rem
     border-radius: 1rem
     background: #{ settings.colors.background }
     box-shadow: #{ settings.shadows.box }
