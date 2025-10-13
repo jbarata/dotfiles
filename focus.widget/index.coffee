@@ -37,7 +37,7 @@ afterRender: (domEl) ->
     # brew install gcalcli
     # gcalcli list
     # 1pw Desktop MM Ubershitch - Calendar API
-    @run('/usr/local/bin/gcalcli agenda now "1 day" --tsv | tail -n +2 | wc -l').then (output) ->
+    @run('/usr/local/bin/gcalcli agenda now tomorrow --tsv --calendar MM@CoB | tail -n +2 | wc -l').then (output) ->
       count = parseInt(output.trim())
       eventEls = domEl.querySelectorAll('.events-today')
       for eventEl in eventEls
