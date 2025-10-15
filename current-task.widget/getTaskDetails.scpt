@@ -19,6 +19,8 @@ if result is true then
 		set theNotesText to ""
 		
 		set theTaskName to name of the theTodo
+		set theId to id of the theTodo
+
 		try
 			set theProject to the project of the theTodo
 			set theProjectName to the name of theProject
@@ -54,7 +56,7 @@ if result is true then
 			set theNotesText to newText
 		end if
 		
-		set message to theAreaName & "~" & theProjectName & "~" & theTaskName & "~" & theTagsList & "~" & theNotesText
+		set message to theAreaName & "~" & theProjectName & "~" & theTaskName & "~" & theTagsList & "~" & theNotesText & "~" & theId
 		
 		set AppleScript's text item delimiters to {"\""}
 		set message to text items of message

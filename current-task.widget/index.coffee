@@ -1,6 +1,6 @@
 command: """
-IFS='~' read -r theArea theProject theTask theTags theNotes <<<"$(osascript current-task.widget/getTaskDetails.scpt)"
-echo '{ "area":"'$theArea'","project": "'$theProject'", "task": "'$theTask'", "tags": "'$theTags'", "notes": "'$theNotes'"}'
+IFS='~' read -r theArea theProject theTask theTags theNotes theId<<<"$(osascript current-task.widget/getTaskDetails.scpt)"
+echo '{ "area":"'$theArea'","project": "'$theProject'", "task": "'$theTask'", "tags": "'$theTags'", "notes": "'$theNotes'", "id": "'$theId'"}'
 """
 
 refreshFrequency: 3000
