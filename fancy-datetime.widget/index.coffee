@@ -84,15 +84,14 @@ locale: locale
 refreshFrequency: 1000
 
 style: """
-  top: 45%
-  left: 50%
-  top: 80px
-  left: 50%
+  top: 40px
+  right: -148px
   font-family: 'Ubuntu', sans-serif
   font-size: 16px
   line-height: 1
   text-transform: uppercase
   transform: translate(-50%, -50%)
+  z-index: 99999
 
   .container
     position: relative
