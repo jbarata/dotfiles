@@ -1,9 +1,21 @@
+settings =
+    lang: 'pt'
+    militaryTime: true
+    colors:
+      default: 'rgba(0, 0, 0, .75)'
+      accent: 'rgba(255, 255, 255, .75)'
+      background: 'rgba(255, 255, 255, .3)'
+    shadows:
+      box: '0 0 1.25em rgba(0, 0, 0, .5)'
+      text: '0 0 0.625em rgba(0, 0, 0, .25)'
+
 command: """
 IFS='~' read -r theArea theProject theTask theTags theNotes theId<<<"$(osascript current-task.widget/getTaskDetails.scpt)"
 echo '{ "area":"'$theArea'","project": "'$theProject'", "task": "'$theTask'", "tags": "'$theTags'", "notes": "'$theNotes'", "id": "'$theId'"}'
 """
 
 refreshFrequency: 3000
+
 
 style: """
   bottom: 0px
@@ -14,9 +26,8 @@ style: """
   border-radius:10px
 
   text-align:center
-  font-family: Helvetica Neue
+  font-family: 'Ubuntu', sans-serif
   font-weight: 200
-  text-shadow: 0 1px 5px #000000;
   text-decoration: none
   color:white
 
@@ -33,8 +44,17 @@ style: """
     color:rgba(255,255,255,0.4)
 
   .thing
-    font-size: 20px
+    font-size: 14px
     color:white
+    border-radius: 1rem
+    background: #{ settings.colors.background }
+    box-shadow: #{ settings.shadows.box }
+    text-shadow: #{ settings.shadows.text }
+    overflow: hidden
+    -webkit-backdrop-filter: blur(10px)
+    background:rgba(255, 255, 255, .9)
+    color: rgba(0, 0, 0, 0.9)
+    padding:5px 20px 5px 15px
 
   .project
     font-size: 18px
