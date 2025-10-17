@@ -52,8 +52,8 @@ style: """
     text-shadow: #{ settings.shadows.text }
     overflow: hidden
     -webkit-backdrop-filter: blur(10px)
-    background:rgba(255, 255, 255, .9)
-    color: rgba(0, 0, 0, 0.9)
+    background:rgba(255, 255, 255, .85)
+    color: rgba(0, 0, 0, 0.8)
     padding:5px 20px 5px 15px
 
   .project
