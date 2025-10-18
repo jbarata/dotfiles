@@ -44,17 +44,17 @@ style: """
     color:rgba(255,255,255,0.4)
 
   .thing
-    font-size: 14px
+    font-size: 12px
+    font-weight: 600
     color:white
     border-radius: 1rem
     background: #{ settings.colors.background }
     box-shadow: #{ settings.shadows.box }
-    text-shadow: #{ settings.shadows.text }
     overflow: hidden
     -webkit-backdrop-filter: blur(10px)
-    background:rgba(255, 255, 255, .85)
-    color: rgba(0, 0, 0, 0.8)
-    padding:5px 20px 5px 15px
+    background:rgba(255, 255, 255, .8)
+    color: rgba(0, 0, 0, 0.7)
+    padding:4px 15px 4px 15px
 
   .project
     font-size: 18px
