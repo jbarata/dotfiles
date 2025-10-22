@@ -9,22 +9,25 @@ style: """
 
   table
     position: absolute
-    top: 10px
+    top: 50%
     left: 0
-    transform: translateX(-100%)
+    transform: translate(-100%, -50%)
     transition: transform 0.2s ease-in-out
     background-color: rgba(0,0,0,0.2)
     padding: 10px 5px
     border-radius: 0 10px 10px 0
 
   &:hover table
-    transform: translateX(0)
+    transform: translate(0, -50%)
 
   a
     text-decoration:none
 
   tr
     height: 50px
+
+  tr.separator-row
+    height: auto
 
   .logoCoB
     margin-left: 8px;
@@ -55,6 +58,12 @@ style: """
     border-radius: 10px;
     background-color: rgba(#fff, 0.7);
     padding: 2px
+
+  .separator
+    height: 1px
+    width: 25px
+    background-color: rgba(255,255,255,0.5)
+    margin: 5px auto
 
 """
 
@@ -118,7 +127,7 @@ render: -> """
           </a>
         </td>
       </tr>
-      <tr> <td> </td> </tr>
+      <tr class="separator-row"><td><div class="separator"></div></td></tr>
       <tr>
         <td>
           <a href="https://my.shelly.cloud/#dashboard">
