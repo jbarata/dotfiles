@@ -77,6 +77,31 @@ render: -> """
             <div class="logoCoB">  <div class="symbolCoB">*</div>  </div>
           </a>
         </td>
+        <td>
+          <a href="https://dogfooding.cultofbits.com/recordm/index.html#/cob.custom-resource/Plan:{%22switchView%22:%22yes%22,%22concurrentFilterToggle%22:%22yes%22,%22showFilters%22:%22yes%22}/dash">
+            <div class="logoCoB">  <div class="symbolMimes">P</div>  </div>
+          </a>
+        </td>
+        <td>
+          <a href="https://dogfooding.cultofbits.com/recordm/index.html#/cob.custom-resource/Review/dash?">
+            <div class="logoCoB">  <div class="symbolMimes">D</div>  </div>
+          </a>
+        </td>
+        <td>
+          <a href="https://dogfooding.cultofbits.com/recordm/index.html#/cob.custom-resource/Do/dash?">
+            <div class="logoCoB">  <div class="symbolMimes">R</div>  </div>
+          </a>
+        </td>
+        <td>
+          <a href="https://dogfooding.cultofbits.com/recordm/index.html#/cob.custom-resource/Visão Geral/dash">
+            <div class="logoCoB">  <div class="symbolMimes">M</div>  </div>
+          </a>
+        </td>
+        <td>
+          <a href="https://dogfooding.cultofbits.com/recordm/index.html#/cob.custom-resource/Resultados/dash">
+            <div class="logoCoB">  <div class="symbolMimes">€</div>  </div>
+          </a>
+        </td>
       </tr>
       <tr>
         <td>
