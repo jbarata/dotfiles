@@ -176,6 +176,7 @@ style: """
     display: none
 
   .review-btn
+    z-index: 10
     display: inline-block
     width: 24px
     height: 15px
