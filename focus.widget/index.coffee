@@ -147,7 +147,6 @@ style: """
 
   .container
     display: none
-    z-index:998
 
   .container.planning
     display: block
@@ -160,7 +159,6 @@ style: """
     display: none
 
   .review-selector
-    z-index:1001
     position: absolute
     bottom: 7px
     left: 7px
@@ -241,7 +239,6 @@ style: """
     left: 0
     width: 100vw
     height: 100%
-    z-index: 999
     color: #fff
     font-family: "Helvetica Neue"
     font-weight: 200
