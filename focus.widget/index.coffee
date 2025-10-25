@@ -159,7 +159,7 @@ style: """
     display: none
 
   .review-selector
-    position: absolute
+    position: absoluteindex
     bottom: 7px
     left: 7px
     text-align: center
@@ -372,7 +372,6 @@ style: """
     margin-right: 5px
 
   .os-links
-    z-index: 1000
     position: absolute
     bottom: 5px
     left: 0

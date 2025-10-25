@@ -91,7 +91,6 @@ style: """
   line-height: 1
   text-transform: uppercase
   transform: translate(-50%, -50%)
-  z-index: 99999
 
   .container
     position: relative
