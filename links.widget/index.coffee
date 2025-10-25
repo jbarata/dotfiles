@@ -1,7 +1,6 @@
 refreshFrequency: 500
 
 style: """
-  z-index: 1
   top: 0
   left: 0
   height: 100%

@@ -159,7 +159,7 @@ style: """
     display: none
 
   .review-selector
-    position: absoluteindex
+    position: absolute
     bottom: 7px
     left: 7px
     text-align: center
