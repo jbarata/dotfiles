@@ -85,7 +85,7 @@ refreshFrequency: 1000
 
 style: """
   top: 40px
-  right: -148px
+  right: -82px
   font-family: 'Ubuntu', sans-serif
   font-size: 16px
   line-height: 1
