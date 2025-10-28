@@ -37,6 +37,9 @@ style: """
     height: 32px;
     width:32px;
 
+  .logoCoB.qual
+    background-color: #f39c12;
+
   .symbolCoB
     margin-left: 1px;
     padding-top: 2px;
@@ -116,8 +119,6 @@ render: -> """
             <img style="width:35px;margin-left:6px;background-color:#ffffff40;padding:3px 0px 0px 0px;border-radius:7px;" src="links.widget/images/github.png">
           </a>
         </td>
-      </tr>
-      <tr>
         <td>
           <a href="https://gitlab.com/cob">
             <img style="width:25px;margin-left:7px;background-color:#ffffff40;padding:4px;border-radius:7px;" src="links.widget/images/gitlab.svg">
@@ -133,11 +134,46 @@ render: -> """
       </tr>
       <tr>
         <td>
+          <a class="slackLink" href="slack://open?team=T02J1N4KH">
+            <img style="width:24px;margin-left:10px;background-color:#fff;padding:2px;border-radius:7px;" src="links.widget/images/slack.png">
+          </a>
+        </td>
+        <td>
           <a class="zoomLink" href="zoommtg://zoom.us/join?confno=668244305&zc=2&browser=chrome&uname=Miguel">
             <img style="width:32px;margin-left:7px" src="links.widget/images/zoom.us.png">
           </a>
         </td>
       </tr>
+      <tr>
+        <td>
+          <a href="https://mdados.cultofbits.com">
+            <div class="logoCoB">  <div class="symbolText">Mello</div>  </div>
+          </a>
+        </td>
+        <td>
+          <a href="https://winestone.cultofbits.com">
+            <div class="logoCoB">  <div class="symbolText">WS</div>  </div>
+          </a>
+        </td>
+        <td>
+          <a href="https://servinform-sam.cultofbits.com">
+            <div class="logoCoB">  <div class="symbolText">SAM</div>  </div>
+          </a>
+        </td>
+      </tr>
+      <tr>
+        <td>
+          <a href="https://mdados-qual.cultofbits.com">
+            <div class="logoCoB qual">  <div class="symbolText">Mello</div>  </div>
+          </a>
+        </td>
+        <td>
+          <a href="https://winestone-qual.cultofbits.com">
+            <div class="logoCoB qual">  <div class="symbolText">WS</div>  </div>
+          </a>
+        </td>
+      </tr>
+
       <tr>
         <td>
           <a class="chatgptLink"  href="https://chatgpt.com/pt-PT">
@@ -149,13 +185,6 @@ render: -> """
         <td>
           <a class="visualcodeLink"  href="vscode://">
             <img style="width:26px;margin-left:10px;background-color:#fff;padding:2px;border-radius:7px;" src="links.widget/images/vc.png">
-          </a>
-        </td>
-      </tr>
-      <tr>
-        <td>
-          <a class="slackLink" href="slack://open?team=T02J1N4KH">
-            <img style="width:24px;margin-left:10px;background-color:#fff;padding:2px;border-radius:7px;" src="links.widget/images/slack.png">
           </a>
         </td>
       </tr>
