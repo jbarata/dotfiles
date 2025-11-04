@@ -43,22 +43,29 @@ style: """
     margin:5px
     color:rgba(255,255,255,0.4)
 
-  .thing
-    font-size: 12px
-    font-weight: 600
-    color:white
+  .taskDetails
+    display:flex
+    flex-direction: row 
+    justify-content: center
+    align-items: center
+    gap:2px
     border-radius: 1rem
     background: #{ settings.colors.background }
     box-shadow: #{ settings.shadows.box }
     overflow: hidden
     -webkit-backdrop-filter: blur(10px)
     background:rgba(255, 255, 255, .8)
-    color: rgba(0, 0, 0, 0.7)
-    padding:4px 15px 4px 15px
+    padding:3px 15px 4px 15px
 
+  .thing
+    font-size: 12px
+    font-weight: 600
+    color: rgba(0, 0, 0, 0.7)
+    
   .project
     font-size: 18px
-
+    color: rgba(0, 0, 0, 0.7)
+    
   .area
     font-size: 12px
 
@@ -78,11 +85,10 @@ render: (output) ->
         <!-- p id="timelapse"/-->
         <!-- p id="timegoal"style="display:none"/-->
         <!-- p id="timelimit"style="display:none"/-->
-        <div>
+        <div class="taskDetails">
             <!--img id="toggl" style="vertical-align:3%" src="current-task.widget/images/Inactive-19.png"/-->
             <!--br/> <a class="area">area</a-->
-            <br/> <a class="project">project</a>
-            <br/> <a class="thing">thing</a>
+            <a class="project">project</a> <a class="thing">thing</a>
         </div>
       </div>
     """
