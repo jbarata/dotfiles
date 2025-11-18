@@ -75,12 +75,69 @@ style: """
     background-color: rgba(255,255,255,0.5)
     margin: 5px auto
 
+  .confirm-dialog-overlay
+    position: fixed
+    top: 0
+    left: 0
+    width: 100%
+    height: 100%
+    background-color: rgba(0,0,0,0.7)
+    display: none
+    z-index: 1000
+
+  .confirm-dialog
+    position: fixed
+    top: 4px
+    left: 50%
+    transform: translateX(-50%)
+    background-color: #2c3e50
+    padding: 0 20px
+    border-radius: 10px
+    color: white
+    font-family: sans-serif
+    height: 55px
+    display: flex
+    align-items: center
+    justify-content: center
+
+  .confirm-dialog p
+    margin: 0 15px 0 0
+
+  .confirm-dialog button
+    border: none
+    padding: 8px 15px
+    margin: 0 5px
+    border-radius: 5px
+    cursor: pointer
+    font-weight: bold
+
+  .confirm-yes
+    background-color: #27ae60
+    color: white
+
+  .confirm-no
+    background-color: #c0392b
+    color: white
 """
 
 
 render: -> """
   <div class="links">
+    <div class="confirm-dialog-overlay">
+      <div class="confirm-dialog">
+        <p>Deseja executar o comando de unlock?</p>
+        <button class="confirm-yes">Sim</button>
+        <button class="confirm-no">Não</button>
+      </div>
+    </div>
     <table>
+      <tr>
+        <td>
+          <a class="unlockLink" href="#">
+            <div class="logoCoB qual">  <div class="symbolText">Unlock</div>  </div>          
+          </a>
+        </td>
+      </tr>
       <tr>
         <td>
           <a href="https://dogfooding.cultofbits.com">
@@ -233,8 +290,33 @@ content=$(tail -n 1 /tmp/uber-listener.log | tr -d '\0')
 if [ "$content" = "zoom" ] || [ "$content" = "chatgpt" ] || [ "$content" = "visualcode" ] || [ "$content" = "slack" ]; then
   echo "" > /tmp/uber-listener.log
   echo "$content"
+elif [ "$content" = "unlock" ]; then
+  echo "" > /tmp/uber-listener.log
+  export SSHPASS=$(/usr/local/bin/op item get "unlockNuki" --fields password --account CW5IDM3OZRCEBMCSQFLHA3UBLQ)
+  /usr/local/bin/sshpass -e ssh -p 443 cob@demo.cultofbits.com "source unlock.sh"
+  echo "unlocked at $(date)"
 fi
 """
+
+afterRender: (domEl) ->
+  widget = $(domEl)
+  overlay = widget.find('.confirm-dialog-overlay')
+
+  hideDialog = -> overlay.css('display', 'none')
+  showDialog = -> overlay.css('display', 'block')
+
+  widget.find('.unlockLink').on 'click', (e) ->
+    e.preventDefault()
+    showDialog()
+
+  widget.find('.confirm-no').on 'click', (e) ->
+    e.preventDefault()
+    hideDialog()
+
+  widget.find('.confirm-yes').on 'click', (e) =>
+    e.preventDefault()
+    @run 'echo unlock > /tmp/uber-listener.log'
+    hideDialog()
 
 update: (output, domEl) ->
   command = output.trim()
@@ -251,3 +333,4 @@ update: (output, domEl) ->
   else if command == "slack"
     link = domEl.querySelector('.slackLink')
     link?.click()
+
