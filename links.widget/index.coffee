@@ -93,12 +93,12 @@ render: -> """
           </a>
         </td>
         <td>
-          <a href="https://dogfooding.cultofbits.com/recordm/index.html#/cob.custom-resource/Review/dash?">
+          <a href="https://dogfooding.cultofbits.com/recordm/index.html#/cob.custom-resource/Do/dash?">
             <div class="logoCoB">  <div class="symbolText">Do</div>  </div>
           </a>
         </td>
         <td>
-          <a href="https://dogfooding.cultofbits.com/recordm/index.html#/cob.custom-resource/Do/dash?">
+          <a href="https://dogfooding.cultofbits.com/recordm/index.html#/cob.custom-resource/Review/dash?">
             <div class="logoCoB">  <div class="symbolText">Review</div>  </div>
           </a>
         </td>
