@@ -205,7 +205,7 @@ render: -> """
       </tr>
       <tr>
         <td>
-          <a href="https://web-new.budget-bakers.com/dashboard">
+          <a href="https://web.budgetbakers.com/dashboard">
             <img style="width:32px;margin-left:7px" src="links.widget/images/budgetbakers.svg">
           </a>
         </td>
