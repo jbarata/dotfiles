@@ -10,8 +10,8 @@ settings =
       text: '0 0 0.625em rgba(0, 0, 0, .25)'
 
 command: """
-IFS='~' read -r theArea theProject theTask theTags theNotes theId<<<"$(osascript current-task.widget/getTaskDetails.scpt)"
-echo '{ "area":"'$theArea'","project": "'$theProject'", "task": "'$theTask'", "tags": "'$theTags'", "notes": "'$theNotes'", "id": "'$theId'"}'
+IFS='~' read -r theArea theProject theTask theId<<<"$(osascript current-task.widget/getTaskDetails.scpt)"
+echo '{ "area":"'$theArea'","project": "'$theProject'", "task": "'$theTask'", "id": "'$theId'"}'
 """
 
 refreshFrequency: 3000
@@ -103,7 +103,7 @@ update: (output, domEl) ->
   $(".thing").text(data.task);
   $(".thing").attr("href","things:///show?id=today");
   $(".project").text(data.project);
-  $(".project").attr("href","things:///show?query="+data.project);
+  $(".project").attr("href","things:///show?id="+data.id);
   # $(".area").text(data.area);
   # $(".area").attr("href","things:///show?query="+data.area);
 

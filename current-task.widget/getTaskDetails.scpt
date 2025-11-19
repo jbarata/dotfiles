@@ -56,7 +56,7 @@ if result is true then
 			set theNotesText to newText
 		end if
 		
-		set message to theAreaName & "~" & theProjectName & "~" & theTaskName & "~" & theTagsList & "~" & theNotesText & "~" & theId
+		set message to theAreaName & "~" & theProjectName & "~" & theTaskName & "~" & "~" & theId
 		
 		set AppleScript's text item delimiters to {"\""}
 		set message to text items of message
