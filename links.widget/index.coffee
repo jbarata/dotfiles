@@ -75,67 +75,31 @@ style: """
     background-color: rgba(255,255,255,0.5)
     margin: 5px auto
 
-  .confirm-dialog-overlay
-    position: fixed
-    top: 0
-    left: 0
-    width: 100%
-    height: 100%
-    background-color: rgba(0,0,0,0.7)
-    display: none
-    z-index: 1000
+
 
   .confirm-dialog
-    position: fixed
-    top: 4px
-    left: 50%
-    transform: translateX(-50%)
-    background-color: #2c3e50
-    padding: 0 20px
-    border-radius: 10px
-    color: white
-    font-family: sans-serif
-    height: 55px
-    display: flex
-    align-items: center
-    justify-content: center
+    display: none
 
-  .confirm-dialog p
-    margin: 0 15px 0 0
+  .confirm-dialog .logoCoB 
+    background-color: green;
 
-  .confirm-dialog button
-    border: none
-    padding: 8px 15px
-    margin: 0 5px
-    border-radius: 5px
-    cursor: pointer
-    font-weight: bold
 
-  .confirm-yes
-    background-color: #27ae60
-    color: white
-
-  .confirm-no
-    background-color: #c0392b
-    color: white
 """
 
 
 render: -> """
   <div class="links">
-    <div class="confirm-dialog-overlay">
-      <div class="confirm-dialog">
-        <p>Deseja executar o comando de unlock?</p>
-        <button class="confirm-yes">Sim</button>
-        <button class="confirm-no">Não</button>
-      </div>
-    </div>
     <table>
       <tr>
-        <td>
+        <td style="position: relative">
           <a class="unlockLink" href="#">
             <div class="logoCoB qual">  <div class="symbolText">Unlock</div>  </div>          
           </a>
+        </td>
+        <td>
+          <span class="confirm-dialog">
+            <div class="logoCoB">  <div class="symbolText confirm-yes">Open</div>  </div>
+          </span>
         </td>
       </tr>
       <tr>
@@ -301,17 +265,22 @@ fi
 afterRender: (domEl) ->
   widget = $(domEl)
   overlay = widget.find('.confirm-dialog-overlay')
+  dialog = widget.find('.confirm-dialog')
 
-  hideDialog = -> overlay.css('display', 'none')
-  showDialog = -> overlay.css('display', 'block')
+  hideDialog = -> 
+    overlay.css('display', 'none')
+    dialog.css('display', 'none')
+
+  showDialog = -> 
+    overlay.css('display', 'block')
+    dialog.css('display', 'flex')
 
   widget.find('.unlockLink').on 'click', (e) ->
     e.preventDefault()
-    showDialog()
-
-  widget.find('.confirm-no').on 'click', (e) ->
-    e.preventDefault()
-    hideDialog()
+    if dialog.css('display') is 'none'
+      showDialog()
+    else
+      hideDialog()
 
   widget.find('.confirm-yes').on 'click', (e) =>
     e.preventDefault()
@@ -333,4 +302,3 @@ update: (output, domEl) ->
   else if command == "slack"
     link = domEl.querySelector('.slackLink')
     link?.click()
-
