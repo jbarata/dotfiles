@@ -5,6 +5,7 @@ style: """
   left: 0
   height: 100%
   width: 20px
+  z-index: 10
 
   table
     position: absolute
