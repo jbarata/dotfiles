@@ -84,8 +84,8 @@ locale: locale
 refreshFrequency: 1000
 
 style: """
-  top: 40px
-  right: -82px
+  bottom: -32px
+  right: -158px
   font-family: 'Ubuntu', sans-serif
   font-size: 16px
   line-height: 1
@@ -96,7 +96,7 @@ style: """
     position: relative
     display: table
     height: 100%
-    padding: 0.7rem 1.5rem
+    padding: 0.6rem 1.5rem
     border-radius: 1rem
     background: #{ settings.colors.background }
     box-shadow: #{ settings.shadows.box }
