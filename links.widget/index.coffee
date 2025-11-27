@@ -2,7 +2,7 @@ refreshFrequency: 500
 
 style: """
   top: 0
-  left: 0
+  right: 0
   height: 100%
   width: 20px
   z-index: 10
@@ -10,12 +10,12 @@ style: """
   table
     position: absolute
     top: 50%
-    left: 0
-    transform: translate(-100%, -50%)
+    right: 0
+    transform: translate(100%, -50%)
     transition: transform 0.2s ease-in-out
     background-color: rgba(0,0,0,0.2)
     padding: 10px 5px
-    border-radius: 0 10px 10px 0
+    border-radius: 10px 0 0 10px
 
   &:hover table
     transform: translate(0, -50%)
@@ -25,6 +25,8 @@ style: """
 
   tr
     height: 50px
+    display: flex
+    flex-direction: row-reverse
 
   tr.separator-row
     height: auto
