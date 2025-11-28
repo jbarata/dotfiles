@@ -251,11 +251,14 @@ style: """
 
   .review-schedule
     position: absolute
-    bottom: 5px
+    top: 5px
     right: 10px
     font-size: 18px
     font-weight: 200
     color: rgba(255, 255, 255, 0.7)
+    background-color: rgba(0,0,0,0.3)
+    padding: 4px 6px
+    border-radius: 5px
     text-shadow: 0 1px 1px rgba(0,0,0,0.2)
 
   .today-plan-overlay
@@ -272,11 +275,9 @@ style: """
     background-color: rgba(255, 0, 0, 0.3) // Darkest Red
   .review-title
     position: absolute
-    top: 5px
-    left: 0
-    width: calc(100% * 5 / 6 - 15px)
-    text-align: right
-    height: auto
+    top: 15px
+    width: 100%
+    text-align: center
     padding-right: 24px
     box-sizing: border-box
 
