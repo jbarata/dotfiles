@@ -46,7 +46,7 @@ style: """
     
   .no-event {
     font-style: italic;
-    opacity: 0.7;
+    opacity: 0.3;
   }
 """
 
@@ -88,7 +88,7 @@ update: (output, domEl) ->
     return
   
   if output == "None" or output == ""
-    content.html('<div class="no-event">sem eventos</div>')
+    content.html('<div class="no-event">sem eventos até</div><div class="no-event">ao fim do dia</div>')
     
     timer = $(domEl).data('blinkTimer')
     if timer
