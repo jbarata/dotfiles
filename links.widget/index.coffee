@@ -261,7 +261,7 @@ fi
 content=$(tail -n 1 /tmp/uber-listener.log | tr -d '\0')
 
 # Se o comando for relevante, limpa o log e devolve o comando
-if [ "$content" = "zoom" ] || [ "$content" = "chatgpt" ] || [ "$content" = "visualcode" ] || [ "$content" = "slack" ]; then
+if [ "$content" = "zoom" ] || [ "$content" = "chatgpt" ] || [ "$content" = "visualcode" ] || [ "$content" = "slack" ] || [ "$content" = "calendar" ]; then
   echo "" > /tmp/uber-listener.log
   echo "$content"
 elif [ "$content" = "unlock" ]; then
@@ -297,6 +297,7 @@ afterRender: (domEl) ->
     @run 'echo unlock > /tmp/uber-listener.log'
     hideDialog()
 
+  console.log "Opening calendar app"
   widget.find('.calendarLink').on 'click', (e) =>
     e.preventDefault()
     @run "osascript focus.widget/open_calendar.scpt"
