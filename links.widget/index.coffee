@@ -212,6 +212,13 @@ render: -> """
           </a>
         </td>
       </tr>
+      <tr>
+        <td>
+          <a class="calendarLink"  href="#">
+            <div >  <div style="font-size: 30px; margin-right: 1px">📅</div>  </div>
+          </a>
+        </td>
+      </tr>
       <tr class="separator-row"><td><div class="separator"></div></td></tr>
       <tr>
         <td>
@@ -290,6 +297,10 @@ afterRender: (domEl) ->
     @run 'echo unlock > /tmp/uber-listener.log'
     hideDialog()
 
+  widget.find('.calendarLink').on 'click', (e) =>
+    e.preventDefault()
+    @run "osascript focus.widget/open_calendar.scpt"
+
 update: (output, domEl) ->
   command = output.trim()
   
@@ -304,4 +315,7 @@ update: (output, domEl) ->
     link?.click()
   else if command == "slack"
     link = domEl.querySelector('.slackLink')
+    link?.click()
+  else if command == "calendar"
+    link = domEl.querySelector('.calendarLink')
     link?.click()
