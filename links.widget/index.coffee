@@ -297,7 +297,6 @@ afterRender: (domEl) ->
     @run 'echo unlock > /tmp/uber-listener.log'
     hideDialog()
 
-  console.log "Opening calendar app"
   widget.find('.calendarLink').on 'click', (e) =>
     e.preventDefault()
     @run "osascript focus.widget/open_calendar.scpt"
