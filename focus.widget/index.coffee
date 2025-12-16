@@ -506,13 +506,11 @@ command: """
 
 update: (output, domEl) ->
   lines = output.split('\n')
-  console.log("focus.widget output lines: ", lines)
   
   for line in lines
     if line.startsWith('CMD:')
       command = line.replace('CMD:', '').trim()
       if command == "review"
-        console.log("focus.widget a processar o comando de toggle 'review'")
         reviewOpen = domEl.querySelector('.review-btn.review-open')
         reviewClose = domEl.querySelector('.review-btn.review-close')
         if reviewOpen.classList.contains('hidden')
