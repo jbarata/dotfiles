@@ -145,8 +145,6 @@ update: (output, domEl) ->
     timeDisplay = startStr
 
   line1 = title
-  if location and location != "" and location != "missing value"
-    line1 += " <span class='separator'>|</span> #{location}"
 
   html = """
     <div>#{line1}</div>
