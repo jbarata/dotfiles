@@ -18,6 +18,7 @@ refreshFrequency: 3000
 
 
 style: """
+  z-index: -1
   bottom: 0px
   left: 50%
   transform: translateX(-50%)
