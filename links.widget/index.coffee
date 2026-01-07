@@ -107,7 +107,7 @@ render: -> """
       </tr>
       <tr>
         <td>
-          <a href="https://dogfooding.cultofbits.com">
+          <a class="dogfoodingLink" href="https://dogfooding.cultofbits.com">
             <div class="logoCoB">  <div class="symbolCoB">*</div>  </div>
           </a>
         </td>
@@ -261,7 +261,7 @@ fi
 content=$(tail -n 1 /tmp/uber-listener.log | tr -d '\0')
 
 # Se o comando for relevante, limpa o log e devolve o comando
-if [ "$content" = "zoom" ] || [ "$content" = "chatgpt" ] || [ "$content" = "visualcode" ] || [ "$content" = "slack" ] || [ "$content" = "calendar" ]; then
+if [ "$content" = "zoom" ] || [ "$content" = "chatgpt" ] || [ "$content" = "visualcode" ] || [ "$content" = "slack" ] || [ "$content" = "calendar" ] || [ "$content" = "dogfooding" ]; then
   echo "" > /tmp/uber-listener.log
   echo "$content"
 elif [ "$content" = "unlock" ]; then
@@ -318,4 +318,7 @@ update: (output, domEl) ->
     link?.click()
   else if command == "calendar"
     link = domEl.querySelector('.calendarLink')
+    link?.click()
+  else if command == "dogfooding"
+    link = domEl.querySelector('.dogfoodingLink')
     link?.click()
