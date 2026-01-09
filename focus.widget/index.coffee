@@ -220,6 +220,7 @@ style: """
 
   .badge-today
     background-color: rgba(0, 128, 0, 0.7)
+    z-index: 1
   .badge-daily
     background-color: rgba(31, 136, 194, 0.7)
   .badge-weekly
