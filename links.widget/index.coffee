@@ -252,12 +252,7 @@ render: -> """
 """
 
 command: """
-# Lança o servidor nc só uma vez (se ainda não estiver a correr)
-if ! pgrep -f "nc -lk 5555" > /dev/null; then
-  nohup nc -lk 5555 > /tmp/uber-listener.log 2>/dev/null &
-fi
-
-# Lê a última linha do log
+# Lê a última linha do log do uber-listener, o ficheiro de comunicação entre o widget e o script de escuta de comandos 
 content=$(tail -n 1 /tmp/uber-listener.log | tr -d '\0')
 
 # Se o comando for relevante, limpa o log e devolve o comando

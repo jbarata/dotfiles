@@ -491,30 +491,23 @@ render: -> """
 """
 
 command: """
-  # --- NC Listener ---
-  # Lança o servidor nc só uma vez (se ainda não estiver a correr)
-  if ! pgrep -f "nc -lk 5555" > /dev/null; then
-    nohup nc -lk 5555 > /tmp/uber-listener.log 2>/dev/null &
-  fi
 
-  # Lê a última linha do log e, se for "review", consome-a.
-  content=$(tail -n 1 /tmp/uber-listener.log | tr -d '\0')
+# Lê a última linha do log do uber-listener, o ficheiro de comunicação entre o widget e o script de escuta de comandos  
+content=$(tail -n 1 /tmp/uber-listener.log | tr -d '\0')
+
   if [ "$content" = "review" ]; then
     echo "" > /tmp/uber-listener.log
-    echo "CMD:review"
+    echo "review"
   fi
 """
 
 update: (output, domEl) ->
-  lines = output.split('\n')
+  command = output.trim()
   
-  for line in lines
-    if line.startsWith('CMD:')
-      command = line.replace('CMD:', '').trim()
-      if command == "review"
-        reviewOpen = domEl.querySelector('.review-btn.review-open')
-        reviewClose = domEl.querySelector('.review-btn.review-close')
-        if reviewOpen.classList.contains('hidden')
-          reviewClose?.click()
-        else
-          reviewOpen?.click()
+  if command == "review"
+    reviewOpen = domEl.querySelector('.review-btn.review-open')
+    reviewClose = domEl.querySelector('.review-btn.review-close')
+    if reviewOpen.classList.contains('hidden')
+      reviewClose?.click()
+    else
+      reviewOpen?.click()
