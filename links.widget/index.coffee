@@ -200,7 +200,7 @@ render: -> """
 
       <tr>
         <td>
-          <a class="claudeLink"  href="https://claude.ai">
+          <a class="claudeLink"  href="claude://">
             <img style="width:26px;margin-left:10px;background-color:#fff;padding:2px;border-radius:7px;" src="links.widget/images/claude.svg">
           </a>
         </td>
