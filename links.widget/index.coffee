@@ -200,13 +200,13 @@ render: -> """
 
       <tr>
         <td>
-          <a class="chatgptLink"  href="https://chatgpt.com/pt-PT">
-            <img style="width:26px;margin-left:10px;background-color:#fff;padding:2px;border-radius:7px;" src="links.widget/images/chat.png">
+          <a class="claudeLink"  href="https://claude.ai">
+            <img style="width:26px;margin-left:10px;background-color:#fff;padding:2px;border-radius:7px;" src="links.widget/images/claude.svg">
           </a>
         </td>
         <td>
-          <a class="claudeLink"  href="https://claude.ai">
-            <img style="width:26px;margin-left:10px;background-color:#fff;padding:2px;border-radius:7px;" src="links.widget/images/claude.svg">
+          <a class="chatgptLink"  href="https://chatgpt.com/pt-PT">
+            <img style="width:26px;margin-left:10px;background-color:#fff;padding:2px;border-radius:7px;" src="links.widget/images/chat.png">
           </a>
         </td>
       </tr>
