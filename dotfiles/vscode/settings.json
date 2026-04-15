@@ -1,0 +1,21 @@
+{
+    "editor.fontSize": 14,
+    "editor.tabSize": 2,
+    "editor.formatOnSave": true,
+    "editor.minimap.enabled": false,
+    "editor.wordWrap": "on",
+    "editor.bracketPairColorization.enabled": true,
+
+    "terminal.integrated.defaultProfile.osx": "zsh",
+    "terminal.integrated.fontSize": 13,
+
+    "files.trimTrailingWhitespace": true,
+    "files.insertFinalNewline": true,
+    "files.trimFinalNewlines": true,
+
+    "workbench.startupEditor": "none",
+
+    "git.confirmSync": false,
+    "git.autofetch": true,
+    "git.enableSmartCommit": true
+}

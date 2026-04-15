@@ -267,8 +267,9 @@ if [ "$content" = "zoom" ] || [ "$content" = "chatgpt" ] || [ "$content" = "clau
   echo "$content"
 elif [ "$content" = "unlock" ]; then
   echo "" > /tmp/uber-listener.log
-  export SSHPASS=$(/usr/local/bin/op item get "unlockNuki" --fields password --account CW5IDM3OZRCEBMCSQFLHA3UBLQ)
-  /usr/local/bin/sshpass -e ssh -p 443 cob@demo.cultofbits.com "source unlock.sh"
+  BREW_PREFIX=$([[ -d /opt/homebrew ]] && echo /opt/homebrew || echo /usr/local)
+  export SSHPASS=$($BREW_PREFIX/bin/op item get "unlockNuki" --fields password --account CW5IDM3OZRCEBMCSQFLHA3UBLQ)
+  $BREW_PREFIX/bin/sshpass -e ssh -p 443 cob@demo.cultofbits.com "source unlock.sh"
   echo "unlocked at $(date)"
 fi
 """
