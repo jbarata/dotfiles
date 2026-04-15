@@ -201,7 +201,7 @@ render: -> """
       <tr>
         <td>
           <a class="claudeLink"  href="claude://">
-            <img style="width:26px;margin-left:10px;background-color:#fff;padding:2px;border-radius:7px;" src="links.widget/images/claude.svg">
+            <img style="width:32px;margin-left:7px;border-radius:7px;" src="links.widget/images/claude.svg">
           </a>
         </td>
         <td>
