@@ -492,7 +492,8 @@ render: -> """
 
 command: """
 
-# Lê a última linha do log do uber-listener, o ficheiro de comunicação entre o widget e o script de escuta de comandos  
+# Lê a última linha do log do uber-listener, o ficheiro de comunicação entre o widget e o script de escuta de comandos
+touch /tmp/uber-listener.log
 content=$(tail -n 1 /tmp/uber-listener.log | tr -d '\0')
 
   if [ "$content" = "review" ]; then

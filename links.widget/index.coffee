@@ -200,6 +200,11 @@ render: -> """
 
       <tr>
         <td>
+          <a class="claudeLink"  href="claude://">
+            <img style="width:32px;margin-left:7px;border-radius:7px;" src="links.widget/images/claude.svg">
+          </a>
+        </td>
+        <td>
           <a class="chatgptLink"  href="https://chatgpt.com/pt-PT">
             <img style="width:26px;margin-left:10px;background-color:#fff;padding:2px;border-radius:7px;" src="links.widget/images/chat.png">
           </a>
@@ -252,11 +257,12 @@ render: -> """
 """
 
 command: """
-# Lê a última linha do log do uber-listener, o ficheiro de comunicação entre o widget e o script de escuta de comandos 
+# Lê a última linha do log do uber-listener, o ficheiro de comunicação entre o widget e o script de escuta de comandos
+touch /tmp/uber-listener.log
 content=$(tail -n 1 /tmp/uber-listener.log | tr -d '\0')
 
 # Se o comando for relevante, limpa o log e devolve o comando
-if [ "$content" = "zoom" ] || [ "$content" = "chatgpt" ] || [ "$content" = "visualcode" ] || [ "$content" = "slack" ] || [ "$content" = "calendar" ] || [ "$content" = "dogfooding" ]; then
+if [ "$content" = "zoom" ] || [ "$content" = "chatgpt" ] || [ "$content" = "claude" ] || [ "$content" = "visualcode" ] || [ "$content" = "slack" ] || [ "$content" = "calendar" ] || [ "$content" = "dogfooding" ]; then
   echo "" > /tmp/uber-listener.log
   echo "$content"
 elif [ "$content" = "unlock" ]; then
@@ -292,6 +298,10 @@ afterRender: (domEl) ->
     @run 'echo unlock > /tmp/uber-listener.log'
     hideDialog()
 
+  widget.find('.claudeLink').on 'click', (e) =>
+    e.preventDefault()
+    @run "osascript -e 'tell application \"Claude\" to activate'"
+
   widget.find('.calendarLink').on 'click', (e) =>
     e.preventDefault()
     @run "osascript focus.widget/open_calendar.scpt"
@@ -304,6 +314,9 @@ update: (output, domEl) ->
     link?.click()
   else if command == "chatgpt"
     link = domEl.querySelector('.chatgptLink')
+    link?.click()
+  else if command == "claude"
+    link = domEl.querySelector('.claudeLink')
     link?.click()
   else if command == "visualcode"
     link = domEl.querySelector('.visualcodeLink')
