@@ -204,6 +204,11 @@ render: -> """
             <img style="width:26px;margin-left:10px;background-color:#fff;padding:2px;border-radius:7px;" src="links.widget/images/chat.png">
           </a>
         </td>
+        <td>
+          <a class="claudeLink"  href="https://claude.ai">
+            <img style="width:26px;margin-left:10px;background-color:#fff;padding:2px;border-radius:7px;" src="links.widget/images/claude.svg">
+          </a>
+        </td>
       </tr>
       <tr>
         <td>
@@ -256,7 +261,7 @@ command: """
 content=$(tail -n 1 /tmp/uber-listener.log | tr -d '\0')
 
 # Se o comando for relevante, limpa o log e devolve o comando
-if [ "$content" = "zoom" ] || [ "$content" = "chatgpt" ] || [ "$content" = "visualcode" ] || [ "$content" = "slack" ] || [ "$content" = "calendar" ] || [ "$content" = "dogfooding" ]; then
+if [ "$content" = "zoom" ] || [ "$content" = "chatgpt" ] || [ "$content" = "claude" ] || [ "$content" = "visualcode" ] || [ "$content" = "slack" ] || [ "$content" = "calendar" ] || [ "$content" = "dogfooding" ]; then
   echo "" > /tmp/uber-listener.log
   echo "$content"
 elif [ "$content" = "unlock" ]; then
@@ -304,6 +309,9 @@ update: (output, domEl) ->
     link?.click()
   else if command == "chatgpt"
     link = domEl.querySelector('.chatgptLink')
+    link?.click()
+  else if command == "claude"
+    link = domEl.querySelector('.claudeLink')
     link?.click()
   else if command == "visualcode"
     link = domEl.querySelector('.visualcodeLink')
