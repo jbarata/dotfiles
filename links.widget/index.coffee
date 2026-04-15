@@ -297,6 +297,10 @@ afterRender: (domEl) ->
     @run 'echo unlock > /tmp/uber-listener.log'
     hideDialog()
 
+  widget.find('.claudeLink').on 'click', (e) =>
+    e.preventDefault()
+    @run "osascript -e 'tell application \"Claude\" to activate'"
+
   widget.find('.calendarLink').on 'click', (e) =>
     e.preventDefault()
     @run "osascript focus.widget/open_calendar.scpt"
