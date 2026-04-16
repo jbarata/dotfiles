@@ -113,8 +113,9 @@ __node_loaded=0
 
 load_node() {
     [[ $__node_loaded -eq 1 ]] && return
+    [[ -f .nvmrc ]] || return
     __node_loaded=1
-    [[ -f .nvmrc ]] && nvm use >/dev/null 2>&1 || nvm use --lts >/dev/null 2>&1
+    nvm use >/dev/null 2>&1
 }
 
 add-zsh-hook chpwd load_node
