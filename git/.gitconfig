@@ -1,11 +1,10 @@
 [user]
-    name = Miguel
-    # NOTA: Alterar para o teu email
-    # email = miguel@example.com
+    name = Miguel Mesquita
+    email = mm@cob.pt
+    signingkey = ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAACAQCdeSoVXyPvLyXF0nB3QuyKYCMGC45xKtqTRBduCzIsxnD0HPeIF81NSBStIcHQYkZsoct/eQFAeiURYVsI+mq+WUAbtFqr8RSMcdnlXN91i397wEtWGttjwbRBpwGIvzzpND+Jhh85rHCelrbfPTWXoAifitZ7FE3/gvEiOG6nOGOy9Ts01nzOpgYp8hTZuterJFCmjp6QO5jeef4fvB7qio/ZrTIlWIbl0G5Ogu11azBmFStXy5U0eRVYH4jQpOEOPvdTLwURBNGy+WhsolYL1epITn4mX6tUM3petavzj/F66pdZsYUkK4qYqwgWvek+uneJCz6U0Hk5ac1OyhAIagQz1amVVcxNcVyJRKeRCFR8CdxCGV/IEaFB/6sKLFwrBrzMVEkfAm7Bi6bPBEMIrSFl4rtrKQUEEfJ83FHbxISbVWfB6Qc/DVsjStsxQGld/E3uPg903b8JmKQ3GH6xayEhDdenV9Kcyg/KoN0aIVIVeG+rs4zBYG8hWtFxnmm6lIRn4mC3mr+jSuiGLM78Ul/+HBqJBj8uG/uX0IhCmrfDlmMuBQUoRNwGyO9sRxVSYEMlh9X6RdBYlTpvr3zmV0WZHhCWc7xYJuldAUVKqh7EbKJGdX5xNAktDCFKYJF/WrZPudmcpI7dkMXtvb5SvWn8S5MrHrChasH5mNwjsQ==
 
 [core]
     excludesFile = ~/.gitignore_global
-    editor = code --wait
 
 [gpg]
     format = ssh
@@ -30,4 +29,7 @@
     co = checkout
     br = branch
     ci = commit
+    pr = pull --rebase
     lg = log --oneline --graph --decorate -20
+    dlog = log --graph --abbrev-commit --decorate --all --format=format:'%C(blue)%h%C(reset) - %C(green)%ar%C(reset) - %C(white)%s%C(reset) %C(dim white)- %an%C(reset)%C(auto)%d%C(reset)'
+    vlog = log --graph --decorate --format=format:'%C(blue)%h%C(reset) - %C(green)%ar%C(reset) %C(auto)%d%C(reset)%n%n        %C(white)%s%C(reset)%n        %C(dim white)~ %an <%ae>%C(reset)%n'
