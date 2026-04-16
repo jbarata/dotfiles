@@ -13,8 +13,12 @@ brew "fd"                    # find alternativo (usado pelo fzf)
 brew "zsh-autosuggestions"
 brew "zsh-syntax-highlighting"
 
+# Fonts
+cask "font-jetbrains-mono"
+
 # GUI apps
 cask "1password"
+cask "ghostty"
 cask "iterm2"
 cask "visual-studio-code"
 cask "ubersicht"
