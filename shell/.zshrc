@@ -74,7 +74,7 @@ fi
 autoload -Uz vcs_info
 precmd() { vcs_info 2>/dev/null }
 zstyle ':vcs_info:git:*' formats '(%b)'
-PROMPT='%m %F{cyan}%1~%f %F{magenta}${vcs_info_msg_0_}%f%# '
+PROMPT='%F{yellow}%m%f %F{cyan}%1~%f %F{magenta}${vcs_info_msg_0_}%f%# '
 
 # =========================================================
 # 8. Vi mode (turbo)
