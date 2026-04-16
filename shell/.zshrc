@@ -10,7 +10,6 @@ path=(
     $HOME/.bin
     $HOME/bin
     $HOME/Work/cmd-line-importer
-    /usr/local/sbin
     $path
 )
 export PATH
