@@ -123,6 +123,28 @@ add-zsh-hook chpwd load_node
 # 10. fzf (fuzzy search)
 # =========================================================
 if command -v fzf >/dev/null 2>&1; then
+    # Alt+C cache (usa FZF_ALT_C_GENERATE para gerar, cat para ler)
+    if command -v fd >/dev/null 2>&1; then
+        _fzf_alt_c_cache="${HOME}/.cache/fzf-dirs-cache"
+
+        # Gerar cache se não existir ou tiver mais de 24h
+        if [[ ! -f "$_fzf_alt_c_cache" ]] || \
+           [[ -n "$(find "$_fzf_alt_c_cache" -mmin +1440 2>/dev/null)" ]]; then
+            eval "$FZF_ALT_C_GENERATE" > "$_fzf_alt_c_cache" 2>/dev/null &!
+        fi
+
+        # fzf usa esta variável — aponta para cache em vez de fd
+        export FZF_ALT_C_COMMAND="cat $_fzf_alt_c_cache"
+
+        fzf-refresh-cache() {
+            echo "A actualizar cache..."
+            eval "$FZF_ALT_C_GENERATE" > "$_fzf_alt_c_cache"
+            echo "Feito! $(wc -l < $_fzf_alt_c_cache) directorias indexadas."
+        }
+        alias fzf-refresh='fzf-refresh-cache'
+    fi
+
+    # Source key-bindings (Ctrl+R, Ctrl+T, Alt+C)
     if [[ -f $HOMEBREW_PREFIX/opt/fzf/shell/key-bindings.zsh ]]; then
         source $HOMEBREW_PREFIX/opt/fzf/shell/key-bindings.zsh
     fi
