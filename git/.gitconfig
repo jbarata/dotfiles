@@ -1,0 +1,33 @@
+[user]
+    name = Miguel
+    # NOTA: Alterar para o teu email
+    # email = miguel@example.com
+
+[core]
+    excludesFile = ~/.gitignore_global
+    editor = code --wait
+
+[gpg]
+    format = ssh
+
+[gpg "ssh"]
+    program = /Applications/1Password.app/Contents/MacOS/op-ssh-sign
+
+[commit]
+    gpgsign = true
+
+[init]
+    defaultBranch = main
+
+[pull]
+    rebase = true
+
+[push]
+    autoSetupRemote = true
+
+[alias]
+    st = status
+    co = checkout
+    br = branch
+    ci = commit
+    lg = log --oneline --graph --decorate -20
