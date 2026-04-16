@@ -36,3 +36,7 @@ Brewfile.lock.json
 # Shell history
 shell/.zsh_history
 shell/.bash_history
+
+# Zsh completion cache
+shell/.zcompdump
+shell/.zcompdump.*
