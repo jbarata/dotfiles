@@ -1,2 +1,0 @@
-// Gerar com: code --list-extensions > ~/.dotfiles/vscode/extensions.txt
-// Instalar com: alias vscode-import

@@ -1,3 +1,0 @@
-# Brewfile.imac — Específico para iMac (Intel, 2020)
-
-brew "sshpass"               # Usado pelo widget unlock Nuki
