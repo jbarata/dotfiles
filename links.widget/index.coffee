@@ -80,31 +80,12 @@ style: """
 
 
 
-  .confirm-dialog
-    display: none
-
-  .confirm-dialog .logoCoB 
-    background-color: green;
-
-
 """
 
 
 render: -> """
   <div class="links">
     <table>
-      <tr>
-        <td style="position: relative">
-          <a class="unlockLink" href="#">
-            <div class="logoCoB qual">  <div class="symbolText">Unlock</div>  </div>          
-          </a>
-        </td>
-        <td>
-          <span class="confirm-dialog">
-            <div class="logoCoB">  <div class="symbolText confirm-yes">Open</div>  </div>
-          </span>
-        </td>
-      </tr>
       <tr>
         <td>
           <a class="dogfoodingLink" href="https://dogfooding.cultofbits.com">
@@ -265,39 +246,11 @@ content=$(tail -n 1 /tmp/uber-listener.log | tr -d '\0')
 if [ "$content" = "zoom" ] || [ "$content" = "chatgpt" ] || [ "$content" = "claude" ] || [ "$content" = "visualcode" ] || [ "$content" = "slack" ] || [ "$content" = "calendar" ] || [ "$content" = "dogfooding" ]; then
   echo "" > /tmp/uber-listener.log
   echo "$content"
-elif [ "$content" = "unlock" ]; then
-  echo "" > /tmp/uber-listener.log
-  BREW_PREFIX=$([[ -d /opt/homebrew ]] && echo /opt/homebrew || echo /usr/local)
-  export SSHPASS=$($BREW_PREFIX/bin/op item get "unlockNuki" --fields password --account CW5IDM3OZRCEBMCSQFLHA3UBLQ)
-  $BREW_PREFIX/bin/sshpass -e ssh -p 443 cob@demo.cultofbits.com "source unlock.sh"
-  echo "unlocked at $(date)"
 fi
 """
 
 afterRender: (domEl) ->
   widget = $(domEl)
-  overlay = widget.find('.confirm-dialog-overlay')
-  dialog = widget.find('.confirm-dialog')
-
-  hideDialog = -> 
-    overlay.css('display', 'none')
-    dialog.css('display', 'none')
-
-  showDialog = -> 
-    overlay.css('display', 'block')
-    dialog.css('display', 'flex')
-
-  widget.find('.unlockLink').on 'click', (e) ->
-    e.preventDefault()
-    if dialog.css('display') is 'none'
-      showDialog()
-    else
-      hideDialog()
-
-  widget.find('.confirm-yes').on 'click', (e) =>
-    e.preventDefault()
-    @run 'echo unlock > /tmp/uber-listener.log'
-    hideDialog()
 
   widget.find('.claudeLink').on 'click', (e) =>
     e.preventDefault()
