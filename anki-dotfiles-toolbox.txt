@@ -142,6 +142,14 @@ Onde está o ficheiro de config do Ghostty?	~/.config/ghostty/config	ghostty
 Que fonte usa o Ghostty?	JetBrains Mono 14pt	ghostty
 Que tema usa o Ghostty?	Catppuccin Mocha	ghostty
 O que faz macos-option-as-alt = true?	Permite que Alt+C funcione para fzf no macOS	ghostty
+Ghostty: novo tab	Cmd+T	ghostty
+Ghostty: tab seguinte	Cmd+Shift+Right	ghostty
+Ghostty: tab anterior	Cmd+Shift+Left	ghostty
+Ghostty: tab específico (ex: 3º)	Cmd+3	ghostty
+Ghostty: split horizontal	Cmd+D	ghostty
+Ghostty: split vertical	Cmd+Shift+D	ghostty
+Ghostty: navegar entre splits	Cmd+Alt+setas	ghostty
+Ghostty: fechar split/tab	Cmd+W	ghostty
 
 # =========================================================
 # Dotfiles — Estrutura
