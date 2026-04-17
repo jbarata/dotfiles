@@ -58,7 +58,50 @@ else
     echo "==> NVM já instalado"
 fi
 
-# --- 4. Criar symlinks (stow + manuais) ---
+# --- 4. Backup de ficheiros existentes ---
+BACKUP_DIR="$HOME/dotfiles-backup/pre-bootstrap-$(date +%Y%m%d-%H%M%S)"
+NEED_BACKUP=false
+
+BACKUP_FILES=(
+    "$HOME/.zshrc"
+    "$HOME/.zprofile"
+    "$HOME/.aliases"
+    "$HOME/.exports"
+    "$HOME/.gitconfig"
+    "$HOME/.ssh/config"
+    "$HOME/.config/ghostty/config"
+)
+
+for f in "${BACKUP_FILES[@]}"; do
+    if [[ -e "$f" && ! -L "$f" ]]; then
+        NEED_BACKUP=true
+        break
+    fi
+done
+
+if $NEED_BACKUP; then
+    echo "==> A fazer backup de ficheiros existentes..."
+    if $DRY_RUN; then
+        for f in "${BACKUP_FILES[@]}"; do
+            [[ -e "$f" && ! -L "$f" ]] && echo "  [dry-run] backup $f → $BACKUP_DIR/"
+        done
+    else
+        mkdir -p "$BACKUP_DIR"
+        for f in "${BACKUP_FILES[@]}"; do
+            if [[ -e "$f" && ! -L "$f" ]]; then
+                local_name=$(basename "$f")
+                cp "$f" "$BACKUP_DIR/$local_name"
+                rm "$f"
+                echo "  Backup: $f"
+            fi
+        done
+        echo "  Guardado em: $BACKUP_DIR/"
+    fi
+else
+    echo "==> Nenhum ficheiro para backup (já são symlinks ou não existem)"
+fi
+
+# --- 5. Criar symlinks (stow + manuais) ---
 echo "==> A criar symlinks..."
 if $DRY_RUN; then
     echo "  [dry-run] stow git shell ssh ghostty"
@@ -68,7 +111,7 @@ else
     bash "$DOTFILES/setup/symlinks.sh"
 fi
 
-# --- 5. Mudar remote para SSH (1Password agent) ---
+# --- 6. Mudar remote para SSH (1Password agent) ---
 echo "==> A configurar git remote via SSH..."
 CURRENT_REMOTE=$(git -C "$DOTFILES" remote get-url origin 2>/dev/null || true)
 if [[ "$CURRENT_REMOTE" == https://* ]]; then
@@ -79,7 +122,7 @@ else
     echo "  Remote já usa SSH"
 fi
 
-# --- 6. Instalar extensões VS Code ---
+# --- 7. Instalar extensões VS Code ---
 if command -v code &>/dev/null && [[ -f "$DOTFILES/vscode/extensions.txt" ]]; then
     echo "==> A instalar extensões VS Code..."
     if $DRY_RUN; then
@@ -91,7 +134,7 @@ else
     echo "==> VS Code: não encontrado ou sem extensions.txt, a saltar"
 fi
 
-# --- 7. Configurar Übersicht widgets ---
+# --- 8. Configurar Übersicht widgets ---
 if [[ -f "$DOTFILES/ubersicht/install.sh" ]]; then
     echo "==> A configurar Übersicht widgets..."
     if $DRY_RUN; then
@@ -101,7 +144,7 @@ if [[ -f "$DOTFILES/ubersicht/install.sh" ]]; then
     fi
 fi
 
-# --- 8. macOS defaults (opcional) ---
+# --- 9. macOS defaults (opcional) ---
 if [[ -f "$DOTFILES/setup/macos-defaults.sh" ]]; then
     echo "==> A aplicar preferências macOS..."
     if $DRY_RUN; then
@@ -111,10 +154,13 @@ if [[ -f "$DOTFILES/setup/macos-defaults.sh" ]]; then
     fi
 fi
 
-# --- 9. Criar directoria de cache fzf ---
+# --- 10. Criar directoria de cache fzf ---
 mkdir -p "$HOME/.cache"
 
 echo ""
 echo "==> Bootstrap completo! Reinicia o terminal para aplicar todas as mudanças."
 echo "    Máquina: $MACHINE ($ARCH)"
 echo "    Homebrew: $BREW_PREFIX"
+if [[ -d "$BACKUP_DIR" ]]; then
+    echo "    Backups: $BACKUP_DIR/"
+fi
