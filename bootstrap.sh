@@ -62,29 +62,20 @@ fi
 BACKUP_DIR="$HOME/dotfiles-backup/pre-bootstrap-$(date +%Y%m%d-%H%M%S)"
 NEED_BACKUP=false
 
-BACKUP_FILES=(
-    "$HOME/.zshrc"
-    "$HOME/.zprofile"
-    "$HOME/.aliases"
-    "$HOME/.exports"
-    "$HOME/.gitconfig"
-    "$HOME/.ssh/config"
-    "$HOME/.config/ghostty/config"
+# Pares: ficheiro local | ficheiro no repo
+PAIRS=(
+    "$HOME/.zshrc|$DOTFILES/shell/.zshrc"
+    "$HOME/.zprofile|$DOTFILES/shell/.zprofile"
+    "$HOME/.aliases|$DOTFILES/shell/.aliases"
+    "$HOME/.exports|$DOTFILES/shell/.exports"
+    "$HOME/.gitconfig|$DOTFILES/git/.gitconfig"
+    "$HOME/.ssh/config|$DOTFILES/ssh/.ssh/config"
+    "$HOME/.config/ghostty/config|$DOTFILES/ghostty/.config/ghostty/config"
 )
 
-# Mapeamento: ficheiro local → ficheiro no repo
-declare -A REPO_FILES=(
-    ["$HOME/.zshrc"]="$DOTFILES/shell/.zshrc"
-    ["$HOME/.zprofile"]="$DOTFILES/shell/.zprofile"
-    ["$HOME/.aliases"]="$DOTFILES/shell/.aliases"
-    ["$HOME/.exports"]="$DOTFILES/shell/.exports"
-    ["$HOME/.gitconfig"]="$DOTFILES/git/.gitconfig"
-    ["$HOME/.ssh/config"]="$DOTFILES/ssh/.ssh/config"
-    ["$HOME/.config/ghostty/config"]="$DOTFILES/ghostty/.config/ghostty/config"
-)
-
-for f in "${BACKUP_FILES[@]}"; do
-    if [[ -e "$f" && ! -L "$f" ]]; then
+for pair in "${PAIRS[@]}"; do
+    local_f="${pair%%|*}"
+    if [[ -e "$local_f" && ! -L "$local_f" ]]; then
         NEED_BACKUP=true
         break
     fi
@@ -94,22 +85,21 @@ if $NEED_BACKUP; then
     # --- 4a. Mostrar diferenças ---
     echo "==> Diferenças entre ficheiros actuais e repo:"
     echo ""
-    HAS_DIFFS=false
-    for f in "${BACKUP_FILES[@]}"; do
-        if [[ -e "$f" && ! -L "$f" ]]; then
-            repo_f="${REPO_FILES[$f]}"
+    for pair in "${PAIRS[@]}"; do
+        local_f="${pair%%|*}"
+        repo_f="${pair##*|}"
+        if [[ -e "$local_f" && ! -L "$local_f" ]]; then
             if [[ -f "$repo_f" ]]; then
-                DIFF_OUTPUT=$(diff "$f" "$repo_f" 2>/dev/null || true)
+                DIFF_OUTPUT=$(diff "$local_f" "$repo_f" 2>/dev/null || true)
                 if [[ -n "$DIFF_OUTPUT" ]]; then
-                    HAS_DIFFS=true
-                    echo "--- $f vs $repo_f ---"
+                    echo "--- $local_f vs $repo_f ---"
                     echo "$DIFF_OUTPUT"
                     echo ""
                 else
-                    echo "  $f — sem diferenças"
+                    echo "  $local_f — sem diferenças"
                 fi
             else
-                echo "  $f — novo (não existe no repo)"
+                echo "  $local_f — novo (não existe no repo)"
             fi
         fi
     done
@@ -126,17 +116,19 @@ if $NEED_BACKUP; then
     # --- 4b. Backup e remoção ---
     echo "==> A fazer backup de ficheiros existentes..."
     if $DRY_RUN; then
-        for f in "${BACKUP_FILES[@]}"; do
-            [[ -e "$f" && ! -L "$f" ]] && echo "  [dry-run] backup $f → $BACKUP_DIR/"
+        for pair in "${PAIRS[@]}"; do
+            local_f="${pair%%|*}"
+            [[ -e "$local_f" && ! -L "$local_f" ]] && echo "  [dry-run] backup $local_f → $BACKUP_DIR/"
         done
     else
         mkdir -p "$BACKUP_DIR"
-        for f in "${BACKUP_FILES[@]}"; do
-            if [[ -e "$f" && ! -L "$f" ]]; then
-                local_name=$(basename "$f")
-                cp "$f" "$BACKUP_DIR/$local_name"
-                rm "$f"
-                echo "  Backup: $f"
+        for pair in "${PAIRS[@]}"; do
+            local_f="${pair%%|*}"
+            if [[ -e "$local_f" && ! -L "$local_f" ]]; then
+                local_name=$(basename "$local_f")
+                cp "$local_f" "$BACKUP_DIR/$local_name"
+                rm "$local_f"
+                echo "  Backup: $local_f"
             fi
         done
         echo "  Guardado em: $BACKUP_DIR/"
