@@ -247,10 +247,17 @@ trissector
 
 # V
 activa
+activar
 Actores
 Actualiza
+actualização
 Arquitectura
+desseleccionar
+directorias
 directório
+interactivas
+interactivo
+seleccionar
 vicção
 viccioso
 victoria
