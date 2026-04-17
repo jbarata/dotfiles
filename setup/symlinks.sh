@@ -3,14 +3,18 @@
 set -euo pipefail
 
 DOTFILES="${DOTFILES:-$HOME/.dotfiles}"
+BACKUP_DIR="$HOME/dotfiles-backup/$(date +%Y%m%d-%H%M%S)"
 
 # --- Função auxiliar para symlinks manuais ---
 link_config() {
     local src="$1" dst="$2"
     mkdir -p "$(dirname "$dst")"
     if [[ -e "$dst" && ! -L "$dst" ]]; then
-        echo "  Backup: $dst → ${dst}.backup.$(date +%Y%m%d)"
-        mv "$dst" "${dst}.backup.$(date +%Y%m%d)"
+        mkdir -p "$BACKUP_DIR"
+        local backup_name
+        backup_name=$(echo "$dst" | sed "s|$HOME/||; s|/|__|g")
+        mv "$dst" "$BACKUP_DIR/$backup_name"
+        echo "  Backup: $dst → $BACKUP_DIR/$backup_name"
     fi
     ln -sf "$src" "$dst"
     echo "  Link: $dst → $src"
