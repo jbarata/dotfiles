@@ -20,8 +20,8 @@ link_config() {
     echo "  Link: $dst → $src"
 }
 
-# --- GNU Stow para ficheiros na home (~) ---
-# --no-folding: nunca substitui directórios por symlinks (evita conflitos com .ssh/, .config/)
+# --- GNU Stow para ficheiros directos na home (~) ---
+# --no-folding: nunca substitui directórios por symlinks
 cd "$DOTFILES"
 
 echo "  Stow: git..."
@@ -30,11 +30,19 @@ stow --no-folding -t "$HOME" git
 echo "  Stow: shell..."
 stow --no-folding -t "$HOME" shell
 
-echo "  Stow: ssh..."
-stow --no-folding -t "$HOME" ssh
+# --- SSH e Ghostty: usar link_config (stow não lida bem com dirs existentes como ~/.ssh) ---
+echo "  SSH config..."
+link_config "$DOTFILES/ssh/.ssh/config" "$HOME/.ssh/config"
 
-echo "  Stow: ghostty..."
-stow --no-folding -t "$HOME" ghostty
+echo "  Ghostty config..."
+link_config "$DOTFILES/ghostty/.config/ghostty/config" "$HOME/.config/ghostty/config"
+
+# Ghostty themes (linka todos os ficheiros na pasta themes)
+if [[ -d "$DOTFILES/ghostty/.config/ghostty/themes" ]]; then
+    for theme in "$DOTFILES/ghostty/.config/ghostty/themes/"*; do
+        [[ -f "$theme" ]] && link_config "$theme" "$HOME/.config/ghostty/themes/$(basename "$theme")"
+    done
+fi
 
 # --- VS Code (~/Library/Application Support/Code/User/) ---
 VSCODE_USER="$HOME/Library/Application Support/Code/User"
