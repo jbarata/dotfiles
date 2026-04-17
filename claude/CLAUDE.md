@@ -8,6 +8,25 @@
 
 ## Preferências
 - Língua: Português (PT)
-- Editor: VS Code
-- Terminal: iTerm2
-- Shell: Zsh
+- Editor CLI: vim
+- Editor gráfico: VS Code (VISUAL)
+- Terminal: Ghostty (JetBrains Mono, Catppuccin Mocha)
+- Shell: Zsh (vi mode, fzf, autosuggestions, syntax-highlighting)
+- Node: NVM (lazy loading, sem brew node)
+- Segredos: 1Password CLI (`op read`), nunca em ficheiros
+
+## Estrutura dotfiles
+- `shell/` → stow → ~/.zshrc, .zprofile, .aliases, .exports
+- `git/` → stow → ~/.gitconfig
+- `ssh/` → stow → ~/.ssh/config
+- `ghostty/` → stow → ~/.config/ghostty/config
+- `vscode/` → symlink manual (setup/symlinks.sh)
+- `claude/` → symlink manual (setup/symlinks.sh)
+- `machine/` → overrides por máquina (imac.sh, macbook.sh)
+
+## Git
+- Commits assinados via SSH (1Password)
+- Remotes via SSH (git@github.com)
+- `pull.rebase = true`
+- `push.autoSetupRemote = true`
+- `init.defaultBranch = main`

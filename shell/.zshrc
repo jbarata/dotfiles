@@ -1,7 +1,22 @@
 # ~/.zshrc — Configuração principal do Zsh
 # Gerido por: https://github.com/mimes70/dotfiles
 
-# --- Deteção de arquitetura (Intel vs Apple Silicon) ---
+# =========================================================
+# 1. PATH (limpo + sem duplicados)
+# =========================================================
+typeset -U path
+path=(
+    $HOME/.local/bin
+    $HOME/.bin
+    $HOME/bin
+    $HOME/Work/cmd-line-importer
+    $path
+)
+export PATH
+
+# =========================================================
+# 2. Deteção de arquitetura (Intel vs Apple Silicon)
+# =========================================================
 if [[ "$(uname -m)" == "arm64" ]]; then
     export HOMEBREW_PREFIX="/opt/homebrew"
     export MACHINE_TYPE="macbook"
@@ -10,34 +25,200 @@ else
     export MACHINE_TYPE="imac"
 fi
 
-# Inicializar Homebrew
-eval "$($HOMEBREW_PREFIX/bin/brew shellenv)"
-
-# --- Configurações modulares ---
+# =========================================================
+# 3. Configurações modulares
+# =========================================================
 [[ -f ~/.aliases ]] && source ~/.aliases
 [[ -f ~/.exports ]] && source ~/.exports
 
-# --- Overrides específicos da máquina ---
-MACHINE_CONFIG="$HOME/.dotfiles/machine/${MACHINE_TYPE}.sh"
+# Overrides específicos da máquina
+DOTFILES="${DOTFILES:-$HOME/.dotfiles}"
+MACHINE_CONFIG="$DOTFILES/machine/${MACHINE_TYPE}.sh"
 [[ -f "$MACHINE_CONFIG" ]] && source "$MACHINE_CONFIG"
 
-# --- 1Password SSH Agent ---
-export SSH_AUTH_SOCK="$HOME/Library/Group Containers/2BUA8C4S2C.com.1password/t/agent.sock"
-
-# --- Histórico ---
-HISTSIZE=10000
-SAVEHIST=10000
+# =========================================================
+# 4. Histórico (smart + IDE-like)
+# =========================================================
+HISTSIZE=50000
+SAVEHIST=50000
 HISTFILE=~/.zsh_history
-setopt HIST_IGNORE_DUPS
-setopt HIST_IGNORE_SPACE
+setopt HIST_IGNORE_ALL_DUPS
+setopt HIST_FIND_NO_DUPS
+setopt HIST_REDUCE_BLANKS
+setopt EXTENDED_HISTORY
+setopt INC_APPEND_HISTORY
 setopt SHARE_HISTORY
+setopt HIST_IGNORE_SPACE
 
-# --- Completions ---
-autoload -Uz compinit && compinit
-
-# --- Prompt (personalizar conforme preferência) ---
-autoload -Uz vcs_info
-precmd() { vcs_info }
-zstyle ':vcs_info:git:*' formats ' (%b)'
+# =========================================================
+# 5. Opções Zsh
+# =========================================================
+setopt AUTO_CD
+setopt NO_BEEP
+setopt INTERACTIVE_COMMENTS
 setopt PROMPT_SUBST
-PROMPT='%F{cyan}%1~%f%F{magenta}${vcs_info_msg_0_}%f %# '
+
+# =========================================================
+# 6. Completions (cacheado — grande speedup)
+# =========================================================
+autoload -Uz compinit
+if [[ -n ~/.zcompdump(#qN.mh+24) ]]; then
+    compinit
+else
+    compinit -C
+fi
+
+# =========================================================
+# 7. Prompt (ultra fast, sem frameworks)
+# =========================================================
+autoload -Uz vcs_info
+precmd() { vcs_info 2>/dev/null }
+zstyle ':vcs_info:git:*' formats '(%b)'
+PROMPT='%F{yellow}%m%f %F{cyan}%1~%f %F{magenta}${vcs_info_msg_0_}%f%# '
+
+# =========================================================
+# 8. Vi mode (turbo)
+# =========================================================
+bindkey -v
+export KEYTIMEOUT=1
+
+# Cursor diferente por modo
+zle-keymap-select() {
+    [[ $KEYMAP == vicmd ]] && print -n "\e[1 q" || print -n "\e[5 q"
+}
+zle -N zle-keymap-select
+
+zle-line-init() {
+    print -n "\e[5 q"
+}
+zle -N zle-line-init
+
+# Navegação em modo insert (atalhos úteis)
+bindkey -M viins '^A' beginning-of-line
+bindkey -M viins '^E' end-of-line
+bindkey -M viins '^W' backward-kill-word
+
+# =========================================================
+# 9. NVM (lazy loading + project-aware)
+# =========================================================
+nvm() {
+    unset -f nvm node npm npx
+    source "$NVM_DIR/nvm.sh"
+    nvm "$@"
+}
+
+node() {
+    unset -f nvm node npm npx
+    source "$NVM_DIR/nvm.sh"
+    node "$@"
+}
+
+npm() {
+    unset -f nvm node npm npx
+    source "$NVM_DIR/nvm.sh"
+    npm "$@"
+}
+
+npx() {
+    unset -f nvm node npm npx
+    source "$NVM_DIR/nvm.sh"
+    npx "$@"
+}
+
+autoload -Uz add-zsh-hook
+
+__node_loaded=0
+
+load_node() {
+    [[ $__node_loaded -eq 1 ]] && return
+    [[ -f .nvmrc ]] || return
+    __node_loaded=1
+    nvm use >/dev/null 2>&1
+}
+
+add-zsh-hook chpwd load_node
+
+# =========================================================
+# 10. fzf (fuzzy search)
+# =========================================================
+if command -v fzf >/dev/null 2>&1; then
+    # Alt+C cache (usa FZF_ALT_C_GENERATE para gerar, cat para ler)
+    if command -v fd >/dev/null 2>&1; then
+        _fzf_alt_c_cache="${HOME}/.cache/fzf-dirs-cache"
+
+        # Gerar cache se não existir ou tiver mais de 24h
+        if [[ ! -f "$_fzf_alt_c_cache" ]] || \
+           [[ -n "$(find "$_fzf_alt_c_cache" -mmin +1440 2>/dev/null)" ]]; then
+            eval "$FZF_ALT_C_GENERATE" > "$_fzf_alt_c_cache" 2>/dev/null &!
+        fi
+
+        # fzf usa esta variável — aponta para cache em vez de fd
+        export FZF_ALT_C_COMMAND="cat $_fzf_alt_c_cache"
+
+        fzf-refresh-cache() {
+            echo "A actualizar cache..."
+            eval "$FZF_ALT_C_GENERATE" > "$_fzf_alt_c_cache"
+            echo "Feito! $(wc -l < $_fzf_alt_c_cache) directorias indexadas."
+        }
+        alias fzf-refresh='fzf-refresh-cache'
+    fi
+
+    # Source key-bindings (Ctrl+R, Ctrl+T, Alt+C)
+    if [[ -f $HOMEBREW_PREFIX/opt/fzf/shell/key-bindings.zsh ]]; then
+        source $HOMEBREW_PREFIX/opt/fzf/shell/key-bindings.zsh
+    fi
+else
+    bindkey '^R' history-incremental-search-backward
+fi
+
+# =========================================================
+# 11. COB (lazy init)
+# =========================================================
+if command -v cob >/dev/null 2>&1; then
+    eval "$(cob init -)"
+fi
+[[ -f "$HOME/.cob-cli/completion.sh" ]] && source "$HOME/.cob-cli/completion.sh"
+
+# =========================================================
+# 12. Autosuggestions + Syntax highlighting
+# =========================================================
+# brew install zsh-autosuggestions zsh-syntax-highlighting
+if [[ -f $HOMEBREW_PREFIX/share/zsh-autosuggestions/zsh-autosuggestions.zsh ]]; then
+    source $HOMEBREW_PREFIX/share/zsh-autosuggestions/zsh-autosuggestions.zsh
+fi
+
+# Syntax highlighting deve ser o ÚLTIMO source
+if [[ -f $HOMEBREW_PREFIX/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh ]]; then
+    source $HOMEBREW_PREFIX/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
+fi
+
+# =========================================================
+# 13. Funções
+# =========================================================
+rtmux() {
+    local server=$1
+    shift
+    autossh -M 0 -t "$server" "$@" \
+        "tmux -qu has -t mimes && tmux -qu attach -t mimes || tmux -qu new -s mimes"
+}
+
+listening() {
+    if [[ $# -eq 0 ]]; then
+        sudo lsof -iTCP -sTCP:LISTEN -n -P +c 0
+    else
+        sudo lsof -iTCP -sTCP:LISTEN -n -P +c 0 | grep -i --color "$1"
+    fi
+}
+
+zsh_startup_time() {
+    for i in {1..5}; do
+        time zsh -i -c exit
+    done
+}
+
+sops() {
+    if [[ -z "$SOPS_AGE_KEY" ]]; then
+        export SOPS_AGE_KEY="$(op read "op://Private/Mimes personal Age Key/notesPlain")"
+    fi
+    command sops "$@"
+}

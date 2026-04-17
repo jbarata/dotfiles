@@ -1,21 +1,126 @@
 {
+    // =========================================================
+    // Editor
+    // =========================================================
     "editor.fontSize": 14,
+    "editor.fontFamily": "JetBrains Mono, Menlo, Monaco, 'Courier New', monospace",
+    "editor.fontLigatures": true,
     "editor.tabSize": 2,
-    "editor.formatOnSave": true,
     "editor.minimap.enabled": false,
     "editor.wordWrap": "on",
     "editor.bracketPairColorization.enabled": true,
+    "editor.foldingStrategy": "indentation",
+    "editor.accessibilitySupport": "off",
+    "editor.renderControlCharacters": false,
+    "editor.renderWhitespace": "none",
+    "editor.formatOnSave": false,
+    "editor.formatOnPaste": true,
+    "editor.formatOnType": true,
+    "editor.gotoLocation.multipleDefinitions": "goto",
 
-    "terminal.integrated.defaultProfile.osx": "zsh",
-    "terminal.integrated.fontSize": 13,
-
+    // =========================================================
+    // Files
+    // =========================================================
     "files.trimTrailingWhitespace": true,
     "files.insertFinalNewline": true,
     "files.trimFinalNewlines": true,
+    "files.associations": {
+        "*.md": "markdown"
+    },
 
+    // =========================================================
+    // Workbench
+    // =========================================================
     "workbench.startupEditor": "none",
+    "workbench.editor.empty.hint": "hidden",
+    "window.customTitleBarVisibility": "never",
+    "breadcrumbs.enabled": false,
+    "comments.openView": "never",
 
-    "git.confirmSync": false,
+    // =========================================================
+    // Terminal
+    // =========================================================
+    "terminal.integrated.defaultProfile.osx": "zsh",
+    "terminal.integrated.fontSize": 13,
+    "terminal.integrated.tabs.enabled": true,
+    "terminal.integrated.suggest.enabled": true,
+    "terminal.integrated.fontLigatures.enabled": true,
+
+    // =========================================================
+    // Git
+    // =========================================================
+    "git.path": "git",
     "git.autofetch": true,
-    "git.enableSmartCommit": true
+    "git.confirmSync": false,
+    "git.enableSmartCommit": true,
+    "git.replaceTagsWhenPull": true,
+    "gitlens.blame.ignoreWhitespace": true,
+
+    // =========================================================
+    // Diff editor
+    // =========================================================
+    "diffEditor.ignoreTrimWhitespace": true,
+    "diffEditor.renderSideBySide": true,
+    "diffEditor.maxComputationTime": 0,
+
+    // =========================================================
+    // Language-specific
+    // =========================================================
+    "[vue]": {
+        "editor.defaultFormatter": "Vue.volar"
+    },
+    "[markdown]": {
+        "editor.formatOnSave": false,
+        "files.trimTrailingWhitespace": false,
+        "editor.trimAutoWhitespace": false
+    },
+
+    // =========================================================
+    // Markdown editor
+    // =========================================================
+    "markdown-editor.useVscodeThemeColor": false,
+    "markdown-editor.customCss": "body, .vditor-reset, .vditor-reset p, .vditor-reset li, .vditor-reset blockquote, .vditor-reset td, .vditor-reset th { font-family: 'SF Pro Display', 'Inter', system-ui, -apple-system, sans-serif !important; font-size: 14px; line-height: 1.5; color: #2d2d2d; background: #ffffff !important; } .vditor-reset h1 { color: #d5184b !important; font-size: 1.5em !important; font-weight: 700 !important; font-family: 'SF Pro Display', 'Inter', system-ui, -apple-system, sans-serif !important; letter-spacing: -0.03em; margin-top: 0.8em; margin-bottom: 0.2em; border-bottom: none !important; } .vditor-reset h2 { color: #d5184b !important; font-size: 1.15em !important; font-weight: 700 !important; font-family: 'SF Pro Display', 'Inter', system-ui, -apple-system, sans-serif !important; letter-spacing: -0.02em; margin-top: 0.8em; margin-bottom: 0.3em; border-bottom: none !important; } .vditor-reset h3 { color: #d5184b !important; font-size: 1.0em !important; font-weight: 700 !important; font-family: 'SF Pro Display', 'Inter', system-ui, -apple-system, sans-serif !important; letter-spacing: 0.01em; margin-top: 0.6em; margin-bottom: 0.2em; border-bottom: none !important; } .vditor-reset h4 { color: #1a1a2e !important; font-size: 0.9em !important; font-weight: 700 !important; font-family: 'SF Pro Display', 'Inter', system-ui, -apple-system, sans-serif !important; margin-top: 0.5em; margin-bottom: 0.2em; border-bottom: none !important; } .vditor-reset strong { color: #1a1a2e; font-weight: 700; } .vditor-reset em { color: #6b6b6b; font-style: italic; } .vditor-reset blockquote { border-left: 4px solid #d5184b !important; background: #fce8ee; padding: 12px 20px; border-radius: 0 8px 8px 0; font-size: 0.95em; } .vditor-reset ul, .vditor-reset ol { padding-left: 1.4em; } .vditor-reset li { margin-bottom: 0.2em; line-height: 1.45; } .vditor-reset code { background: #f5f5f7; color: #a8123b; padding: 2px 6px; border-radius: 4px; font-size: 0.85em; } .vditor-reset table { font-size: 0.85em; } .vditor-reset table th { background: #d5184b !important; color: white !important; padding: 8px 14px; text-align: left; font-weight: 600; border: 1px solid #d5184b; } .vditor-reset table td { padding: 6px 14px; border: 1px solid #e5e5e5; } .vditor-reset table tr:nth-child(even) td { background: #f5f5f7; } .vditor-reset hr { border: none; border-top: 2px solid #fce8ee; margin: 20px 0; } .vditor-reset ins { text-decoration: none; background-color: #e6ffec; color: #2da44e; } .vditor-reset del { text-decoration: line-through; background-color: #ffebe9; color: #cf222e; }",
+
+    // =========================================================
+    // Spell checker
+    // =========================================================
+    "cSpell.language": "en,pt",
+    "cSpell.userWords": [
+        "axios",
+        "bindkey",
+        "cloudflared",
+        "cobtoken",
+        "cultofbits",
+        "dogfooding",
+        "Ghostty",
+        "HMAC",
+        "integrationm",
+        "logado",
+        "Loggedin",
+        "ntfy",
+        "Nuki",
+        "recordm",
+        "Sigla",
+        "sniffable",
+        "userm"
+    ],
+    "cSpell.customDictionaries": {
+        "portugues_pre_acordo": {
+            "path": "~/.dotfiles/vscode/portugues_pre_acordo.txt",
+            "addWords": true
+        }
+    },
+    "cSpell.dictionaries": ["portugues_pre_acordo"],
+
+    // =========================================================
+    // Task runners
+    // =========================================================
+    "grunt.autoDetect": "on",
+    "gulp.autoDetect": "on",
+
+    // =========================================================
+    // AI / Copilot
+    // =========================================================
+    "github.copilot.nextEditSuggestions.enabled": true,
+    "claudeCode.preferredLocation": "panel"
 }

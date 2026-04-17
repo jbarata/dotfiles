@@ -1,7 +1,7 @@
 # ~/.exports — Variáveis de ambiente partilhadas
 
-# Editor padrão
-export EDITOR="code --wait"
+# Editores
+export EDITOR=vim
 export VISUAL="code --wait"
 
 # Língua e locale
@@ -14,3 +14,13 @@ export LSCOLORS=GxFxCxDxBxegedabagaced
 
 # Evitar ficheiros .pyc
 export PYTHONDONTWRITEBYTECODE=1
+
+# NVM
+export NVM_DIR="$HOME/.nvm"
+
+# FZF + fd (se disponíveis)
+if command -v fd >/dev/null 2>&1; then
+    export FZF_DEFAULT_COMMAND="fd --type f --hidden --exclude .git --exclude node_modules --exclude .cache --exclude .cargo --exclude .Trash --exclude .aivm"
+    export FZF_CTRL_T_COMMAND="$FZF_DEFAULT_COMMAND"
+    export FZF_ALT_C_GENERATE="fd --type d --hidden --exclude .git --exclude node_modules --exclude .cache --exclude .cargo --exclude .Trash --exclude .aivm"
+fi

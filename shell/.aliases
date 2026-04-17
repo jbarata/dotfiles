@@ -8,9 +8,8 @@ alias dc='dotfiles commit'
 alias dp='dotfiles push'
 alias dl='dotfiles pull'
 
-# --- VS Code extensions sync ---
-alias vscode-export='code --list-extensions > ~/.dotfiles/vscode/extensions.txt && echo "Extensions exportadas"'
-alias vscode-import='while IFS= read -r ext; do code --install-extension "$ext" --force; done < ~/.dotfiles/vscode/extensions.txt'
+# --- Editores ---
+alias vi='vim'
 
 # --- Git shortcuts ---
 alias g='git'
@@ -26,10 +25,14 @@ alias glog='git log --oneline --graph --decorate -20'
 # --- Navegação ---
 alias ..='cd ..'
 alias ...='cd ../..'
-alias ll='ls -lah'
+alias ll='ls -laG'
 alias la='ls -A'
 
 # --- Segurança: pedir confirmação ---
 alias rm='rm -i'
 alias mv='mv -i'
 alias cp='cp -i'
+
+# --- VS Code extensions sync ---
+alias vscode-export='code --list-extensions > ~/.dotfiles/vscode/extensions.txt && echo "Extensions exportadas"'
+alias vscode-import='while IFS= read -r ext; do code --install-extension "$ext" --force; done < ~/.dotfiles/vscode/extensions.txt'

@@ -1,3 +1,16 @@
-// Keybindings — Personalizar conforme preferência
-// Exportar: copiar de ~/Library/Application Support/Code/User/keybindings.json
-[]
+[
+    {
+        "key": "ctrl+pagedown",
+        "command": "workbench.action.terminal.focusNext",
+        "when": "terminalFocus"
+    },
+    {
+        "key": "ctrl+pageup",
+        "command": "workbench.action.terminal.focusPrevious",
+        "when": "terminalFocus"
+    },
+    {
+        "key": "ctrl+shift+cmd+e",
+        "command": "workbench.action.closeSidebar"
+    }
+]

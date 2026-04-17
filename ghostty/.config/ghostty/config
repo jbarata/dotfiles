@@ -1,0 +1,53 @@
+# Ghostty — Terminal configuration
+# Gerido por: https://github.com/mimes70/dotfiles
+
+# =========================================================
+# Font
+# =========================================================
+font-family = JetBrains Mono
+font-size = 14
+font-thicken = true
+
+# =========================================================
+# Theme
+# =========================================================
+theme = catppuccin-mocha
+
+# =========================================================
+# Window
+# =========================================================
+window-padding-x = 8
+window-padding-y = 4
+window-decoration = true
+macos-titlebar-style = tabs
+window-save-state = always
+
+# =========================================================
+# Cursor (alinha com vi mode do .zshrc)
+# =========================================================
+cursor-style = bar
+cursor-style-blink = false
+
+# =========================================================
+# Mouse
+# =========================================================
+copy-on-select = clipboard
+mouse-hide-while-typing = true
+
+# =========================================================
+# macOS
+# =========================================================
+# Crítico: sem isto Alt+C (fzf) não funciona
+macos-option-as-alt = true
+
+# =========================================================
+# Keybindings (teclado português — sem [ e ])
+# =========================================================
+keybind = cmd+shift+left=previous_tab
+keybind = cmd+shift+right=next_tab
+keybind = cmd+shift+i=prompt_surface_title
+
+# =========================================================
+# Shell
+# =========================================================
+shell-integration = zsh
