@@ -1,4 +1,70 @@
-command: "next-event.widget/GetNextEvent"
+command: """
+osascript -l JavaScript <<'JSEOF'
+ObjC.import('EventKit');
+ObjC.import('Foundation');
+
+function run() {
+  const store = $.EKEventStore.alloc.init;
+
+  let granted = false;
+  let waiting = true;
+  const handler = (g) => { granted = g; waiting = false; };
+
+  if ($.EKEventStore.instancesRespondToSelector('requestFullAccessToEventsWithCompletion:')) {
+    store.requestFullAccessToEventsWithCompletion(handler);
+  } else {
+    store.requestAccessToEntityTypeCompletion($.EKEntityTypeEvent, handler);
+  }
+
+  const runLoop = $.NSRunLoop.currentRunLoop;
+  const deadline = $.NSDate.dateWithTimeIntervalSinceNow(5);
+  while (waiting && $.NSDate.date.compare(deadline) === $.NSOrderedAscending) {
+    runLoop.runUntilDate($.NSDate.dateWithTimeIntervalSinceNow(0.05));
+  }
+
+  if (!granted) return 'Access denied';
+
+  const nowDate = $.NSDate.date;
+  const searchStart = nowDate.dateByAddingTimeInterval(-5 * 60);
+  const gcal = $.NSCalendar.currentCalendar;
+  const startOfDay = gcal.startOfDayForDate(nowDate);
+  const endDate = gcal.dateByAddingUnitValueToDateOptions($.NSCalendarUnitDay, 1, startOfDay, 0);
+
+  const calendars = store.calendarsForEntityType($.EKEntityTypeEvent);
+  const predicate = store.predicateForEventsWithStartDateEndDateCalendars(searchStart, endDate, calendars);
+  const events = store.eventsMatchingPredicate(predicate);
+
+  const count = events.count;
+  const candidates = [];
+  for (let i = 0; i < count; i++) {
+    const ev = events.objectAtIndex(i);
+    if (ev.startDate.compare(searchStart) !== $.NSOrderedAscending) {
+      candidates.push(ev);
+    }
+  }
+
+  candidates.sort((a, b) => {
+    const c = a.startDate.compare(b.startDate);
+    return c === $.NSOrderedAscending ? -1 : c === $.NSOrderedDescending ? 1 : 0;
+  });
+
+  if (candidates.length === 0) return 'None';
+
+  const e = candidates[0];
+  const rawTitle = ObjC.unwrap(e.title) || 'No Title';
+  const title = rawTitle.replace(/\\n/g, ' ').replace(/~/g, '-');
+  const rawLoc = ObjC.unwrap(e.location) || '';
+  const location = rawLoc.replace(/\\n/g, ' ').replace(/~/g, '-');
+  const isAllDay = e.isAllDay ? 'true' : 'false';
+
+  const df = $.NSDateFormatter.alloc.init;
+  df.dateFormat = "yyyy-MM-dd'T'HH:mm:ss";
+  const startStr = ObjC.unwrap(df.stringFromDate(e.startDate));
+
+  return title + '~' + startStr + '~' + location + '~' + isAllDay;
+}
+JSEOF
+"""
 
 refreshFrequency: 6000
 
