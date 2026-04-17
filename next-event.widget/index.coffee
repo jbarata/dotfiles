@@ -1,6 +1,22 @@
 command: """
-bin=next-event.widget/GetNextEvent
-src=next-event.widget/GetNextEvent.swift
+dir=""
+for c in "next-event.widget" "." "./next-event.widget" "../next-event.widget" "Ubersicht-Widgets/next-event.widget"; do
+  if [ -f "$c/GetNextEvent.swift" ]; then dir="$c"; break; fi
+done
+if [ -z "$dir" ]; then
+  for root in "$HOME/Library/Application Support/Übersicht/widgets" "$HOME/Library/Application Support/Uebersicht/widgets"; do
+    if [ -d "$root" ]; then
+      found=$(find "$root" -name GetNextEvent.swift -type f 2>/dev/null | head -1)
+      if [ -n "$found" ]; then dir="${found%/*}"; break; fi
+    fi
+  done
+fi
+if [ -z "$dir" ]; then
+  echo "Missing binary: cannot locate next-event.widget (pwd=$PWD)"
+  exit 0
+fi
+bin="$dir/GetNextEvent"
+src="$dir/GetNextEvent.swift"
 if [ ! -x "$bin" ] && [ -f "$src" ] && command -v swiftc >/dev/null 2>&1; then
   tmpdir=$(mktemp -d) || exit 1
   if swiftc "$src" -o "$tmpdir/x86_64" -target x86_64-apple-macosx12.0 >/dev/null 2>&1 \
