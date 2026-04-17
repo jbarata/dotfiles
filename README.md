@@ -295,7 +295,7 @@ brew bundle cleanup        # remover pacotes não no Brewfile (cuidado!)
 
 Histórico das decisões tomadas e seu racional, para contexto futuro.
 
-### Shell
+### Shell — 2026-04-17
 
 | Decisão | Racional |
 |---|---|
@@ -311,7 +311,7 @@ Histórico das decisões tomadas e seu racional, para contexto futuro.
 | `SSH_AUTH_SOCK` no `~/.ssh/config` (não no `.zshrc`) | Acessível a processos não-interactivos |
 | Path `${DOTFILES:-$HOME/.dotfiles}` | Permite override de localização |
 
-### NVM (Node)
+### NVM (Node) — 2026-04-17
 
 | Decisão | Racional |
 |---|---|
@@ -320,7 +320,7 @@ Histórico das decisões tomadas e seu racional, para contexto futuro.
 | `chpwd` hook só carrega se `.nvmrc` existe | Sem penalty no primeiro `cd` |
 | Removido `brew node` do Brewfile | NVM gere versões |
 
-### fzf
+### fzf — 2026-04-17
 
 | Decisão | Racional |
 |---|---|
@@ -330,7 +330,7 @@ Histórico das decisões tomadas e seu racional, para contexto futuro.
 | `FZF_ALT_C_COMMAND="cat $cache"` | Override no nível da var, não do widget (widget é redefinido pelo fzf) |
 | `macos-option-as-alt = true` no Ghostty | Sem isto, Alt+C não funciona em macOS |
 
-### Git
+### Git — 2026-04-17
 
 | Decisão | Racional |
 |---|---|
@@ -341,7 +341,7 @@ Histórico das decisões tomadas e seu racional, para contexto futuro.
 | Aliases híbridos (`st`, `dlog`, `vlog`) | Mantém shortcuts simples + visualizações ricas |
 | Remote SSH (`git@github.com:`) | Usa 1Password agent, sem credenciais Keychain |
 
-### Terminal
+### Terminal — 2026-04-17
 
 | Decisão | Racional |
 |---|---|
@@ -351,7 +351,7 @@ Histórico das decisões tomadas e seu racional, para contexto futuro.
 | Cursor `bar` sem blink | Coerente com vi mode |
 | Tab navigation `Cmd+Shift+Left/Right` | Teclado PT não tem `[]` acessíveis |
 
-### Vim
+### Vim — 2026-04-17
 
 | Decisão | Racional |
 |---|---|
@@ -362,7 +362,7 @@ Histórico das decisões tomadas e seu racional, para contexto futuro.
 | Leader = `,` | Mais acessível que `\` em PT |
 | Persistent undo em `~/.vim/undo/` | Não perder histórico entre sessões |
 
-### VS Code
+### VS Code — 2026-04-17
 
 | Decisão | Racional |
 |---|---|
@@ -371,7 +371,7 @@ Histórico das decisões tomadas e seu racional, para contexto futuro.
 | Dicionário PT pré-acordo no repo | Sincronização entre máquinas |
 | Markdown editor com CSS custom | Branding |
 
-### SSH
+### SSH — 2026-04-17
 
 | Decisão | Racional |
 |---|---|
@@ -379,14 +379,14 @@ Histórico das decisões tomadas e seu racional, para contexto futuro.
 | Hosts de trabalho no repo (privado) | Sincronização entre máquinas |
 | `ServerAliveInterval 30` | Evita disconnect em sessões longas |
 
-### 1Password / SOPS
+### 1Password / SOPS — 2026-04-17
 
 | Decisão | Racional |
 |---|---|
 | `sops()` wrapper com lazy auth | Evita prompt 1Password a cada shell nova |
 | `op read` on-demand | Segredos nunca em ficheiros |
 
-### Bootstrap
+### Bootstrap — 2026-04-17
 
 | Decisão | Racional |
 |---|---|
@@ -398,7 +398,7 @@ Histórico das decisões tomadas e seu racional, para contexto futuro.
 | `bash` em vez de `source` para sub-scripts | Evita `set -e` matar shell pai |
 | Compatível com Bash 3.2 (macOS default) | Sem `declare -A` |
 
-### Stow
+### Stow — 2026-04-17
 
 | Decisão | Racional |
 |---|---|
@@ -407,7 +407,7 @@ Histórico das decisões tomadas e seu racional, para contexto futuro.
 | `link_config` (não stow) para SSH/Ghostty | Stow recusa criar links em dirs com ficheiros não-geridos |
 | `.stow-local-ignore` em `shell/` | Ignora `.zsh_history`, `.zcompdump` |
 
-### Anki
+### Anki — 2026-04-17
 
 | Decisão | Racional |
 |---|---|
@@ -415,7 +415,7 @@ Histórico das decisões tomadas e seu racional, para contexto futuro.
 | Tags hierárquicas (`vim mappings`, `git-config`) | Filtragem fina no Anki |
 | Comentários `#` para organização | Ignorados pelo Anki, ajudam navegação |
 
-### Repositório
+### Repositório — 2026-04-17
 
 | Decisão | Racional |
 |---|---|
