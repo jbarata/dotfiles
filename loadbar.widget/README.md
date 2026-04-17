@@ -8,10 +8,10 @@ It formats its height based on the screen size, so it should work on any size mo
 
 ### How it samples
 
-The command uses `top -l 2 -s 1 -n 0` and takes the second sample: a true 1-second delta of `user + sys`, normalized to `0..1` (1.0 = every core saturated). The first sample is discarded because `top`'s first report is cumulative since boot and not meaningful as an instantaneous reading.
+The command uses `top -l 2 -s 1 -n 0` and takes the second sample: a true 1-second delta of `user + sys`, normalized to `0..1` (1.0 = every core saturated). The first sample is discarded because `top`'s first report is cumulative since boot and not meaningful as an instantaneous reading. `awk` runs under `LC_ALL=C` so it always emits `.` as the decimal separator, regardless of the system locale (otherwise `parseFloat` in the widget would truncate values like `0,04` to `0`).
 
 ```sh
-top -l 2 -s 1 -n 0 | awk '/CPU usage/ {gsub("%",""); print ($3+$5)/100}' | tail -1
+top -l 2 -s 1 -n 0 | LC_ALL=C awk '/CPU usage/ {gsub("%",""); print ($3+$5)/100}' | tail -1
 ```
 
 The widget refreshes every 9.5 seconds (`refreshFrequency: 9500`). Each poll spends ~1s mostly sleeping inside `top`, so CPU overhead is negligible.
