@@ -107,6 +107,24 @@ nvm() {
     nvm "$@"
 }
 
+node() {
+    unset -f nvm node npm npx
+    source "$NVM_DIR/nvm.sh"
+    node "$@"
+}
+
+npm() {
+    unset -f nvm node npm npx
+    source "$NVM_DIR/nvm.sh"
+    npm "$@"
+}
+
+npx() {
+    unset -f nvm node npm npx
+    source "$NVM_DIR/nvm.sh"
+    npx "$@"
+}
+
 autoload -Uz add-zsh-hook
 
 __node_loaded=0
