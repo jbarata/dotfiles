@@ -61,20 +61,22 @@ fi
 # --- 4. Criar symlinks (stow + manuais) ---
 echo "==> A criar symlinks..."
 if $DRY_RUN; then
-    echo "  [dry-run] stow git shell ssh"
+    echo "  [dry-run] stow git shell ssh ghostty"
     echo "  [dry-run] link VS Code settings, keybindings, snippets"
     echo "  [dry-run] link Claude Code settings, CLAUDE.md"
 else
-    source "$DOTFILES/setup/symlinks.sh"
+    bash "$DOTFILES/setup/symlinks.sh"
 fi
 
-# --- 5. Configurar iTerm2 para usar dotfiles ---
-if [[ -d "$DOTFILES/iterm2" ]]; then
-    echo "==> A configurar iTerm2..."
-    run defaults write com.googlecode.iterm2 PrefsCustomFolder -string "$DOTFILES/iterm2"
-    run defaults write com.googlecode.iterm2 LoadPrefsFromCustomFolder -bool true
+# --- 5. Mudar remote para SSH (1Password agent) ---
+echo "==> A configurar git remote via SSH..."
+CURRENT_REMOTE=$(git -C "$DOTFILES" remote get-url origin 2>/dev/null || true)
+if [[ "$CURRENT_REMOTE" == https://* ]]; then
+    SSH_REMOTE=$(echo "$CURRENT_REMOTE" | sed 's|https://github.com/|git@github.com:|')
+    run git -C "$DOTFILES" remote set-url origin "$SSH_REMOTE"
+    echo "  Remote alterado: $SSH_REMOTE"
 else
-    echo "==> iTerm2: directoria $DOTFILES/iterm2 não existe, a saltar"
+    echo "  Remote já usa SSH"
 fi
 
 # --- 6. Instalar extensões VS Code ---
@@ -83,7 +85,7 @@ if command -v code &>/dev/null && [[ -f "$DOTFILES/vscode/extensions.txt" ]]; th
     if $DRY_RUN; then
         echo "  [dry-run] code --install-extension ($(wc -l < "$DOTFILES/vscode/extensions.txt") extensões)"
     else
-        source "$DOTFILES/setup/vscode-extensions.sh"
+        bash "$DOTFILES/setup/vscode-extensions.sh"
     fi
 else
     echo "==> VS Code: não encontrado ou sem extensions.txt, a saltar"
@@ -95,7 +97,7 @@ if [[ -f "$DOTFILES/ubersicht/install.sh" ]]; then
     if $DRY_RUN; then
         echo "  [dry-run] git clone/pull Ubersicht-Widgets"
     else
-        source "$DOTFILES/ubersicht/install.sh"
+        bash "$DOTFILES/ubersicht/install.sh"
     fi
 fi
 
@@ -105,9 +107,12 @@ if [[ -f "$DOTFILES/setup/macos-defaults.sh" ]]; then
     if $DRY_RUN; then
         echo "  [dry-run] defaults write (Finder, Screenshots, Teclado)"
     else
-        source "$DOTFILES/setup/macos-defaults.sh"
+        bash "$DOTFILES/setup/macos-defaults.sh"
     fi
 fi
+
+# --- 9. Criar directoria de cache fzf ---
+mkdir -p "$HOME/.cache"
 
 echo ""
 echo "==> Bootstrap completo! Reinicia o terminal para aplicar todas as mudanças."

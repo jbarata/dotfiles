@@ -28,6 +28,9 @@ stow -t "$HOME" shell
 echo "  Stow: ssh..."
 stow -t "$HOME" ssh
 
+echo "  Stow: ghostty..."
+stow -t "$HOME" ghostty
+
 # --- VS Code (~/Library/Application Support/Code/User/) ---
 VSCODE_USER="$HOME/Library/Application Support/Code/User"
 echo "  VS Code settings..."
