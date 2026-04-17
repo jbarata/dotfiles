@@ -181,7 +181,7 @@ fi
 if [[ -f "$DOTFILES/setup/vim-plugins.sh" ]]; then
     echo "==> A instalar plugins vim..."
     if $DRY_RUN; then
-        echo "  [dry-run] git clone $(grep -c '^https' "$DOTFILES/vim/plugins.txt") plugins → ~/.vim/pack/dotfiles/start/"
+        echo "  [dry-run] git clone $(grep -c '^https' "$DOTFILES/setup/vim-plugins.txt") plugins → ~/.vim/pack/dotfiles/start/"
     else
         bash "$DOTFILES/setup/vim-plugins.sh"
     fi

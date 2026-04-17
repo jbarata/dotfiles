@@ -177,7 +177,7 @@ Editar `shell/.exports`.
 ### Adicionar plugin vim
 
 ```bash
-echo 'https://github.com/owner/plugin-name' >> vim/plugins.txt
+echo 'https://github.com/owner/plugin-name' >> setup/vim-plugins.txt
 bash setup/vim-plugins.sh   # clona e gera helptags
 ```
 
@@ -257,8 +257,7 @@ brew bundle cleanup        # remover pacotes não no Brewfile (cuidado!)
 │   └── .ssh/config                 # 1Password agent + work hosts
 │
 ├── vim/                            # → stow → ~/.vimrc
-│   ├── .vimrc                      # Config (Catppuccin, leader=,)
-│   └── plugins.txt                 # URLs dos plugins
+│   └── .vimrc                      # Config (Catppuccin, leader=,)
 │
 ├── ghostty/                        # → link_config → ~/.config/ghostty/
 │   └── .config/ghostty/
@@ -285,6 +284,7 @@ brew bundle cleanup        # remover pacotes não no Brewfile (cuidado!)
 └── setup/                          # Scripts de instalação
     ├── symlinks.sh                 # Stow + link_config
     ├── vim-plugins.sh              # Clonar plugins vim
+    ├── vim-plugins.txt             # URLs dos plugins vim
     ├── vscode-extensions.sh        # Instalar extensões
     └── macos-defaults.sh           # defaults write
 ```

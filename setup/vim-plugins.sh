@@ -3,7 +3,7 @@
 set -euo pipefail
 
 DOTFILES="${DOTFILES:-$HOME/.dotfiles}"
-PLUGINS_FILE="$DOTFILES/vim/plugins.txt"
+PLUGINS_FILE="$DOTFILES/setup/vim-plugins.txt"
 PACK_DIR="$HOME/.vim/pack/dotfiles/start"
 
 if [[ ! -f "$PLUGINS_FILE" ]]; then
