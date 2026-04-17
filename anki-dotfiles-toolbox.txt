@@ -1,0 +1,155 @@
+#separator:tab
+#html:false
+#deck:Dotfiles Toolbox
+#tags column:3
+#Front	Back	Tags
+
+# =========================================================
+# fzf — Fuzzy Finder
+# =========================================================
+Ctrl+R no terminal — o que faz?	Pesquisa fuzzy no histórico de comandos (fzf)	fzf
+Ctrl+T no terminal — o que faz?	Pesquisa fuzzy de ficheiros e insere o path	fzf
+Alt+C (Option+C) no terminal — o que faz?	Pesquisa fuzzy de directórias e faz cd	fzf
+Como forçar actualização da cache do Alt+C?	fzf-refresh	fzf
+Onde está a cache do fzf Alt+C?	~/.cache/fzf-dirs-cache	fzf
+De quanto em quanto tempo o fzf Alt+C regenera a cache?	24 horas (1440 minutos)	fzf
+Que ferramenta o fzf usa para listar ficheiros?	fd (alternativa rápida ao find)	fzf
+
+# =========================================================
+# Zsh Vi Mode
+# =========================================================
+Como activar vi mode no zsh?	bindkey -v	zsh vi-mode
+No vi mode, que cursor indica modo INSERT?	Barra fina (beam) — \e[5 q	zsh vi-mode
+No vi mode, que cursor indica modo NORMAL?	Bloco (block) — \e[1 q	zsh vi-mode
+Ctrl+A em vi insert mode — o que faz?	Vai para o início da linha	zsh vi-mode
+Ctrl+E em vi insert mode — o que faz?	Vai para o fim da linha	zsh vi-mode
+Ctrl+W em vi insert mode — o que faz?	Apaga a palavra anterior	zsh vi-mode
+Como entrar no modo NORMAL no terminal?	Pressionar Escape	zsh vi-mode
+
+# =========================================================
+# Shell Aliases — Dotfiles
+# =========================================================
+Alias: ds	dotfiles status (git status do repo dotfiles)	aliases dotfiles
+Alias: da	dotfiles add -p (stage interactivo)	aliases dotfiles
+Alias: dc	dotfiles commit	aliases dotfiles
+Alias: dp	dotfiles push	aliases dotfiles
+Alias: dl	dotfiles pull	aliases dotfiles
+
+# =========================================================
+# Shell Aliases — Git
+# =========================================================
+Alias: gs	git status	aliases git
+Alias: gc	git commit	aliases git
+Alias: gp	git push	aliases git
+Alias: gl	git pull	aliases git
+Alias: gd	git diff	aliases git
+Alias: gco	git checkout	aliases git
+Alias: gb	git branch	aliases git
+Alias: glog	git log --oneline --graph --decorate -20	aliases git
+
+# =========================================================
+# Git Config — Aliases
+# =========================================================
+git st	git status	git-config
+git co	git checkout	git-config
+git br	git branch	git-config
+git ci	git commit	git-config
+git pr	git pull --rebase	git-config
+git lg	git log --oneline --graph --decorate -20	git-config
+git dlog	Log denso: uma linha por commit, graph com cores	git-config
+git vlog	Log visual: multi-linha com autor e email	git-config
+
+# =========================================================
+# Shell Aliases — Navegação
+# =========================================================
+Alias: ..	cd ..	aliases nav
+Alias: ...	cd ../..	aliases nav
+Alias: ll	ls -laG (lista completa com cores)	aliases nav
+Alias: la	ls -A (lista incluindo ocultos)	aliases nav
+
+# =========================================================
+# Shell Aliases — VS Code
+# =========================================================
+vscode-export — o que faz?	Exporta lista de extensões para o repo dotfiles	aliases vscode
+vscode-import — o que faz?	Instala todas as extensões da lista no repo	aliases vscode
+
+# =========================================================
+# Stow — Gestão de Symlinks
+# =========================================================
+O que faz o stow?	Cria symlinks de um directório para o nível acima	stow
+Como aplicar config shell via stow?	cd ~/.dotfiles && stow shell	stow
+Como remover symlinks do stow?	cd ~/.dotfiles && stow -D shell	stow
+Que packages stow existem no dotfiles?	git, shell, ssh, ghostty	stow
+Porque é que o stow falha com "existing target"?	O ficheiro original existe — mover/apagar primeiro	stow
+
+# =========================================================
+# Brew — Homebrew
+# =========================================================
+Como instalar tudo do Brewfile?	cd ~/.dotfiles && brew bundle	brew
+Como verificar problemas do Homebrew?	brew doctor	brew
+Onde está o Homebrew no Apple Silicon?	/opt/homebrew	brew
+Onde está o Homebrew no Intel?	/usr/local	brew
+Como ver pacotes instalados?	brew list	brew
+
+# =========================================================
+# 1Password — CLI e SSH
+# =========================================================
+Como ler um segredo do 1Password via CLI?	op read "op://Vault/Item/field"	1password
+Onde está o socket do 1Password SSH agent?	~/Library/Group Containers/2BUA8C4S2C.com.1password/t/agent.sock	1password
+Que programa assina commits git via 1Password?	/Applications/1Password.app/Contents/MacOS/op-ssh-sign	1password
+Onde está a chave privada SSH com 1Password?	Nunca sai do 1Password — assina internamente	1password
+
+# =========================================================
+# SOPS
+# =========================================================
+Como é que o sops obtém a chave AGE?	Wrapper zsh carrega via op read na primeira chamada	sops
+Porque não carregar SOPS_AGE_KEY no arranque da shell?	Pediria autenticação 1Password a cada terminal novo	sops
+
+# =========================================================
+# NVM — Node Version Manager
+# =========================================================
+Como funciona o NVM lazy loading?	Stubs para nvm/node/npm/npx — só carrega no primeiro uso	nvm
+Quando é que o NVM carrega automaticamente?	Ao fazer cd para um directório com .nvmrc	nvm
+Como mudar a versão de node?	nvm use <version> ou nvm use --lts	nvm
+
+# =========================================================
+# Zsh — Opções e Histórico
+# =========================================================
+O que faz setopt AUTO_CD?	Permite mudar de directório sem escrever cd	zsh
+O que faz setopt HIST_IGNORE_SPACE?	Comandos com espaço no início não ficam no histórico	zsh
+Quanto histórico guarda o zsh (config actual)?	50000 comandos	zsh
+O que faz HIST_IGNORE_ALL_DUPS?	Remove duplicados antigos quando um novo igual é adicionado	zsh
+Onde está o ficheiro de histórico?	~/.zsh_history	zsh
+
+# =========================================================
+# Funções Custom
+# =========================================================
+rtmux <server> — o que faz?	Liga via autossh e attach/cria sessão tmux "mimes"	funcoes
+listening — o que faz?	Mostra portas TCP em LISTEN (aceita filtro opcional)	funcoes
+listening 8080 — o que faz?	Mostra processos a escutar na porta 8080	funcoes
+zsh_startup_time — o que faz?	Corre 5x zsh -i -c exit para medir tempo de arranque	funcoes
+
+# =========================================================
+# Prompt
+# =========================================================
+Que informação mostra o prompt?	Hostname (amarelo) + directório (cyan) + git branch (magenta)	prompt
+Porque incluir hostname no prompt?	Distinguir iMac vs MacBook quando ambos estão abertos	prompt
+
+# =========================================================
+# Ghostty
+# =========================================================
+Onde está o ficheiro de config do Ghostty?	~/.config/ghostty/config	ghostty
+Que fonte usa o Ghostty?	JetBrains Mono 14pt	ghostty
+Que tema usa o Ghostty?	Catppuccin Mocha	ghostty
+O que faz macos-option-as-alt = true?	Permite que Alt+C funcione para fzf no macOS	ghostty
+
+# =========================================================
+# Dotfiles — Estrutura
+# =========================================================
+Onde clonar o repo dotfiles?	~/.dotfiles	dotfiles
+Como testar config shell sem activar?	ZDOTDIR=~/.dotfiles/shell zsh -l	dotfiles
+Que ficheiro corre em login shells?	.zprofile	dotfiles
+Que ficheiro corre em shells interactivas?	.zshrc	dotfiles
+Que ficheiro define variáveis de ambiente?	.exports	dotfiles
+Que ficheiro define aliases?	.aliases	dotfiles
+Como correr o bootstrap em modo teste?	~/.dotfiles/bootstrap.sh --dry-run	dotfiles
