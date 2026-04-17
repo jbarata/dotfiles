@@ -3,6 +3,8 @@
     // Editor
     // =========================================================
     "editor.fontSize": 14,
+    "editor.fontFamily": "JetBrains Mono, Menlo, Monaco, 'Courier New', monospace",
+    "editor.fontLigatures": true,
     "editor.tabSize": 2,
     "editor.minimap.enabled": false,
     "editor.wordWrap": "on",
