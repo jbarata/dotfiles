@@ -74,16 +74,24 @@ PAIRS=(
     "$HOME/.vimrc|$DOTFILES/vim/.vimrc"
 )
 
+# Detectar ficheiros reais (a fazer backup) e symlinks stale (a remover)
+STALE_LINKS=()
 for pair in "${PAIRS[@]}"; do
     local_f="${pair%%|*}"
-    if [[ -e "$local_f" && ! -L "$local_f" ]]; then
+    repo_f="${pair##*|}"
+    if [[ -L "$local_f" ]]; then
+        # Symlink — verificar se aponta para o repo
+        current_target=$(readlink "$local_f")
+        if [[ "$current_target" != "$repo_f" ]]; then
+            STALE_LINKS+=("$local_f|$current_target")
+        fi
+    elif [[ -e "$local_f" ]]; then
         NEED_BACKUP=true
-        break
     fi
 done
 
-if $NEED_BACKUP; then
-    # --- 4a. Mostrar diferenças ---
+if $NEED_BACKUP || [[ ${#STALE_LINKS[@]} -gt 0 ]]; then
+    # --- 4a. Mostrar diferenças e symlinks stale ---
     echo "==> Diferenças entre ficheiros actuais e repo:"
     echo ""
     for pair in "${PAIRS[@]}"; do
@@ -105,6 +113,16 @@ if $NEED_BACKUP; then
         fi
     done
 
+    if [[ ${#STALE_LINKS[@]} -gt 0 ]]; then
+        echo ""
+        echo "==> Symlinks a substituir (apontam para fora do repo):"
+        for stale in "${STALE_LINKS[@]}"; do
+            link="${stale%%|*}"
+            target="${stale##*|}"
+            echo "  $link → $target"
+        done
+    fi
+
     if ! $DRY_RUN; then
         echo ""
         read -rp "==> Continuar com backup e substituição? [s/N] " REPLY
@@ -114,12 +132,16 @@ if $NEED_BACKUP; then
         fi
     fi
 
-    # --- 4b. Backup e remoção ---
-    echo "==> A fazer backup de ficheiros existentes..."
+    # --- 4b. Backup de ficheiros reais e remoção de symlinks stale ---
+    echo "==> A fazer backup e limpar..."
     if $DRY_RUN; then
         for pair in "${PAIRS[@]}"; do
             local_f="${pair%%|*}"
             [[ -e "$local_f" && ! -L "$local_f" ]] && echo "  [dry-run] backup $local_f → $BACKUP_DIR/"
+        done
+        for stale in "${STALE_LINKS[@]}"; do
+            link="${stale%%|*}"
+            echo "  [dry-run] remove symlink $link"
         done
     else
         mkdir -p "$BACKUP_DIR"
@@ -131,6 +153,13 @@ if $NEED_BACKUP; then
                 rm "$local_f"
                 echo "  Backup: $local_f"
             fi
+        done
+        for stale in "${STALE_LINKS[@]}"; do
+            link="${stale%%|*}"
+            target="${stale##*|}"
+            echo "$link → $target" >> "$BACKUP_DIR/stale-symlinks.log"
+            rm "$link"
+            echo "  Removed stale symlink: $link"
         done
         echo "  Guardado em: $BACKUP_DIR/"
     fi
