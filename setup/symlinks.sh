@@ -21,19 +21,20 @@ link_config() {
 }
 
 # --- GNU Stow para ficheiros na home (~) ---
+# --no-folding: nunca substitui directórios por symlinks (evita conflitos com .ssh/, .config/)
 cd "$DOTFILES"
 
 echo "  Stow: git..."
-stow -t "$HOME" git
+stow --no-folding -t "$HOME" git
 
 echo "  Stow: shell..."
-stow -t "$HOME" shell
+stow --no-folding -t "$HOME" shell
 
 echo "  Stow: ssh..."
-stow -t "$HOME" ssh
+stow --no-folding -t "$HOME" ssh
 
 echo "  Stow: ghostty..."
-stow -t "$HOME" ghostty
+stow --no-folding -t "$HOME" ghostty
 
 # --- VS Code (~/Library/Application Support/Code/User/) ---
 VSCODE_USER="$HOME/Library/Application Support/Code/User"
