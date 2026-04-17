@@ -74,6 +74,13 @@ vscode-export — o que faz?	Exporta lista de extensões para o repo dotfiles	al
 vscode-import — o que faz?	Instala todas as extensões da lista no repo	aliases vscode
 
 # =========================================================
+# VS Code — Shortcuts
+# =========================================================
+VS Code: seleccionar próxima ocorrência da palavra	Cmd+D (repetir para mais)	vscode
+VS Code: seleccionar TODAS as ocorrências da palavra	Cmd+Shift+L	vscode
+VS Code: desseleccionar última ocorrência (desfazer Cmd+D)	Cmd+U	vscode
+
+# =========================================================
 # Stow — Gestão de Symlinks
 # =========================================================
 O que faz o stow?	Cria symlinks de um directório para o nível acima	stow
