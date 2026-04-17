@@ -1,4 +1,4 @@
-command: "echo \"scale=4; $(sysctl -n vm.loadavg | awk '{print $2}') / $(sysctl -n hw.ncpu)\" | bc"
+command: "top -l 2 -s 1 -n 0 | LC_ALL=C awk '/CPU usage/ {gsub(\"%\",\"\"); print ($3+$5)/100}' | tail -1"
 refreshFrequency: 9500
 render: (_) -> """
   <progress class='bar' value='0' max='1'></progress>
@@ -11,7 +11,7 @@ update: (output, domEl) ->
   $bar.css width: $(domEl).height()
   $bar.attr 'value': val
   colorclass = switch
-    when val > 1 then 'urgent'
+    when val > 0.9 then 'urgent'
     when val > 0.75 then 'important'
     when val > 0.5 then 'high'
     when val > 0.25 then 'normal'
