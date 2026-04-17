@@ -41,6 +41,12 @@ mouse-hide-while-typing = true
 macos-option-as-alt = true
 
 # =========================================================
+# Keybindings (teclado português — sem [ e ])
+# =========================================================
+keybind = cmd+shift+left=previous_tab
+keybind = cmd+shift+right=next_tab
+
+# =========================================================
 # Shell
 # =========================================================
 shell-integration = zsh
