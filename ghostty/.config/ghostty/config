@@ -45,6 +45,7 @@ macos-option-as-alt = true
 # =========================================================
 keybind = cmd+shift+left=previous_tab
 keybind = cmd+shift+right=next_tab
+keybind = cmd+shift+i=prompt_surface_title
 
 # =========================================================
 # Shell
