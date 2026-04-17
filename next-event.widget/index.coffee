@@ -152,7 +152,7 @@ update: (output, domEl) ->
   output = output.trim()
 
   if output.includes("Access denied")
-    content.html('<div class="no-event" style="color:#ff6b6b">Access Denied<br><span style="font-size:10px">Please run the binary in Terminal once to grant permission.</span></div>')
+    content.html('<div class="no-event" style="color:#ff6b6b">Access Denied<br><span style="font-size:10px">Grant Calendar access to osascript in System Settings &rsaquo; Privacy &amp; Security &rsaquo; Calendars.</span></div>')
     return
   
   if output == "None" or output == ""
