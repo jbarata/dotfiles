@@ -1,4 +1,4 @@
-command: "top -l 2 -s 1 -n 0 | awk '/CPU usage/ {gsub(\"%\",\"\"); print ($3+$5)/100}' | tail -1"
+command: "top -l 2 -s 1 -n 0 | LC_ALL=C awk '/CPU usage/ {gsub(\"%\",\"\"); print ($3+$5)/100}' | tail -1"
 refreshFrequency: 9500
 render: (_) -> """
   <progress class='bar' value='0' max='1'></progress>
