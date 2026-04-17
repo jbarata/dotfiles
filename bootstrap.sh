@@ -72,6 +72,17 @@ BACKUP_FILES=(
     "$HOME/.config/ghostty/config"
 )
 
+# Mapeamento: ficheiro local → ficheiro no repo
+declare -A REPO_FILES=(
+    ["$HOME/.zshrc"]="$DOTFILES/shell/.zshrc"
+    ["$HOME/.zprofile"]="$DOTFILES/shell/.zprofile"
+    ["$HOME/.aliases"]="$DOTFILES/shell/.aliases"
+    ["$HOME/.exports"]="$DOTFILES/shell/.exports"
+    ["$HOME/.gitconfig"]="$DOTFILES/git/.gitconfig"
+    ["$HOME/.ssh/config"]="$DOTFILES/ssh/.ssh/config"
+    ["$HOME/.config/ghostty/config"]="$DOTFILES/ghostty/.config/ghostty/config"
+)
+
 for f in "${BACKUP_FILES[@]}"; do
     if [[ -e "$f" && ! -L "$f" ]]; then
         NEED_BACKUP=true
@@ -80,6 +91,39 @@ for f in "${BACKUP_FILES[@]}"; do
 done
 
 if $NEED_BACKUP; then
+    # --- 4a. Mostrar diferenças ---
+    echo "==> Diferenças entre ficheiros actuais e repo:"
+    echo ""
+    HAS_DIFFS=false
+    for f in "${BACKUP_FILES[@]}"; do
+        if [[ -e "$f" && ! -L "$f" ]]; then
+            repo_f="${REPO_FILES[$f]}"
+            if [[ -f "$repo_f" ]]; then
+                DIFF_OUTPUT=$(diff "$f" "$repo_f" 2>/dev/null || true)
+                if [[ -n "$DIFF_OUTPUT" ]]; then
+                    HAS_DIFFS=true
+                    echo "--- $f vs $repo_f ---"
+                    echo "$DIFF_OUTPUT"
+                    echo ""
+                else
+                    echo "  $f — sem diferenças"
+                fi
+            else
+                echo "  $f — novo (não existe no repo)"
+            fi
+        fi
+    done
+
+    if ! $DRY_RUN; then
+        echo ""
+        read -rp "==> Continuar com backup e substituição? [s/N] " REPLY
+        if [[ ! "$REPLY" =~ ^[sS]$ ]]; then
+            echo "==> Abortado. Nenhuma alteração feita."
+            exit 0
+        fi
+    fi
+
+    # --- 4b. Backup e remoção ---
     echo "==> A fazer backup de ficheiros existentes..."
     if $DRY_RUN; then
         for f in "${BACKUP_FILES[@]}"; do
