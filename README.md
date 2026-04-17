@@ -1,54 +1,22 @@
 # Dotfiles
 
-Configurações de trabalho centralizadas para macOS, geridas com [GNU Stow](https://www.gnu.org/software/stow/) e sincronizadas via git.
+Configurações centralizadas para macOS (iMac Intel + MacBook M3), geridas com [GNU Stow](https://www.gnu.org/software/stow/) e sincronizadas via git.
 
-## Máquinas
+---
 
-| Máquina | Arquitetura | Homebrew |
-|---------|-------------|----------|
-| iMac (Retina 5K, 27", 2020) | Intel (x86_64) | `/usr/local` |
-| MacBook (M3) | Apple Silicon (arm64) | `/opt/homebrew` |
+## Índice
 
-## Aplicações geridas
+- [Uso](#uso)
+- [Instalação](#instalação)
+- [Manutenção](#manutenção)
+- [Estrutura](#estrutura)
+- [Decisões](#decisões)
 
-- **Git** — `.gitconfig`, commit signing via 1Password SSH
-- **Shell (Zsh)** — `.zshrc`, `.zprofile`, `.aliases`, `.exports` (vi mode, fzf, autosuggestions, syntax-highlighting)
-- **SSH** — config com 1Password SSH agent + hosts de trabalho
-- **Ghostty** — terminal GPU-accelerated (JetBrains Mono, Catppuccin Mocha)
-- **VS Code** — settings, keybindings, extensões, dicionário PT
-- **Claude Code** — settings globais e CLAUDE.md
-- **Übersicht** — clone automático do [repo de widgets](https://github.com/mimes70/Ubersicht-Widgets)
-- **NVM** — Node version manager (lazy loading)
+---
 
-## Setup rápido (nova máquina)
+## Uso
 
-```bash
-git clone https://github.com/mimes70/dotfiles.git ~/.dotfiles
-cd ~/.dotfiles
-./bootstrap.sh
-```
-
-O bootstrap deteta automaticamente se é Intel ou Apple Silicon. Para pré-visualizar sem executar:
-
-```bash
-./bootstrap.sh --dry-run
-```
-
-## Estrutura
-
-```
-git/            → stow → ~/.gitconfig
-shell/          → stow → ~/.zshrc, ~/.zprofile, ~/.aliases, ~/.exports
-ssh/            → stow → ~/.ssh/config
-ghostty/        → stow → ~/.config/ghostty/config
-claude/         → symlink manual → ~/.claude/settings.json, ~/.claude/CLAUDE.md
-vscode/         → symlink manual → ~/Library/.../Code/User/
-machine/        → overrides por máquina (imac.sh, macbook.sh)
-setup/          → scripts de instalação (symlinks, extensões, defaults)
-ubersicht/      → clone/update do repo de widgets
-```
-
-## Sync diário
+### Sync diário
 
 ```bash
 ds              # dotfiles status
@@ -58,24 +26,400 @@ dp              # dotfiles push
 dl              # dotfiles pull (na outra máquina)
 ```
 
-### VS Code extensions
-
-```bash
-vscode-export   # exportar lista de extensões para o repo
-vscode-import   # instalar extensões a partir da lista
-```
-
-### fzf
+### fzf — Fuzzy finder
 
 ```bash
 Ctrl+R          # pesquisa fuzzy no histórico
-Ctrl+T          # pesquisa fuzzy de ficheiros
-Alt+C           # pesquisa fuzzy de directórias (cache 24h)
+Ctrl+T          # pesquisa fuzzy de ficheiros (insere path)
+Alt+C           # pesquisa fuzzy de directórias (cd) — usa cache 24h
 fzf-refresh     # forçar actualização da cache Alt+C
 ```
 
-## Segredos
+### Vim — Leader = `,`
 
-Segredos são geridos pelo **1Password CLI** (`op`). Nunca são guardados em ficheiros — são obtidos a pedido via `op read`. O SSH agent do 1Password elimina a necessidade de chaves privadas no disco.
+```bash
+,n      # limpar highlight de pesquisa
+,w      # save
+,q      # quit
+,l      # toggle line numbers
+gcc     # comentar linha (vim-commentary)
+cs"'    # mudar "x" para 'x' (vim-surround)
+:Git    # git integration (vim-fugitive)
+```
 
-O SOPS AGE key é carregado on-demand: o wrapper `sops()` no `.zshrc` chama `op read` apenas na primeira invocação.
+### Ghostty — Terminal
+
+```bash
+Cmd+T               # novo tab
+Cmd+Shift+Left/Right # tab anterior/seguinte
+Cmd+1, Cmd+2, ...   # tab específico
+Cmd+D / Cmd+Shift+D # split horizontal/vertical
+Cmd+Alt+setas       # navegar entre splits
+Cmd+Shift+Alt+setas # redimensionar split
+Cmd+W               # fechar tab/split
+Cmd+Shift+I         # renomear tab
+Cmd+Shift+,         # reload da configuração
+```
+
+### VS Code — Multi-cursor
+
+```bash
+Cmd+D           # seleccionar próxima ocorrência
+Cmd+Shift+L     # seleccionar TODAS as ocorrências
+Cmd+U           # desfazer última selecção
+```
+
+### Git — Aliases
+
+```bash
+git st          # status
+git co          # checkout
+git br          # branch
+git ci          # commit
+git pr          # pull --rebase
+git lg          # log oneline graph
+git dlog        # log denso (uma linha)
+git vlog        # log visual (multi-linha)
+```
+
+### VS Code extensions sync
+
+```bash
+vscode-export   # exportar lista para o repo
+vscode-import   # instalar todas a partir do repo
+```
+
+### Funções custom
+
+```bash
+rtmux <server>      # autossh + tmux attach/new "mimes"
+listening           # portas TCP em LISTEN
+listening 8080      # filtrar por porta
+zsh_startup_time    # medir tempo de arranque (5x)
+```
+
+### Segredos via 1Password
+
+```bash
+op read "op://Vault/Item/field"   # ler segredo
+sops <args>                        # wrapper que carrega SOPS_AGE_KEY lazy
+```
+
+---
+
+## Instalação
+
+### Nova máquina
+
+```bash
+git clone git@github.com:mimes70/dotfiles.git ~/.dotfiles
+cd ~/.dotfiles
+./bootstrap.sh --dry-run    # pré-visualizar
+./bootstrap.sh              # executar
+```
+
+O bootstrap:
+1. Instala Homebrew (se não existir)
+2. `brew bundle` (Brewfile + Brewfile.<machine>)
+3. Instala NVM (se não existir)
+4. Detecta ficheiros existentes, mostra **diff vs repo**, pede confirmação
+5. Faz backup centralizado em `~/dotfiles-backup/pre-bootstrap-<timestamp>/`
+6. Cria symlinks (stow + manuais)
+7. Clona/actualiza plugins vim para `~/.vim/pack/dotfiles/start/`
+8. Migra remote git para SSH
+9. Instala extensões VS Code
+10. Clona widgets Übersicht
+11. Aplica macOS defaults
+12. Cria `~/.cache` para fzf
+
+O bootstrap é **idempotente** — pode correr várias vezes.
+
+### Testar shell sem activar
+
+```bash
+ZDOTDIR=~/.dotfiles/shell zsh -l
+```
+
+### Activação manual (sem bootstrap)
+
+```bash
+cd ~/.dotfiles
+bash setup/symlinks.sh           # criar symlinks
+bash setup/vim-plugins.sh        # instalar plugins vim
+bash setup/vscode-extensions.sh  # instalar extensões VS Code
+```
+
+---
+
+## Manutenção
+
+### Adicionar pacote ao Brewfile
+
+```bash
+# CLI tool
+echo 'brew "nome"          # descrição' >> Brewfile
+
+# GUI app
+echo 'cask "nome"          # descrição' >> Brewfile
+
+# Específico de máquina
+echo 'brew "nome"' >> Brewfile.imac     # ou Brewfile.macbook
+```
+
+### Adicionar alias
+
+Editar `shell/.aliases` e organizar por secção (Dotfiles, Git, Navegação, etc.).
+
+### Adicionar variável de ambiente
+
+Editar `shell/.exports`.
+
+### Adicionar plugin vim
+
+```bash
+echo 'https://github.com/owner/plugin-name' >> vim/plugins.txt
+bash setup/vim-plugins.sh   # clona e gera helptags
+```
+
+### Adicionar extensão VS Code
+
+```bash
+# Após instalar manualmente:
+vscode-export   # exporta lista actualizada para o repo
+```
+
+### Adicionar tema Ghostty
+
+```bash
+curl -o ghostty/.config/ghostty/themes/<nome> <url>
+# Activar em ghostty/.config/ghostty/config:
+# theme = <nome>
+```
+
+### Atualizar Anki deck
+
+Ficheiro: `anki-dotfiles-toolbox.txt`
+Formato: TSV com cabeçalho:
+```
+#separator:tab
+#html:false
+#deck:Dotfiles Toolbox
+#tags column:3
+#Front	Back	Tags
+```
+
+Cada card é uma linha: `pergunta\tresposta\ttags-separadas-por-espaço`
+
+Comentários `# ...` são ignorados pelo Anki, usar para organizar secções.
+
+Importar: Anki → File → Import → seleccionar ficheiro.
+
+### Reverter alterações
+
+Backups em:
+- `~/dotfiles-backup/pre-bootstrap-<timestamp>/` — feitos pelo bootstrap
+- `~/dotfiles-backup/<timestamp>/` — feitos pelo `setup/symlinks.sh`
+
+Os ficheiros têm `__` no nome em vez de `/` (ex: `Library__Application Support__Code__User__settings.json`).
+
+### Verificar Homebrew
+
+```bash
+brew doctor
+brew bundle check          # verificar consistência com Brewfile
+brew bundle cleanup        # remover pacotes não no Brewfile (cuidado!)
+```
+
+---
+
+## Estrutura
+
+```
+.dotfiles/
+├── README.md                       # Este ficheiro
+├── bootstrap.sh                    # Setup script (--dry-run disponível)
+├── Brewfile                        # Pacotes Homebrew partilhados
+├── Brewfile.imac                   # Específico iMac
+├── Brewfile.macbook                # Específico MacBook
+├── anki-dotfiles-toolbox.txt       # Cards Anki (importável)
+│
+├── shell/                          # → stow → ~/
+│   ├── .zshrc                      # Config principal Zsh
+│   ├── .zprofile                   # Login shell (Homebrew init)
+│   ├── .aliases                    # Aliases partilhados
+│   ├── .exports                    # Variáveis de ambiente
+│   └── .stow-local-ignore          # Ignora .zsh_history, .zcompdump
+│
+├── git/                            # → stow → ~/.gitconfig
+│   └── .gitconfig                  # Inclui SSH signing, aliases
+│
+├── ssh/                            # → link_config → ~/.ssh/config
+│   └── .ssh/config                 # 1Password agent + work hosts
+│
+├── vim/                            # → stow → ~/.vimrc
+│   ├── .vimrc                      # Config (Catppuccin, leader=,)
+│   └── plugins.txt                 # URLs dos plugins
+│
+├── ghostty/                        # → link_config → ~/.config/ghostty/
+│   └── .config/ghostty/
+│       ├── config                  # JetBrains Mono + Catppuccin
+│       └── themes/catppuccin-mocha # Tema embutido
+│
+├── vscode/                         # → link_config → ~/Library/.../Code/User/
+│   ├── settings.json               # Settings completas
+│   ├── keybindings.json
+│   ├── extensions.txt              # Lista de extensões
+│   └── portugues_pre_acordo.txt    # Dicionário cSpell PT
+│
+├── claude/                         # → link_config → ~/.claude/
+│   ├── settings.json               # Configurações Claude Code
+│   └── CLAUDE.md                   # Instruções globais
+│
+├── machine/                        # Overrides por máquina (sourced no .zshrc)
+│   ├── imac.sh
+│   └── macbook.sh
+│
+├── ubersicht/                      # Übersicht widgets
+│   └── install.sh                  # Clone do repo Ubersicht-Widgets
+│
+└── setup/                          # Scripts de instalação
+    ├── symlinks.sh                 # Stow + link_config
+    ├── vim-plugins.sh              # Clonar plugins vim
+    ├── vscode-extensions.sh        # Instalar extensões
+    └── macos-defaults.sh           # defaults write
+```
+
+---
+
+## Decisões
+
+Histórico das decisões tomadas e seu racional, para contexto futuro.
+
+### Shell
+
+| Decisão | Racional |
+|---|---|
+| Estrutura modular (`.zshrc` + `.aliases` + `.exports`) | Separa concerns; mais fácil de navegar |
+| `EDITOR=vim`, `VISUAL=code --wait` | vim para CLI rápido (git commit), VS Code para edição visual |
+| Vi mode (`bindkey -v`) | Consistência com vim |
+| Histórico 50K com `HIST_IGNORE_ALL_DUPS` | Mais memória útil, sem duplicados |
+| `compinit` cacheado (regenera 24h) | Arranque ~200ms mais rápido |
+| Prompt: hostname (yellow) + dir (cyan) + git (magenta) | Distingue iMac vs MacBook visualmente |
+| `setopt AUTO_CD` | Escrever path muda directamente |
+| `setopt HIST_IGNORE_SPACE` | Comandos com espaço inicial não ficam no histórico (segurança) |
+| Homebrew init **só** em `.zprofile` | Evita duplicação (era em ambos) |
+| `SSH_AUTH_SOCK` no `~/.ssh/config` (não no `.zshrc`) | Acessível a processos não-interactivos |
+| Path `${DOTFILES:-$HOME/.dotfiles}` | Permite override de localização |
+
+### NVM (Node)
+
+| Decisão | Racional |
+|---|---|
+| Lazy loading com stubs | Arranque shell ~500ms mais rápido |
+| Stubs para `nvm`, `node`, `npm`, `npx` | Cobre todos os entry points comuns |
+| `chpwd` hook só carrega se `.nvmrc` existe | Sem penalty no primeiro `cd` |
+| Removido `brew node` do Brewfile | NVM gere versões |
+
+### fzf
+
+| Decisão | Racional |
+|---|---|
+| `fd` em vez de `find` | Mais rápido, ignora `.git/` por defeito |
+| Cache Alt+C em `~/.cache/fzf-dirs-cache` | 250K dirs demoram 8s a listar — cache é instantâneo |
+| Cache regenera em background a cada 24h | Always-fresh sem bloquear shell |
+| `FZF_ALT_C_COMMAND="cat $cache"` | Override no nível da var, não do widget (widget é redefinido pelo fzf) |
+| `macos-option-as-alt = true` no Ghostty | Sem isto, Alt+C não funciona em macOS |
+
+### Git
+
+| Decisão | Racional |
+|---|---|
+| SSH signing via 1Password | Chave privada nunca sai do 1Password |
+| `init.defaultBranch = main` | Padrão moderno |
+| `push.autoSetupRemote = true` | Evita `git push -u origin <branch>` |
+| `pull.rebase = true` | Histórico linear |
+| Aliases híbridos (`st`, `dlog`, `vlog`) | Mantém shortcuts simples + visualizações ricas |
+| Remote SSH (`git@github.com:`) | Usa 1Password agent, sem credenciais Keychain |
+
+### Terminal
+
+| Decisão | Racional |
+|---|---|
+| **Ghostty** sobre iTerm2 | GPU-accelerated, config text-based versionável |
+| **JetBrains Mono** | Ligatures, gratuita, legível |
+| **Catppuccin Mocha** | Mesmo tema em Ghostty + VS Code + vim |
+| Cursor `bar` sem blink | Coerente com vi mode |
+| Tab navigation `Cmd+Shift+Left/Right` | Teclado PT não tem `[]` acessíveis |
+
+### Vim
+
+| Decisão | Racional |
+|---|---|
+| Editor secundário (não primário) | VS Code é primário |
+| Plugin manager nativo (`~/.vim/pack/dotfiles/start/`) | Sem dependências externas |
+| Plugins clonados via `setup/vim-plugins.sh` | Mais simples que submodules |
+| Nível 3: vim-sensible/commentary/surround/fugitive + airline + catppuccin | Mínimo polido |
+| Leader = `,` | Mais acessível que `\` em PT |
+| Persistent undo em `~/.vim/undo/` | Não perder histórico entre sessões |
+
+### VS Code
+
+| Decisão | Racional |
+|---|---|
+| `formatOnSave: false`, `formatOnPaste/Type: true` | Manter controlo, formatar só ao colar |
+| `git.path: "git"` | Usa o git do PATH (Homebrew em ambas as máquinas) |
+| Dicionário PT pré-acordo no repo | Sincronização entre máquinas |
+| Markdown editor com CSS custom | Branding |
+
+### SSH
+
+| Decisão | Racional |
+|---|---|
+| 1Password agent | Sem chaves no disco |
+| Hosts de trabalho no repo (privado) | Sincronização entre máquinas |
+| `ServerAliveInterval 30` | Evita disconnect em sessões longas |
+
+### 1Password / SOPS
+
+| Decisão | Racional |
+|---|---|
+| `sops()` wrapper com lazy auth | Evita prompt 1Password a cada shell nova |
+| `op read` on-demand | Segredos nunca em ficheiros |
+
+### Bootstrap
+
+| Decisão | Racional |
+|---|---|
+| `--dry-run` flag | Pré-visualizar sem executar |
+| Diff antes de substituir | Ver o que muda + decidir |
+| Confirmação interactiva | Evitar substituições não intencionais |
+| Backups centralizados em `~/dotfiles-backup/<timestamp>/` | Não espalhar `.backup` files |
+| Detecta symlinks "stale" e remove-os | Stow recusa overwrite de symlinks externos |
+| `bash` em vez de `source` para sub-scripts | Evita `set -e` matar shell pai |
+| Compatível com Bash 3.2 (macOS default) | Sem `declare -A` |
+
+### Stow
+
+| Decisão | Racional |
+|---|---|
+| `--no-folding` | Nunca substitui directórios por symlinks |
+| Stow para ficheiros directos em `~` | Idempotente, simples |
+| `link_config` (não stow) para SSH/Ghostty | Stow recusa criar links em dirs com ficheiros não-geridos |
+| `.stow-local-ignore` em `shell/` | Ignora `.zsh_history`, `.zcompdump` |
+
+### Anki
+
+| Decisão | Racional |
+|---|---|
+| Formato TSV plano | Importável directamente, fácil de editar |
+| Tags hierárquicas (`vim mappings`, `git-config`) | Filtragem fina no Anki |
+| Comentários `#` para organização | Ignorados pelo Anki, ajudam navegação |
+
+### Repositório
+
+| Decisão | Racional |
+|---|---|
+| Repo privado | Permite incluir signing key, hosts SSH de trabalho |
+| Branch convention `claude/<feature>-<id>` | Trabalho em branches descritivas |
+| Commit messages descritivos com "why" | Histórico útil para futura referência |
+| README como memória para Claude Code | Contexto persistente entre sessões |
