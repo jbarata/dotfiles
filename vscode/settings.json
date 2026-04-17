@@ -47,7 +47,7 @@
     // =========================================================
     // Git
     // =========================================================
-    "git.path": "/usr/local/bin/git",
+    "git.path": "git",
     "git.autofetch": true,
     "git.confirmSync": false,
     "git.enableSmartCommit": true,
