@@ -71,6 +71,7 @@ PAIRS=(
     "$HOME/.gitconfig|$DOTFILES/git/.gitconfig"
     "$HOME/.ssh/config|$DOTFILES/ssh/.ssh/config"
     "$HOME/.config/ghostty/config|$DOTFILES/ghostty/.config/ghostty/config"
+    "$HOME/.vimrc|$DOTFILES/vim/.vimrc"
 )
 
 for pair in "${PAIRS[@]}"; do
@@ -140,14 +141,24 @@ fi
 # --- 5. Criar symlinks (stow + manuais) ---
 echo "==> A criar symlinks..."
 if $DRY_RUN; then
-    echo "  [dry-run] stow git shell ssh ghostty"
+    echo "  [dry-run] stow git shell vim ssh ghostty"
     echo "  [dry-run] link VS Code settings, keybindings, snippets"
     echo "  [dry-run] link Claude Code settings, CLAUDE.md"
 else
     bash "$DOTFILES/setup/symlinks.sh"
 fi
 
-# --- 6. Mudar remote para SSH (1Password agent) ---
+# --- 6. Instalar plugins vim ---
+if [[ -f "$DOTFILES/setup/vim-plugins.sh" ]]; then
+    echo "==> A instalar plugins vim..."
+    if $DRY_RUN; then
+        echo "  [dry-run] git clone $(grep -c '^https' "$DOTFILES/vim/plugins.txt") plugins → ~/.vim/pack/dotfiles/start/"
+    else
+        bash "$DOTFILES/setup/vim-plugins.sh"
+    fi
+fi
+
+# --- 7. Mudar remote para SSH (1Password agent) ---
 echo "==> A configurar git remote via SSH..."
 CURRENT_REMOTE=$(git -C "$DOTFILES" remote get-url origin 2>/dev/null || true)
 if [[ "$CURRENT_REMOTE" == https://* ]]; then
@@ -158,7 +169,7 @@ else
     echo "  Remote já usa SSH"
 fi
 
-# --- 7. Instalar extensões VS Code ---
+# --- 8. Instalar extensões VS Code ---
 if command -v code &>/dev/null && [[ -f "$DOTFILES/vscode/extensions.txt" ]]; then
     echo "==> A instalar extensões VS Code..."
     if $DRY_RUN; then
@@ -170,7 +181,7 @@ else
     echo "==> VS Code: não encontrado ou sem extensions.txt, a saltar"
 fi
 
-# --- 8. Configurar Übersicht widgets ---
+# --- 9. Configurar Übersicht widgets ---
 if [[ -f "$DOTFILES/ubersicht/install.sh" ]]; then
     echo "==> A configurar Übersicht widgets..."
     if $DRY_RUN; then
@@ -180,7 +191,7 @@ if [[ -f "$DOTFILES/ubersicht/install.sh" ]]; then
     fi
 fi
 
-# --- 9. macOS defaults (opcional) ---
+# --- 10. macOS defaults (opcional) ---
 if [[ -f "$DOTFILES/setup/macos-defaults.sh" ]]; then
     echo "==> A aplicar preferências macOS..."
     if $DRY_RUN; then
@@ -190,7 +201,7 @@ if [[ -f "$DOTFILES/setup/macos-defaults.sh" ]]; then
     fi
 fi
 
-# --- 10. Criar directoria de cache fzf ---
+# --- 11. Criar directoria de cache fzf ---
 mkdir -p "$HOME/.cache"
 
 echo ""

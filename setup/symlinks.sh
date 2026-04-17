@@ -30,6 +30,9 @@ stow --no-folding -t "$HOME" git
 echo "  Stow: shell..."
 stow --no-folding -t "$HOME" shell
 
+echo "  Stow: vim..."
+stow --no-folding -t "$HOME" vim
+
 # --- SSH e Ghostty: usar link_config (stow não lida bem com dirs existentes como ~/.ssh) ---
 echo "  SSH config..."
 link_config "$DOTFILES/ssh/.ssh/config" "$HOME/.ssh/config"

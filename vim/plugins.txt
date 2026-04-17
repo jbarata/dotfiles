@@ -1,0 +1,22 @@
+# Plugins vim — instalados em ~/.vim/pack/dotfiles/start/
+# Formato: <url>
+# Comentários começam com #
+
+# Defaults sensatos (Tim Pope)
+https://github.com/tpope/vim-sensible
+
+# Comentar com gcc / gc
+https://github.com/tpope/vim-commentary
+
+# Manipular pares (cs"' muda "x" para 'x')
+https://github.com/tpope/vim-surround
+
+# Git integration (:Git status, :Git blame)
+https://github.com/tpope/vim-fugitive
+
+# Status line
+https://github.com/vim-airline/vim-airline
+https://github.com/vim-airline/vim-airline-themes
+
+# Colorscheme Catppuccin (mesmo do Ghostty)
+https://github.com/catppuccin/vim
