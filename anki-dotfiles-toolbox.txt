@@ -9,7 +9,7 @@
 # =========================================================
 Ctrl+R no terminal — o que faz?	Pesquisa fuzzy no histórico de comandos (fzf)	fzf
 Ctrl+T no terminal — o que faz?	Pesquisa fuzzy de ficheiros e insere o path	fzf
-Alt+C (Option+C) no terminal — o que faz?	Pesquisa fuzzy de directórias e faz cd	fzf
+Alt+C (Option+C) no terminal — o que faz?	Pesquisa fuzzy de directorias e faz cd	fzf
 Como forçar actualização da cache do Alt+C?	fzf-refresh	fzf
 Onde está a cache do fzf Alt+C?	~/.cache/fzf-dirs-cache	fzf
 De quanto em quanto tempo o fzf Alt+C regenera a cache?	24 horas (1440 minutos)	fzf
