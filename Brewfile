@@ -4,7 +4,6 @@
 brew "git"
 brew "gh"                    # GitHub CLI
 brew "stow"                  # Symlink farm manager para dotfiles
-brew "1password-cli"         # 1Password CLI (op)
 brew "gcalcli"               # Google Calendar CLI (usado pelo focus.widget)
 brew "fzf"                   # Fuzzy finder (Ctrl+R, Ctrl+T)
 brew "fd"                    # find alternativo (usado pelo fzf)
@@ -18,6 +17,7 @@ cask "font-jetbrains-mono"
 
 # GUI apps
 cask "1password"
+cask "1password-cli"         # 1Password CLI (op) — instalado como cask
 cask "ghostty"
 cask "iterm2"
 cask "visual-studio-code"
