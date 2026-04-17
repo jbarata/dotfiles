@@ -163,6 +163,62 @@ Ghostty: reload da configuração	Cmd+Shift+,	ghostty
 Ghostty pode rearranjar splits ou converter para tab?	Não — gestão básica intencional. Para isso, usar tmux	ghostty
 
 # =========================================================
+# Vim — Configuração e plugins
+# =========================================================
+Onde está o ficheiro de config do vim?	~/.vimrc	vim
+Onde estão os plugins vim instalados?	~/.vim/pack/dotfiles/start/	vim
+Como instalar/actualizar plugins vim no dotfiles?	bash ~/.dotfiles/setup/vim-plugins.sh	vim
+Que colorscheme usa o vim?	Catppuccin Mocha (mesmo do Ghostty)	vim
+Que leader key está configurada no vim?	, (vírgula)	vim
+
+# =========================================================
+# Vim — Mappings (leader = ,)
+# =========================================================
+Vim: limpar highlight de pesquisa	,n (leader+n)	vim mappings
+Vim: save	,w (leader+w)	vim mappings
+Vim: quit	,q (leader+q)	vim mappings
+Vim: toggle line numbers	,l (leader+l)	vim mappings
+
+# =========================================================
+# Vim — Comandos básicos
+# =========================================================
+Vim: entrar modo insert	i (antes do cursor) ou a (depois)	vim
+Vim: sair modo insert	Esc	vim
+Vim: gravar e sair	:wq ou ZZ	vim
+Vim: sair sem gravar	:q!	vim
+Vim: pesquisar para a frente	/texto	vim
+Vim: pesquisar para trás	?texto	vim
+Vim: próxima ocorrência da pesquisa	n	vim
+Vim: ocorrência anterior da pesquisa	N	vim
+Vim: substituir tudo no ficheiro	:%s/velho/novo/g	vim
+Vim: undo	u	vim
+Vim: redo	Ctrl+R	vim
+Vim: ir para linha N	:N ou Ngg	vim
+Vim: ir para fim do ficheiro	G	vim
+Vim: ir para início do ficheiro	gg	vim
+
+# =========================================================
+# Vim — Plugins (vim-commentary)
+# =========================================================
+Vim commentary: comentar linha actual	gcc	vim plugins
+Vim commentary: comentar selecção visual	gc (em modo visual)	vim plugins
+
+# =========================================================
+# Vim — Plugins (vim-surround)
+# =========================================================
+Vim surround: mudar "x" para 'x'	cs"'	vim plugins
+Vim surround: apagar parênteses à volta	ds(	vim plugins
+Vim surround: adicionar aspas à palavra	ysiw"	vim plugins
+
+# =========================================================
+# Vim — Plugins (vim-fugitive)
+# =========================================================
+Vim fugitive: ver git status	:Git status (ou :G)	vim plugins
+Vim fugitive: ver git blame	:Git blame	vim plugins
+Vim fugitive: ver git log	:Git log	vim plugins
+Vim fugitive: stage do ficheiro actual	:Gwrite	vim plugins
+
+# =========================================================
 # Dotfiles — Estrutura
 # =========================================================
 Onde clonar o repo dotfiles?	~/.dotfiles	dotfiles
