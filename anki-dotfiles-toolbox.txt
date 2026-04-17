@@ -156,7 +156,11 @@ Ghostty: tab específico (ex: 3º)	Cmd+3	ghostty
 Ghostty: split horizontal	Cmd+D	ghostty
 Ghostty: split vertical	Cmd+Shift+D	ghostty
 Ghostty: navegar entre splits	Cmd+Alt+setas	ghostty
+Ghostty: redimensionar split	Cmd+Shift+Alt+setas	ghostty
 Ghostty: fechar split/tab	Cmd+W	ghostty
+Ghostty: renomear tab/janela	Cmd+Shift+I	ghostty
+Ghostty: reload da configuração	Cmd+Shift+,	ghostty
+Ghostty pode rearranjar splits ou converter para tab?	Não — gestão básica intencional. Para isso, usar tmux	ghostty
 
 # =========================================================
 # Dotfiles — Estrutura
