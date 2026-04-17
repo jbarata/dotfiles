@@ -8,7 +8,24 @@ BACKUP_DIR="$HOME/dotfiles-backup/$(date +%Y%m%d-%H%M%S)"
 # --- Função auxiliar para symlinks manuais ---
 link_config() {
     local src="$1" dst="$2"
+
+    # Resolver src para path absoluto (evitar loops)
+    src=$(cd "$(dirname "$src")" 2>/dev/null && pwd)/$(basename "$src")
+
+    # Recusa criar symlink circular (src == dst)
+    if [[ "$src" == "$dst" ]]; then
+        echo "  ERRO: src e dst iguais ($src), a saltar"
+        return 0
+    fi
+
+    # Se dst já é o symlink correcto, nada a fazer
+    if [[ -L "$dst" && "$(readlink "$dst")" == "$src" ]]; then
+        return 0
+    fi
+
     mkdir -p "$(dirname "$dst")"
+
+    # Backup se for ficheiro real
     if [[ -e "$dst" && ! -L "$dst" ]]; then
         mkdir -p "$BACKUP_DIR"
         local backup_name
@@ -16,7 +33,13 @@ link_config() {
         mv "$dst" "$BACKUP_DIR/$backup_name"
         echo "  Backup: $dst → $BACKUP_DIR/$backup_name"
     fi
-    ln -sf "$src" "$dst"
+
+    # Remover symlinks errados ou broken
+    if [[ -L "$dst" ]]; then
+        rm "$dst"
+    fi
+
+    ln -s "$src" "$dst"
     echo "  Link: $dst → $src"
 }
 
