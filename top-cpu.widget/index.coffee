@@ -47,7 +47,7 @@ style: """
     font-weight: normal
 
   @media (max-width: 1999px)
-    bottom: 8px
+    bottom: 36px
     td
       font-size: 14px
       width: 80px
