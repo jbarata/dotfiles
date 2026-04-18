@@ -64,6 +64,10 @@ render: (output) -> @getVisual output
 
 update: (output, domEl) ->
   $domEl = $(domEl)
+  if localStorage.getItem('planningMode') is 'on'
+    $domEl.hide()
+    return
+  $domEl.show()
   $domEl.html @getVisual output
 
 encodeTerm: (s) -> encodeURIComponent(s ? '')
