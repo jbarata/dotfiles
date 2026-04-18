@@ -279,7 +279,6 @@ brew bundle cleanup        # remover pacotes não no Brewfile (cuidado!)
 │   └── macbook.sh
 │
 ├── ubersicht/                      # Übersicht widgets
-│   ├── install.sh                  # Symlink widgets → ~/Library/Application Support/Übersicht/
 │   └── widgets/                    # Widgets (git subtree de Ubersicht-Widgets)
 │
 └── setup/                          # Scripts de instalação
@@ -287,6 +286,7 @@ brew bundle cleanup        # remover pacotes não no Brewfile (cuidado!)
     ├── vim-plugins.sh              # Clonar plugins vim
     ├── vim-plugins.txt             # URLs dos plugins vim
     ├── vscode-extensions.sh        # Instalar extensões
+    ├── ubersicht.sh                # Symlink pasta de widgets Übersicht
     └── macos-defaults.sh           # defaults write
 ```
 
@@ -421,7 +421,8 @@ Histórico das decisões tomadas e seu racional, para contexto futuro.
 | Decisão | Racional |
 |---|---|
 | Widgets migrados para `ubersicht/widgets/` via `git subtree` | Um só repo, histórico preservado |
-| `install.sh` passa a symlinkar (em vez de clonar) | Widgets geridos junto com os dotfiles |
+| `setup/ubersicht.sh` symlinka a pasta inteira | Consistente com os outros scripts em `setup/` |
+| Symlink directo em `~/Library/Application Support/Übersicht/widgets` | Sem namespace `Ubersicht-Widgets/` extra |
 | Upstream `mimes70/Ubersicht-Widgets` mantido como fonte opcional | Pode-se `git subtree pull/push --prefix=ubersicht/widgets ubersicht-widgets main` |
 
 ### Repositório — 2026-04-17

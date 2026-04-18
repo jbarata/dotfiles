@@ -1,10 +1,10 @@
 #!/bin/bash
-# ubersicht/install.sh — Symlink dos widgets Übersicht para a localização oficial
+# setup/ubersicht.sh — Symlink da pasta de widgets Übersicht
 set -euo pipefail
 
 DOTFILES="${DOTFILES:-$HOME/.dotfiles}"
 WIDGETS_SRC="$DOTFILES/ubersicht/widgets"
-WIDGETS_DST="$HOME/Library/Application Support/Übersicht/widgets/Ubersicht-Widgets"
+WIDGETS_DST="$HOME/Library/Application Support/Übersicht/widgets"
 BACKUP_DIR="$HOME/dotfiles-backup/$(date +%Y%m%d-%H%M%S)"
 
 mkdir -p "$(dirname "$WIDGETS_DST")"
@@ -14,14 +14,14 @@ if [[ -L "$WIDGETS_DST" && "$(readlink "$WIDGETS_DST")" == "$WIDGETS_SRC" ]]; th
     exit 0
 fi
 
-# Backup se for directoria real (clone antigo do Ubersicht-Widgets)
+# Backup se for directoria real (widgets instalados por outra via)
 if [[ -d "$WIDGETS_DST" && ! -L "$WIDGETS_DST" ]]; then
     mkdir -p "$BACKUP_DIR"
-    mv "$WIDGETS_DST" "$BACKUP_DIR/Ubersicht-Widgets"
-    echo "  Backup: $WIDGETS_DST → $BACKUP_DIR/Ubersicht-Widgets"
+    mv "$WIDGETS_DST" "$BACKUP_DIR/ubersicht-widgets"
+    echo "  Backup: $WIDGETS_DST → $BACKUP_DIR/ubersicht-widgets"
 fi
 
-# Remove symlink antigo a apontar para outro lado
+# Remover symlink antigo a apontar para lado errado
 if [[ -L "$WIDGETS_DST" ]]; then
     rm "$WIDGETS_DST"
 fi

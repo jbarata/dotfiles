@@ -211,12 +211,12 @@ else
 fi
 
 # --- 9. Configurar Übersicht widgets ---
-if [[ -f "$DOTFILES/ubersicht/install.sh" ]]; then
+if [[ -f "$DOTFILES/setup/ubersicht.sh" ]]; then
     echo "==> A configurar Übersicht widgets..."
     if $DRY_RUN; then
-        echo "  [dry-run] symlink ubersicht/widgets → ~/Library/Application Support/Übersicht/widgets/Ubersicht-Widgets"
+        echo "  [dry-run] symlink ubersicht/widgets → ~/Library/Application Support/Übersicht/widgets"
     else
-        bash "$DOTFILES/ubersicht/install.sh"
+        bash "$DOTFILES/setup/ubersicht.sh"
     fi
 fi
 
