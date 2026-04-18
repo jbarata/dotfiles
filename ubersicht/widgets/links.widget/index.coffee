@@ -1,4 +1,4 @@
-refreshFrequency: 500
+refreshFrequency: false
 
 style: """
   top: 0
@@ -332,18 +332,6 @@ render: -> """
     </table>
 """
 
-command: """
-# Lê a última linha do log do uber-listener, o ficheiro de comunicação entre o widget e o script de escuta de comandos
-touch /tmp/uber-listener.log
-content=$(tail -n 1 /tmp/uber-listener.log | tr -d '\0')
-
-# Se o comando for relevante, limpa o log e devolve o comando
-if [ "$content" = "zoom" ] || [ "$content" = "chatgpt" ] || [ "$content" = "claude" ] || [ "$content" = "visualcode" ] || [ "$content" = "slack" ] || [ "$content" = "calendar" ] || [ "$content" = "dogfooding" ]; then
-  echo "" > /tmp/uber-listener.log
-  echo "$content"
-fi
-"""
-
 afterRender: (domEl) ->
   widget = $(domEl)
 
@@ -354,28 +342,3 @@ afterRender: (domEl) ->
   widget.find('.calendarLink').on 'click', (e) =>
     e.preventDefault()
     @run "osascript focus.widget/open_calendar.scpt"
-
-update: (output, domEl) ->
-  command = output.trim()
-  
-  if command == "zoom"
-    link = domEl.querySelector('.zoomLink')
-    link?.click()
-  else if command == "chatgpt"
-    link = domEl.querySelector('.chatgptLink')
-    link?.click()
-  else if command == "claude"
-    link = domEl.querySelector('.claudeLink')
-    link?.click()
-  else if command == "visualcode"
-    link = domEl.querySelector('.visualcodeLink')
-    link?.click()
-  else if command == "slack"
-    link = domEl.querySelector('.slackLink')
-    link?.click()
-  else if command == "calendar"
-    link = domEl.querySelector('.calendarLink')
-    link?.click()
-  else if command == "dogfooding"
-    link = domEl.querySelector('.dogfoodingLink')
-    link?.click()

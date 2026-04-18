@@ -66,19 +66,21 @@ Cmd+Shift+,         # reload da configuração
 Editar `skhd/.config/skhd/skhdrc` e correr `skhd --restart-service`.
 
 ```bash
-Cmd+Alt+Z       # Zoom (sala pessoal)
-Cmd+Alt+S       # Slack
-Cmd+Alt+A       # Claude (activate)
-Cmd+Alt+G       # ChatGPT
-Cmd+Alt+V       # VS Code
-Cmd+Alt+K       # Calendário (open_calendar.scpt do focus.widget)
-Cmd+Alt+D       # Dogfooding
-Cmd+Alt+P/O/R   # Plan / Do / Review
-Cmd+Alt+M       # Mimes (Dia a Dia)
-Cmd+Alt+B       # BudgetBakers
-Cmd+Alt+L       # AnyList (via Atalho iOS)
-Cmd+Alt+W       # Abrir ~/Documents/Working Info + preset Rectangle
-Ctrl+Alt+Cmd+W  # Modo arrumação: mover ficheiros do Desktop
+# Convenção antiga (herdada dos Atalhos Mac):
+Ctrl+Alt+Cmd+Z          # Zoom (sala pessoal)
+Ctrl+Alt+Cmd+S          # Slack
+Ctrl+Alt+Cmd+C          # Claude (activate)
+Shift+Ctrl+Alt+Cmd+C    # ChatGPT
+Ctrl+Alt+Cmd+V          # VS Code
+Ctrl+Alt+Cmd+T          # Calendário (open_calendar.scpt do focus.widget)
+Ctrl+Alt+Cmd+D          # Dogfooding
+Ctrl+Alt+Cmd+R          # Toggle review mode no focus.widget
+
+# Convenção nova (dashboards / pessoais):
+Cmd+Alt+P/O/R           # Plan / Do / Review no Dogfooding
+Cmd+Alt+M               # Mimes (Dia a Dia)
+Cmd+Alt+B               # BudgetBakers
+Cmd+Alt+L               # AnyList (via Atalho iOS)
 ```
 
 ### Working Info — Desktop como workspace temporário
@@ -334,7 +336,7 @@ brew bundle cleanup        # remover pacotes não no Brewfile (cuidado!)
 │       └── themes/catppuccin-mocha # Tema embutido
 │
 ├── skhd/                           # → link_config → ~/.config/skhd/
-│   └── .config/skhd/skhdrc         # Atalhos globais (Cmd+Alt+...)
+│   └── .config/skhd/skhdrc         # Atalhos globais (Ctrl+Alt+Cmd+... / Cmd+Alt+...)
 │
 ├── vscode/                         # → link_config → ~/Library/.../Code/User/
 │   ├── settings.json               # Settings completas
@@ -511,8 +513,10 @@ Histórico das decisões tomadas e seu racional, para contexto futuro.
 | Decisão | Racional |
 |---|---|
 | skhd em vez de Atalhos Mac + `/tmp/uber-listener.log` | Config em texto, versionável e sincronizada entre máquinas via git |
-| `cmd + alt` como modificador | Evita os conflitos frequentes de `cmd + shift` com apps |
+| `ctrl + alt + cmd` para os 8 atalhos antigos (z/s/c/shift+c/v/t/d/r) | Preserva a convenção herdada dos Atalhos Mac (muscle memory) |
+| `cmd + alt` para atalhos novos (dashboards CoB, pessoais) | Modificador mais leve; evita conflitos de `cmd + shift` com apps |
 | `open "<url>"` directo (em vez de simular clique no widget) | Elimina polling a 500ms do `links.widget` e o ficheiro temporário |
+| Toggle do `focus.widget` via `/tmp/focus-review-toggle` | `open` não consegue mexer no DOM; ficheiro dedicado (não partilhado) torna a intenção explícita |
 | Tap `koekeishiya/formulae` | Fórmula oficial do autor (mesmo autor do yabai) |
 | Gerido por `skhd --install-service` + `--start-service` | A fórmula não define plist para `brew services`; o skhd tem CLI próprio para launchd |
 | Hammerspoon considerado e rejeitado | Overkill para URL→hotkey; skhd é declarativo em 1 ficheiro |

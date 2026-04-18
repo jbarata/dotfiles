@@ -491,21 +491,21 @@ render: -> """
 """
 
 command: """
+# IPC dedicado com o skhd (ctrl+alt+cmd-r) — o toggle de review
+# precisa de manipular o DOM do widget, que `open` não resolve.
+touch /tmp/focus-review-toggle
+content=$(tail -n 1 /tmp/focus-review-toggle | tr -d '\\0')
 
-# Lê a última linha do log do uber-listener, o ficheiro de comunicação entre o widget e o script de escuta de comandos
-touch /tmp/uber-listener.log
-content=$(tail -n 1 /tmp/uber-listener.log | tr -d '\0')
-
-  if [ "$content" = "review" ]; then
-    echo "" > /tmp/uber-listener.log
-    echo "review"
-  fi
+if [ "$content" = "toggle" ]; then
+  echo "" > /tmp/focus-review-toggle
+  echo "toggle"
+fi
 """
 
 update: (output, domEl) ->
   command = output.trim()
-  
-  if command == "review"
+
+  if command == "toggle"
     reviewOpen = domEl.querySelector('.review-btn.review-open')
     reviewClose = domEl.querySelector('.review-btn.review-close')
     if reviewOpen.classList.contains('hidden')

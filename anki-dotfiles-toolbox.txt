@@ -239,17 +239,18 @@ YZea7VdZ9i	Como correr o bootstrap em modo teste?	~/.dotfiles/bootstrap.sh --dry
 # =========================================================
 sk0zR7nQp1	Onde está o ficheiro de config do skhd?	~/.config/skhd/skhdrc (symlink para skhd/.config/skhd/skhdrc do repo)	skhd
 sk1aXpL9Tm	Como aplicar alterações ao skhdrc sem reboot?	skhd --restart-service	skhd
-sk2vYm3BcN	Que modificador é a convenção nos dotfiles para skhd?	cmd + alt (evita conflitos com apps)	skhd
-sk3hJ8fGdQ	Sintaxe skhd para abrir um URL ao premir Cmd+Alt+N?	cmd + alt - n : open "https://example.com"	skhd
+sk2vYm3BcN	Que modificador é a convenção nos dotfiles para skhd?	ctrl + alt + cmd para os 8 atalhos antigos (herança dos Atalhos Mac); cmd + alt para os novos	skhd
+sk3hJ8fGdQ	Sintaxe skhd para abrir um URL ao premir Ctrl+Alt+Cmd+N?	ctrl + alt + cmd - n : open "https://example.com"	skhd
 sk4oPzR2sK	Que permissão macOS tem o skhd de ter para funcionar?	Acessibilidade (Definições → Privacidade e Segurança)	skhd
 sk5wV6kA3e	Porque skhd em vez de Atalhos Mac + /tmp/uber-listener?	Config em texto versionável; sem polling; sincroniza por git	skhd
-sk6rL4cN9b	skhd: Cmd+Alt+Z — o que abre?	Zoom (sala pessoal)	skhd shortcuts
-sk7tEaW1jD	skhd: Cmd+Alt+S — o que abre?	Slack	skhd shortcuts
-sk8fI5mH2x	skhd: Cmd+Alt+A — o que faz?	Activa a app Claude (osascript)	skhd shortcuts
-sk9bO6uP0y	skhd: Cmd+Alt+G — o que abre?	ChatGPT (chatgpt.com/pt-PT)	skhd shortcuts
-skAcT3dF4z	skhd: Cmd+Alt+V — o que abre?	VS Code (vscode://)	skhd shortcuts
-skB9eS2qJw	skhd: Cmd+Alt+K — o que faz?	Abre Calendário (open_calendar.scpt do focus.widget)	skhd shortcuts
-skCnY7hM8v	skhd: Cmd+Alt+D — o que abre?	Dogfooding (cultofbits.com)	skhd shortcuts
+sk6rL4cN9b	skhd: Ctrl+Alt+Cmd+Z — o que abre?	Zoom (sala pessoal)	skhd shortcuts
+sk7tEaW1jD	skhd: Ctrl+Alt+Cmd+S — o que abre?	Slack	skhd shortcuts
+sk8fI5mH2x	skhd: Ctrl+Alt+Cmd+C — o que faz?	Activa a app Claude (osascript)	skhd shortcuts
+sk9bO6uP0y	skhd: Shift+Ctrl+Alt+Cmd+C — o que abre?	ChatGPT (chatgpt.com/pt-PT)	skhd shortcuts
+skAcT3dF4z	skhd: Ctrl+Alt+Cmd+V — o que abre?	VS Code (vscode://)	skhd shortcuts
+skB9eS2qJw	skhd: Ctrl+Alt+Cmd+T — o que faz?	Abre Calendário (open_calendar.scpt do focus.widget)	skhd shortcuts
+skCnY7hM8v	skhd: Ctrl+Alt+Cmd+D — o que abre?	Dogfooding (cultofbits.com)	skhd shortcuts
+skH8mQr5Tj	skhd: Ctrl+Alt+Cmd+R — o que faz?	Escreve "toggle" em /tmp/focus-review-toggle; o focus.widget lê e alterna modo review	skhd shortcuts
 skD1uK6rZp	skhd: Cmd+Alt+P / O / R — o que abrem?	Plan / Do / Review no Dogfooding	skhd shortcuts
 skE4gX5lBq	skhd: Cmd+Alt+M — o que abre?	Mimes — Dia a Dia (mimes.cultofbits.com)	skhd shortcuts
 skF2iC8vNt	skhd: Cmd+Alt+B — o que abre?	BudgetBakers (web.budgetbakers.com)	skhd shortcuts

@@ -2,22 +2,29 @@
 # Daemon: brew services start skhd (requer "Acessibilidade" no macOS)
 # Docs: https://github.com/koekeishiya/skhd
 #
-# Convenção de teclas: cmd + alt - <letra>
-#   - Evita conflitos frequentes de cmd+shift nas apps.
-#   - Substitui o mecanismo antigo (Atalhos Mac → /tmp/uber-listener.log →
-#     polling do links.widget). skhd dispara `open` directamente — sem
-#     ficheiros temporários, sem polling, versionável neste repo.
+# Convenções de teclas:
+#   - ctrl + alt + cmd - <letra>  : atalhos "Start X" herdados dos Atalhos Mac
+#     (Calendar usa 't' e ChatGPT junta shift, para desambiguar com Claude).
+#   - cmd + alt - <letra>         : atalhos novos (dashboards CoB, pessoais).
+#
+# Substitui o mecanismo antigo (Atalhos Mac → /tmp/uber-listener.log →
+# polling do links.widget). skhd dispara `open` directamente — sem
+# ficheiros temporários, sem polling, versionável neste repo.
+# Excepção: o toggle do focus.widget (review) ainda precisa de comunicar
+# com o DOM do widget, por isso escreve num ficheiro dedicado que o
+# widget lê (/tmp/focus-review-toggle).
 
-# --- Apps principais -----------------------------------------------------
-cmd + alt - z : open "zoommtg://zoom.us/join?confno=668244305&zc=2&browser=chrome&uname=Miguel"
-cmd + alt - s : open "slack://open?team=T02J1N4KH"
-cmd + alt - a : osascript -e 'tell application "Claude" to activate'
-cmd + alt - g : open "https://chatgpt.com/pt-PT"
-cmd + alt - v : open "vscode://"
-cmd + alt - k : osascript "$HOME/.dotfiles/ubersicht/widgets/focus.widget/open_calendar.scpt"
+# --- Apps principais (convenção antiga: ctrl + alt + cmd) ----------------
+ctrl + alt + cmd - z : open "zoommtg://zoom.us/join?confno=668244305&zc=2&browser=chrome&uname=Miguel"
+ctrl + alt + cmd - s : open "slack://open?team=T02J1N4KH"
+ctrl + alt + cmd - c : osascript -e 'tell application "Claude" to activate'
+shift + ctrl + alt + cmd - c : open "https://chatgpt.com/pt-PT"
+ctrl + alt + cmd - v : open "vscode://"
+ctrl + alt + cmd - t : osascript "$HOME/.dotfiles/ubersicht/widgets/focus.widget/open_calendar.scpt"
+ctrl + alt + cmd - d : open "https://dogfooding.cultofbits.com"
+ctrl + alt + cmd - r : echo toggle > /tmp/focus-review-toggle
 
-# --- Cult of Bits --------------------------------------------------------
-cmd + alt - d : open "https://dogfooding.cultofbits.com"
+# --- Cult of Bits (dashboards) -------------------------------------------
 cmd + alt - p : open "https://dogfooding.cultofbits.com/recordm/index.html#/cob.custom-resource/Plan:{%22switchView%22:%22yes%22,%22concurrentFilterToggle%22:%22yes%22,%22showFilters%22:%22yes%22}/dash"
 cmd + alt - o : open "https://dogfooding.cultofbits.com/recordm/index.html#/cob.custom-resource/Do/dash?"
 cmd + alt - r : open "https://dogfooding.cultofbits.com/recordm/index.html#/cob.custom-resource/Review/dash?"
