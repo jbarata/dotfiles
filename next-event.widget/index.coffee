@@ -83,6 +83,17 @@ style: """
     text-align: center;
     width: 100%;
   }
+
+  @media (max-width: 1999px) {
+    font-size: 11px;
+    right: 260px;
+    .event-bg {
+      height: 44px;
+    }
+    .event-content {
+      padding: 0.45rem 1rem;
+    }
+  }
 """
 
 render: (output) -> """

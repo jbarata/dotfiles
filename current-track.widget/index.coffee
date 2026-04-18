@@ -50,6 +50,14 @@ style: """
     text-decoration: none
     margin-left: 5px
 
+  @media (max-width: 1999px)
+    .artist
+      font-size: 18px
+    .song
+      font-size: 16px
+    .link
+      font-size: 11px
+
 """
 
 render: (output) -> @getVisual output
