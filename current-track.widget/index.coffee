@@ -1,28 +1,23 @@
 command: """
-read -r running <<<"$(ps -ef | grep -e \"/System/Applications/Music.app/Contents/MacOS/Music\" | wc -l)" &&
-test $running != 0 &&
-IFS='|' read -r theArtist theName theId theApp <<<"$(osascript <<<'
-    global aname, tname, alname, rate
-
-    set musicapp to "Music"
-    set playerstate to "Playing"
-
-    try
-    	if musicapp is not "" then
-        tell application "Music"
-          set {tname, aname, tid} to {name, artist, id} of current track
-          set tpos to player position
-        end tell
-    		return aname & "|" & tname & "|" & tid & "|" & musicapp
-    	else
-    		return "NA" & "|" & "NA" & "|" & "NA" & "|" & "NA" & "| " & "NA" & "|" & "NA" & "|" & "NA"
-    	end if
-    on error e
-    	return "erro a obter musica"
-    end try
-
-')" &&
-echo '{ "artist":"'$theArtist'","song": "'$theName'", "id": "'$theId'", "app":"'$theApp'"}' || echo "Music.app Closed"
+osascript -l JavaScript <<'JS'
+function run() {
+  var se = Application("System Events");
+  if (se.processes.name().indexOf("Music") === -1) return "Music.app Closed";
+  var music = Application("Music");
+  try {
+    if (music.playerState() === "stopped") return "Music Stopped";
+    var t = music.currentTrack();
+    return JSON.stringify({
+      artist: t.artist(),
+      song: t.name(),
+      id: String(t.id()),
+      app: "Music"
+    });
+  } catch (e) {
+    return "No track";
+  }
+}
+JS
 """
 
 refreshFrequency: 4000
@@ -63,20 +58,32 @@ update: (output, domEl) ->
   $domEl = $(domEl)
   $domEl.html @getVisual output
 
+encodeTerm: (s) -> encodeURIComponent(s ? '')
+
+escapeHtml: (s) ->
+  String(s ? '')
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+
 getVisual: (output) ->
-  data = []
   try
     data = JSON.parse output
   catch ex
     return """
-      <div class='github-notifications #{if @enterprise then "enterprise" else "public"}'>
-        <span class="output song">#{output}</span>
+      <div class="output">
+        <span class="output song">#{@escapeHtml(output).trim() or 'Music.app Closed'}</span>
       </div>
     """
+  artist = @escapeHtml(data.artist)
+  song = @escapeHtml(data.song)
+  artistQ = @encodeTerm(data.artist)
+  songQ = @encodeTerm("#{data.song} #{data.artist}")
   return """
       <div class="output">
-        <a href="music://music.apple.com/pt/search?term=#{data.artist}" class="artist">#{data.artist}</a>
-        <a href="music://music.apple.com/pt/search?term='#{data.song}' #{data.artist}" class="song">#{data.song}</a>
+        <a href="music://music.apple.com/pt/search?term=#{artistQ}" class="artist">#{artist}</a>
+        <a href="music://music.apple.com/pt/search?term=#{songQ}" class="song">#{song}</a>
         <a href="music://" class="link">↩︎</a>
       </div>
   """
