@@ -37,7 +37,7 @@ refreshFrequency: 6000
 
 style: """
   bottom: 3px
-  right: 322px
+  right: 262px
 
   color: #fff
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif
