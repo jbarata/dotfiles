@@ -137,16 +137,17 @@ style: """
     box-shadow: #{ settings.shadows.text }
 
   @media (max-width: 1999px)
-    bottom: -8px
-    right: -70px
+    transform: none
+    bottom: 2px
+    right: 8px
     .container
-      padding: 0.25rem 0.8rem
+      padding: 0.2rem 0.7rem
     .txt-large
-      font-size: 1.6rem
+      font-size: 1.3rem
     .txt-small
-      font-size: 0.7rem
+      font-size: 0.65rem
     .divider
-      margin: 0 0.5rem
+      margin: 0 0.45rem
 """
 
 render: () -> """
