@@ -214,7 +214,7 @@ fi
 if [[ -f "$DOTFILES/ubersicht/install.sh" ]]; then
     echo "==> A configurar Übersicht widgets..."
     if $DRY_RUN; then
-        echo "  [dry-run] git clone/pull Ubersicht-Widgets"
+        echo "  [dry-run] symlink ubersicht/widgets → ~/Library/Application Support/Übersicht/widgets/Ubersicht-Widgets"
     else
         bash "$DOTFILES/ubersicht/install.sh"
     fi
