@@ -143,6 +143,14 @@ style: """
     background:rgba(0,255,0,0.15)
     -webkit-transition: background-color 2000ms linear;
 
+  @media (max-width: 1999px)
+    .taskDetails
+      padding: 1px 10px 2px 10px
+    .project
+      font-size: 12px
+    .thing
+      font-size: 10px
+
 """
 
 render: (output) ->

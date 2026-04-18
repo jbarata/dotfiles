@@ -37,8 +37,8 @@ refreshFrequency: 6000
 
 style: """
   bottom: 3px
-  right: 322px
-  
+  right: 262px
+
   color: #fff
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif
   white-space: nowrap
@@ -47,7 +47,7 @@ style: """
   font-weight: 500
   cursor: pointer
   border-radius: 1rem
-  
+
   .event-bg {
     position: absolute;
     top: 0;
@@ -61,7 +61,7 @@ style: """
     z-index: 0;
     transition: background-color 0.5s ease, border-color 0.5s ease;
   }
-  
+
   .event-content {
     position: relative;
     z-index: 1;
@@ -71,17 +71,37 @@ style: """
     align-items: flex-end;
     text-align: right;
   }
-  
+
   .separator {
     opacity: 0.5
     margin: 0 6px;
   }
-    
+
   .no-event {
     font-style: italic;
     opacity: 0.3;
     text-align: center;
     width: 100%;
+  }
+
+  @media (max-width: 1999px) {
+    font-size: 11px;
+    right: 220px;
+    bottom: 0;
+    height: 30px;
+    .event-bg {
+      height: 30px;
+      top: 0;
+    }
+    .event-content {
+      flex-direction: row;
+      align-items: center;
+      justify-content: flex-end;
+      gap: 10px;
+      padding: 0 0.8rem;
+      height: 30px;
+      box-sizing: border-box;
+    }
   }
 """
 
@@ -97,7 +117,7 @@ afterRender: (domEl) ->
     container = $(domEl).find('#next-event-content')
     key = container.attr('data-key')
     bg = $(domEl).find('.event-bg')
-    
+
     if key
       if localStorage.getItem(key) == 'true'
         localStorage.removeItem(key)
@@ -108,7 +128,7 @@ afterRender: (domEl) ->
         if timer
             clearInterval(timer)
             $(domEl).data('blinkTimer', null)
-        
+
         bg.css('opacity', '1')
         bg.css('background-color', 'rgba(255, 0, 0, 0.6)')
         bg.css('border-color', 'rgba(255, 0, 0, 0.3)')
@@ -125,15 +145,15 @@ update: (output, domEl) ->
   if output.includes("Access denied")
     content.html('<div class="no-event" style="color:#ff6b6b">Access Denied<br><span style="font-size:10px">Run next-event.widget/GetNextEvent in Terminal once to grant Calendar access.</span></div>')
     return
-  
+
   if output == "None" or output == ""
     content.html('<div class="no-event">sem eventos até</div><div class="no-event">ao fim do dia</div>')
-    
+
     timer = $(domEl).data('blinkTimer')
     if timer
         clearInterval(timer)
         $(domEl).data('blinkTimer', null)
-        
+
     bg.css('opacity', '0.3')
     bg.css('background-color', 'rgba(0, 0, 0, 0.6)')
     bg.css('border-color', 'rgba(255, 255, 255, 0.1)')
@@ -151,34 +171,34 @@ update: (output, domEl) ->
 
   # Parse Date
   startDate = new Date(startStr)
-  
+
   # Format time display
   optionsTime = { hour: '2-digit', minute: '2-digit', hour12: false }
-  
+
   timeDisplay = ""
   remainingText = ""
-  
+
   if isAllDay == "true"
     timeDisplay = "All Day"
   else if !isNaN(startDate)
     timeDisplay = startDate.toLocaleTimeString([], optionsTime)
-    
+
     # Calculate remaining time
     now = new Date()
     diffMs = startDate - now
     diffMins = diffMs / 1000 / 60
-    
+
     if diffMins > 0
       totalMins = Math.ceil(diffMins)
       hours = Math.floor(totalMins / 60)
       mins = Math.floor(totalMins % 60)
-      
+
       rt = ""
       if hours > 0
         rt = "#{hours}h#{mins}m"
       else
         rt = "#{mins}m"
-        
+
       remainingText = " <span style='font-size: 0.8em; opacity: 0.7;'>(" + rt + ")</span>"
   else
     timeDisplay = startStr
@@ -189,9 +209,9 @@ update: (output, domEl) ->
     <div>#{line1}</div>
     <div style="font-size: 0.9em; opacity: 0.9;">#{timeDisplay}#{remainingText}</div>
   """
-    
+
   content.html(html)
-  
+
   # Set Data Key for Acknowledgment
   eventKey = "ack_#{title}_#{startStr}"
   content.attr('data-key', eventKey)
@@ -200,12 +220,12 @@ update: (output, domEl) ->
   bgColor = 'rgba(0, 0, 0, 0.1)'
   borderColor = 'rgba(255, 255, 255, 0.05)'
   isBlinking = false
-  
+
   if isAllDay != "true" and !isNaN(startDate)
     now = new Date()
     diffMs = startDate - now
     diffMins = diffMs / 1000 / 60
-    
+
     if diffMins <= 1
         if diffMins >= -10
              # Started within last 5 mins
@@ -228,7 +248,7 @@ update: (output, domEl) ->
 
   # Apply State
   timer = $(domEl).data('blinkTimer')
-  
+
   if isBlinking
     if !timer
       bg.css('background-color', bgColor)
@@ -246,7 +266,7 @@ update: (output, domEl) ->
     if timer
        clearInterval(timer)
        $(domEl).data('blinkTimer', null)
-       
+
     bg.css('opacity', '1')
     bg.css('background-color', bgColor)
     bg.css('border-color', borderColor)

@@ -46,6 +46,20 @@ style: """
     font-size: 15px
     font-weight: normal
 
+  @media (max-width: 1999px)
+    bottom: 36px
+    right: 110px
+    td
+      font-size: 14px
+      width: 80px
+      max-width: 80px
+    .wrapper
+      padding: 2px 4px 2px 4px
+    p
+      font-size: 9px
+    .type
+      font-size: 10px
+
 """
 
 

@@ -23,8 +23,8 @@ JS
 refreshFrequency: 4000
 
 style: """
-  bottom: 0px
-  left: 10px
+  bottom: 3px
+  left: 40px
   color: #fff
 
   .output
@@ -50,12 +50,34 @@ style: """
     text-decoration: none
     margin-left: 5px
 
+  @media (max-width: 1999px)
+    .artist
+      font-size: 18px
+    .song
+      font-size: 16px
+    .link
+      font-size: 11px
+
 """
 
 render: (output) -> @getVisual output
 
+afterRender: (domEl) ->
+  $domEl = $(domEl)
+  applyPlanningMode = ->
+    if localStorage.getItem('planningMode') is 'on'
+      $domEl.hide()
+    else
+      $domEl.show()
+  applyPlanningMode()
+  setInterval applyPlanningMode, 300
+
 update: (output, domEl) ->
   $domEl = $(domEl)
+  if localStorage.getItem('planningMode') is 'on'
+    $domEl.hide()
+    return
+  $domEl.show()
   $domEl.html @getVisual output
 
 encodeTerm: (s) -> encodeURIComponent(s ? '')

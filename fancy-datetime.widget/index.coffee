@@ -135,6 +135,26 @@ style: """
     margin: 0 1rem
     background: #{ settings.colors.accent }
     box-shadow: #{ settings.shadows.text }
+
+  @media (max-width: 1999px)
+    transform: none
+    bottom: 0
+    right: 8px
+    .container
+      display: flex
+      align-items: center
+      height: 30px
+      padding: 0 0.7rem
+    .cell
+      display: flex
+      align-items: center
+    .txt-large
+      font-size: 1.3rem
+    .txt-small
+      font-size: 0.65rem
+    .divider
+      margin: 0 0.45rem
+      height: 70%
 """
 
 render: () -> """
