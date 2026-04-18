@@ -1,4 +1,4 @@
-command: "ps axo \"pid,%cpu,ucomm\" | awk 'FNR>1' | sort -k2 -rn | head -n 1 | awk '{ printf \"%5.1f%%,%s,%s\\n\", $2, $3, $1 }' && top -l 1 -n 0 | awk '/CPU usage/ {gsub(\"%\",\"\"); print $3+$5}' && sysctl -n hw.ncpu"
+command: "top -l 2 -s 1 -o cpu -n 1 -stats pid,cpu,command 2>/dev/null | awk '/CPU usage/ {gsub(\"%\",\"\"); total=$3+$5} /^PID / {in_procs=1; next} in_procs && NF>=3 {pid=$1; cpu=$2; cname=\"\"; for(i=3;i<=NF;i++) cname=cname (i==3?\"\":\" \") $i; in_procs=0} END {printf \"%.1f%%,%s,%s\\n%.1f\\n\", cpu, cname, pid, total}'"
 
 refreshFrequency: 9000
 
@@ -85,8 +85,7 @@ update: (output, domEl) ->
     table.find(".col#{i+1}").html renderProcess(args...)
 
   totalCpuUsage = parseFloat(processes[1])
-  cpuQuantity = parseFloat(processes[2])
-  alarm = (totalCpuUsage / cpuQuantity) > 50
+  alarm = totalCpuUsage > 50
 
   if(alarm)
     table.find("td").toggleClass("alarm")
