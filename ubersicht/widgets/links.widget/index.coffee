@@ -78,7 +78,102 @@ style: """
     background-color: rgba(255,255,255,0.5)
     margin: 5px auto
 
+  // ---------------------------------------------------------------
+  //  MacBook (ecrã <= 1999px) — tipicamente temos apps abertas com
+  //  uma margem de ~30px aos limites do ecrã. A última coluna deste
+  //  widget (a rightmost, por causa do row-reverse) aparece nessa
+  //  faixa exposta. As outras colunas ficam por trás da app.
+  //
+  //  Normalizamos todos os icones a 24x24 e asseguramos uma margem
+  //  de 3px em cada lado para a coluna da direita ficar centrada na
+  //  faixa de 30px expostos.
+  // ---------------------------------------------------------------
+  @media (max-width: 1999px)
+    width: 30px
 
+    // Padding vertical maior no table para criar margem em cima/em baixo
+    // simétricas com o fundo (não ficar colado ao topo/fundo do ecrã).
+    // NOTA: border-collapse: collapse faz o <table> ignorar o seu próprio padding,
+    // portanto usa-se border-collapse: separate com border-spacing: 0.
+    table
+      padding: 10px 0 !important
+      border-collapse: separate !important
+      border-spacing: 0 !important
+
+    td
+      padding: 0
+
+    tr
+      height: 30px
+
+    tr.separator-row
+      height: auto
+
+    // Uniformização: TODOS os icones com a mesma forma
+    //  - 24x24 outer (box-sizing border-box)
+    //  - padding interno 2px → área de imagem 20x20
+    //  - fundo branco translúcido para visual consistente
+    //  - border-radius 6px
+    .logoCoB,
+    img,
+    a.calendarLink > div
+      width: 24px !important
+      height: 24px !important
+      margin-left: 4px !important
+      margin-right: 0 !important
+      padding: 2px !important
+      border-radius: 6px !important
+      box-sizing: border-box !important
+      display: flex !important
+      align-items: center !important
+      justify-content: center !important
+      background-color: rgba(255, 255, 255, 0.35) !important
+
+    // logoCoB mantém a cor de branding (sobrepõe o fundo translúcido)
+    .logoCoB
+      background-color: #d5184b !important
+      padding: 0 !important
+
+    .logoCoB.qual
+      background-color: #f39c12 !important
+
+    // Imagens: preservar aspect-ratio, centrar dentro do 24x24
+    img
+      object-fit: contain !important
+
+    // Rightmost td (:first-child por causa de row-reverse)
+    // margin-right cria o gap ao bordo direito do ecrã (3px)
+    tr > td:first-child .logoCoB,
+    tr > td:first-child img,
+    tr > td:first-child a.calendarLink > div
+      margin-right: 3px !important
+
+    // Centrar texto/símbolo dentro dos logoCoB
+    .symbolCoB,
+    .symbolMimes,
+    .symbolText
+      margin: 0 !important
+      padding: 0 !important
+      line-height: 1 !important
+      text-align: center !important
+
+    // Asterisco em Verdana assenta no topo do line-box; compensa com translate
+    .symbolCoB
+      font-size: 20px !important
+      transform: translateY(3px) !important
+
+    .symbolMimes
+      font-size: 16px !important
+
+    .symbolText
+      font-size: 8px !important
+
+    // Calendário (emoji 📅 dentro de <div> sem classe dentro de <a.calendarLink>)
+    a.calendarLink > div > div
+      font-size: 16px !important
+      margin: 0 !important
+      padding: 0 !important
+      line-height: 1 !important
 
 """
 
