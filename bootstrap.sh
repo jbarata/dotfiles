@@ -80,8 +80,12 @@ for pair in "${PAIRS[@]}"; do
     local_f="${pair%%|*}"
     repo_f="${pair##*|}"
     if [[ -L "$local_f" ]]; then
-        # Symlink — verificar se aponta para o repo
+        # Symlink — resolver alvo (stow cria symlinks relativos) e comparar
+        # contra o path absoluto do repo
         current_target=$(readlink "$local_f")
+        if [[ "$current_target" != /* ]]; then
+            current_target="$(cd "$(dirname "$local_f")" && cd "$(dirname "$current_target")" 2>/dev/null && pwd)/$(basename "$current_target")"
+        fi
         if [[ "$current_target" != "$repo_f" ]]; then
             STALE_LINKS+=("$local_f|$current_target")
         fi
