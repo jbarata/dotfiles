@@ -23,8 +23,8 @@ JS
 refreshFrequency: 4000
 
 style: """
-  bottom: 0px
-  left: 10px
+  bottom: 3px
+  left: 40px
   color: #fff
 
   .output
