@@ -63,7 +63,7 @@ Cmd+Shift+,         # reload da configuração
 
 ### skhd — Atalhos globais (abrir apps/URLs)
 
-Editar `skhd/.config/skhd/skhdrc` e correr `brew services restart skhd`.
+Editar `skhd/.config/skhd/skhdrc` e correr `skhd --restart-service`.
 
 ```bash
 Cmd+Alt+Z       # Zoom (sala pessoal)
@@ -218,7 +218,7 @@ cmd + alt - n : open "https://example.com"
 Aplicar sem reboot:
 
 ```bash
-brew services restart skhd
+skhd --restart-service
 ```
 
 Primeira instalação: autorizar o binário em **Definições → Privacidade e
@@ -464,7 +464,7 @@ Histórico das decisões tomadas e seu racional, para contexto futuro.
 | `cmd + alt` como modificador | Evita os conflitos frequentes de `cmd + shift` com apps |
 | `open "<url>"` directo (em vez de simular clique no widget) | Elimina polling a 500ms do `links.widget` e o ficheiro temporário |
 | Tap `koekeishiya/formulae` | Fórmula oficial do autor (mesmo autor do yabai) |
-| Gerido por `brew services` | Arranca no login, consistente com o ecossistema do repo |
+| Gerido por `skhd --install-service` + `--start-service` | A fórmula não define plist para `brew services`; o skhd tem CLI próprio para launchd |
 | Hammerspoon considerado e rejeitado | Overkill para URL→hotkey; skhd é declarativo em 1 ficheiro |
 
 ### Übersicht widgets — 2026-04-18

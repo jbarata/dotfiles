@@ -234,7 +234,7 @@ YZea7VdZ9i	Como correr o bootstrap em modo teste?	~/.dotfiles/bootstrap.sh --dry
 # skhd — Hotkey daemon (atalhos globais)
 # =========================================================
 sk0zR7nQp1	Onde está o ficheiro de config do skhd?	~/.config/skhd/skhdrc (symlink para skhd/.config/skhd/skhdrc do repo)	skhd
-sk1aXpL9Tm	Como aplicar alterações ao skhdrc sem reboot?	brew services restart skhd	skhd
+sk1aXpL9Tm	Como aplicar alterações ao skhdrc sem reboot?	skhd --restart-service	skhd
 sk2vYm3BcN	Que modificador é a convenção nos dotfiles para skhd?	cmd + alt (evita conflitos com apps)	skhd
 sk3hJ8fGdQ	Sintaxe skhd para abrir um URL ao premir Cmd+Alt+N?	cmd + alt - n : open "https://example.com"	skhd
 sk4oPzR2sK	Que permissão macOS tem o skhd de ter para funcionar?	Acessibilidade (Definições → Privacidade e Segurança)	skhd
