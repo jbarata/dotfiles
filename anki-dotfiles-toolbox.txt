@@ -1,230 +1,231 @@
 #separator:tab
 #html:false
 #deck:Dotfiles Toolbox
-#tags column:3
-#Front	Back	Tags
+#guid column:1
+#tags column:4
+#columns:guid	Front	Back	Tags
 
 # =========================================================
 # fzf — Fuzzy Finder
 # =========================================================
-Ctrl+R no terminal — o que faz?	Pesquisa fuzzy no histórico de comandos (fzf)	fzf
-Ctrl+T no terminal — o que faz?	Pesquisa fuzzy de ficheiros e insere o path	fzf
-Alt+C (Option+C) no terminal — o que faz?	Pesquisa fuzzy de directorias e faz cd	fzf
-Como forçar actualização da cache do Alt+C?	fzf-refresh	fzf
-Onde está a cache do fzf Alt+C?	~/.cache/fzf-dirs-cache	fzf
-De quanto em quanto tempo o fzf Alt+C regenera a cache?	24 horas (1440 minutos)	fzf
-Que ferramenta o fzf usa para listar ficheiros?	fd (alternativa rápida ao find)	fzf
+ER9ZYESDFc	Ctrl+R no terminal — o que faz?	Pesquisa fuzzy no histórico de comandos (fzf)	fzf
+QBkwaUlSZR	Ctrl+T no terminal — o que faz?	Pesquisa fuzzy de ficheiros e insere o path	fzf
+U0sjFBm34O	Alt+C (Option+C) no terminal — o que faz?	Pesquisa fuzzy de directorias e faz cd	fzf
+AF4f2AS2TB	Como forçar actualização da cache do Alt+C?	fzf-refresh	fzf
+XVHmuANeU1	Onde está a cache do fzf Alt+C?	~/.cache/fzf-dirs-cache	fzf
+ot3bLV0Oku	De quanto em quanto tempo o fzf Alt+C regenera a cache?	24 horas (1440 minutos)	fzf
+JYklVoPGbv	Que ferramenta o fzf usa para listar ficheiros?	fd (alternativa rápida ao find)	fzf
 
 # =========================================================
 # Zsh Vi Mode
 # =========================================================
-Como activar vi mode no zsh?	bindkey -v	zsh vi-mode
-No vi mode, que cursor indica modo INSERT?	Barra fina (beam) — \e[5 q	zsh vi-mode
-No vi mode, que cursor indica modo NORMAL?	Bloco (block) — \e[1 q	zsh vi-mode
-Ctrl+A em vi insert mode — o que faz?	Vai para o início da linha	zsh vi-mode
-Ctrl+E em vi insert mode — o que faz?	Vai para o fim da linha	zsh vi-mode
-Ctrl+W em vi insert mode — o que faz?	Apaga a palavra anterior	zsh vi-mode
-Como entrar no modo NORMAL no terminal?	Pressionar Escape	zsh vi-mode
+q2vXyOR5J0	Como activar vi mode no zsh?	bindkey -v	zsh vi-mode
+7J5zSXvWlP	No vi mode, que cursor indica modo INSERT?	Barra fina (beam) — \e[5 q	zsh vi-mode
+czS5iKddNt	No vi mode, que cursor indica modo NORMAL?	Bloco (block) — \e[1 q	zsh vi-mode
+JvlVpYyZ2l	Ctrl+A em vi insert mode — o que faz?	Vai para o início da linha	zsh vi-mode
+haHd3CPVwM	Ctrl+E em vi insert mode — o que faz?	Vai para o fim da linha	zsh vi-mode
+e1QcaZccfm	Ctrl+W em vi insert mode — o que faz?	Apaga a palavra anterior	zsh vi-mode
+F19y7kqOWe	Como entrar no modo NORMAL no terminal?	Pressionar Escape	zsh vi-mode
 
 # =========================================================
 # Shell Aliases — Dotfiles
 # =========================================================
-Alias: ds	dotfiles status (git status do repo dotfiles)	aliases dotfiles
-Alias: da	dotfiles add -p (stage interactivo)	aliases dotfiles
-Alias: dc	dotfiles commit	aliases dotfiles
-Alias: dp	dotfiles push	aliases dotfiles
-Alias: dl	dotfiles pull	aliases dotfiles
+fYiiegD0uV	Alias: ds	dotfiles status (git status do repo dotfiles)	aliases dotfiles
+HLlGbVEctl	Alias: da	dotfiles add -p (stage interactivo)	aliases dotfiles
+2dTI7jNXTM	Alias: dc	dotfiles commit	aliases dotfiles
+JJYZAIv1sr	Alias: dp	dotfiles push	aliases dotfiles
+zDt0AvHgBy	Alias: dl	dotfiles pull	aliases dotfiles
 
 # =========================================================
 # Shell Aliases — Git
 # =========================================================
-Alias: gs	git status	aliases git
-Alias: gc	git commit	aliases git
-Alias: gp	git push	aliases git
-Alias: gl	git pull	aliases git
-Alias: gd	git diff	aliases git
-Alias: gco	git checkout	aliases git
-Alias: gb	git branch	aliases git
-Alias: glog	git log --oneline --graph --decorate -20	aliases git
+V5lDKWkLSK	Alias: gs	git status	aliases git
+ZTqGj2O6aI	Alias: gc	git commit	aliases git
+YArIdRWM7r	Alias: gp	git push	aliases git
+JnUlxPLgA5	Alias: gl	git pull	aliases git
+rO6W7xADtN	Alias: gd	git diff	aliases git
+XGavzay76c	Alias: gco	git checkout	aliases git
+LE8JYkY2wd	Alias: gb	git branch	aliases git
+EMphnI43lC	Alias: glog	git log --oneline --graph --decorate -20	aliases git
 
 # =========================================================
 # Git Config — Aliases
 # =========================================================
-git st	git status	git-config
-git co	git checkout	git-config
-git br	git branch	git-config
-git ci	git commit	git-config
-git pr	git pull --rebase	git-config
-git lg	git log --oneline --graph --decorate -20	git-config
-git dlog	Log denso: uma linha por commit, graph com cores	git-config
-git vlog	Log visual: multi-linha com autor e email	git-config
+3NiJ999z8o	git st	git status	git-config
+9DHWgeqX5M	git co	git checkout	git-config
+01Nu5zbG8s	git br	git branch	git-config
+dVbVBiIk80	git ci	git commit	git-config
+ADwwURXxiL	git pr	git pull --rebase	git-config
+2A5piHvJky	git lg	git log --oneline --graph --decorate -20	git-config
+XdaQINSqpj	git dlog	Log denso: uma linha por commit, graph com cores	git-config
+qzapVhAqEh	git vlog	Log visual: multi-linha com autor e email	git-config
 
 # =========================================================
 # Shell Aliases — Navegação
 # =========================================================
-Alias: ..	cd ..	aliases nav
-Alias: ...	cd ../..	aliases nav
-Alias: ll	ls -laG (lista completa com cores)	aliases nav
-Alias: la	ls -A (lista incluindo ocultos)	aliases nav
+f0neLknA6A	Alias: ..	cd ..	aliases nav
+gujzlGAY1W	Alias: ...	cd ../..	aliases nav
+Knigq2YDz6	Alias: ll	ls -laG (lista completa com cores)	aliases nav
+q60V5dXkmw	Alias: la	ls -A (lista incluindo ocultos)	aliases nav
 
 # =========================================================
 # Shell Aliases — VS Code
 # =========================================================
-vscode-export — o que faz?	Exporta lista de extensões para o repo dotfiles	aliases vscode
-vscode-import — o que faz?	Instala todas as extensões da lista no repo	aliases vscode
+hSzUjOPw8O	vscode-export — o que faz?	Exporta lista de extensões para o repo dotfiles	aliases vscode
+jIppj40DKY	vscode-import — o que faz?	Instala todas as extensões da lista no repo	aliases vscode
 
 # =========================================================
 # VS Code — Shortcuts
 # =========================================================
-VS Code: seleccionar próxima ocorrência da palavra	Cmd+D (repetir para mais)	vscode
-VS Code: seleccionar TODAS as ocorrências da palavra	Cmd+Shift+L	vscode
-VS Code: desseleccionar última ocorrência (desfazer Cmd+D)	Cmd+U	vscode
+1unS4sCzDP	VS Code: seleccionar próxima ocorrência da palavra	Cmd+D (repetir para mais)	vscode
+LFFEMzYJia	VS Code: seleccionar TODAS as ocorrências da palavra	Cmd+Shift+L	vscode
+fMlRI9q6Ec	VS Code: desseleccionar última ocorrência (desfazer Cmd+D)	Cmd+U	vscode
 
 # =========================================================
 # Stow — Gestão de Symlinks
 # =========================================================
-O que faz o stow?	Cria symlinks de um directório para o nível acima	stow
-Como aplicar config shell via stow?	cd ~/.dotfiles && stow shell	stow
-Como remover symlinks do stow?	cd ~/.dotfiles && stow -D shell	stow
-Que packages stow existem no dotfiles?	git, shell, ssh, ghostty	stow
-Porque é que o stow falha com "existing target"?	O ficheiro original existe — mover/apagar primeiro	stow
+HpCEZSxrh3	O que faz o stow?	Cria symlinks de um directório para o nível acima	stow
+WmR5p4XhAX	Como aplicar config shell via stow?	cd ~/.dotfiles && stow shell	stow
+vymceV8Y84	Como remover symlinks do stow?	cd ~/.dotfiles && stow -D shell	stow
+yxjimQh8me	Que packages stow existem no dotfiles?	git, shell, ssh, ghostty	stow
+rxCn5SAyEt	Porque é que o stow falha com "existing target"?	O ficheiro original existe — mover/apagar primeiro	stow
 
 # =========================================================
 # Brew — Homebrew
 # =========================================================
-Como instalar tudo do Brewfile?	cd ~/.dotfiles && brew bundle	brew
-Como verificar problemas do Homebrew?	brew doctor	brew
-Onde está o Homebrew no Apple Silicon?	/opt/homebrew	brew
-Onde está o Homebrew no Intel?	/usr/local	brew
-Como ver pacotes instalados?	brew list	brew
+bJfIgyptOK	Como instalar tudo do Brewfile?	cd ~/.dotfiles && brew bundle	brew
+a1zVFvTMa4	Como verificar problemas do Homebrew?	brew doctor	brew
+YeSARFNEoN	Onde está o Homebrew no Apple Silicon?	/opt/homebrew	brew
+5qS4AXiF6f	Onde está o Homebrew no Intel?	/usr/local	brew
+Sz3JVcyzP6	Como ver pacotes instalados?	brew list	brew
 
 # =========================================================
 # 1Password — CLI e SSH
 # =========================================================
-Como ler um segredo do 1Password via CLI?	op read "op://Vault/Item/field"	1password
-Onde está o socket do 1Password SSH agent?	~/Library/Group Containers/2BUA8C4S2C.com.1password/t/agent.sock	1password
-Que programa assina commits git via 1Password?	/Applications/1Password.app/Contents/MacOS/op-ssh-sign	1password
-Onde está a chave privada SSH com 1Password?	Nunca sai do 1Password — assina internamente	1password
+DlNKZXfntB	Como ler um segredo do 1Password via CLI?	op read "op://Vault/Item/field"	1password
+utWWiTP18b	Onde está o socket do 1Password SSH agent?	~/Library/Group Containers/2BUA8C4S2C.com.1password/t/agent.sock	1password
+Kljm6eKeKc	Que programa assina commits git via 1Password?	/Applications/1Password.app/Contents/MacOS/op-ssh-sign	1password
+gbU23EuH9y	Onde está a chave privada SSH com 1Password?	Nunca sai do 1Password — assina internamente	1password
 
 # =========================================================
 # SOPS
 # =========================================================
-Como é que o sops obtém a chave AGE?	Wrapper zsh carrega via op read na primeira chamada	sops
-Porque não carregar SOPS_AGE_KEY no arranque da shell?	Pediria autenticação 1Password a cada terminal novo	sops
+u4ulBLW2Ch	Como é que o sops obtém a chave AGE?	Wrapper zsh carrega via op read na primeira chamada	sops
+cJ4yA3VO6x	Porque não carregar SOPS_AGE_KEY no arranque da shell?	Pediria autenticação 1Password a cada terminal novo	sops
 
 # =========================================================
 # NVM — Node Version Manager
 # =========================================================
-Como funciona o NVM lazy loading?	Stubs para nvm/node/npm/npx — só carrega no primeiro uso	nvm
-Quando é que o NVM carrega automaticamente?	Ao fazer cd para um directório com .nvmrc	nvm
-Como mudar a versão de node?	nvm use <version> ou nvm use --lts	nvm
+TyqRgItbXE	Como funciona o NVM lazy loading?	Stubs para nvm/node/npm/npx — só carrega no primeiro uso	nvm
+hSeORwc0ky	Quando é que o NVM carrega automaticamente?	Ao fazer cd para um directório com .nvmrc	nvm
+ttlu7m53ws	Como mudar a versão de node?	nvm use <version> ou nvm use --lts	nvm
 
 # =========================================================
 # Zsh — Opções e Histórico
 # =========================================================
-O que faz setopt AUTO_CD?	Permite mudar de directório sem escrever cd	zsh
-O que faz setopt HIST_IGNORE_SPACE?	Comandos com espaço no início não ficam no histórico	zsh
-Quanto histórico guarda o zsh (config actual)?	50000 comandos	zsh
-O que faz HIST_IGNORE_ALL_DUPS?	Remove duplicados antigos quando um novo igual é adicionado	zsh
-Onde está o ficheiro de histórico?	~/.zsh_history	zsh
+Uu73h5zR5z	O que faz setopt AUTO_CD?	Permite mudar de directório sem escrever cd	zsh
+ejekq2XOnl	O que faz setopt HIST_IGNORE_SPACE?	Comandos com espaço no início não ficam no histórico	zsh
+eDZ4eIq35S	Quanto histórico guarda o zsh (config actual)?	50000 comandos	zsh
+BzYKnRNPfm	O que faz HIST_IGNORE_ALL_DUPS?	Remove duplicados antigos quando um novo igual é adicionado	zsh
+bJoj7xA1ZW	Onde está o ficheiro de histórico?	~/.zsh_history	zsh
 
 # =========================================================
 # Funções Custom
 # =========================================================
-rtmux <server> — o que faz?	Liga via autossh e attach/cria sessão tmux "mimes"	funcoes
-listening — o que faz?	Mostra portas TCP em LISTEN (aceita filtro opcional)	funcoes
-listening 8080 — o que faz?	Mostra processos a escutar na porta 8080	funcoes
-zsh_startup_time — o que faz?	Corre 5x zsh -i -c exit para medir tempo de arranque	funcoes
+sUFuJvA2Y9	rtmux <server> — o que faz?	Liga via autossh e attach/cria sessão tmux "mimes"	funcoes
+FLSFKq6UpL	listening — o que faz?	Mostra portas TCP em LISTEN (aceita filtro opcional)	funcoes
+nNEeh5mH4k	listening 8080 — o que faz?	Mostra processos a escutar na porta 8080	funcoes
+YJx2C3kxF7	zsh_startup_time — o que faz?	Corre 5x zsh -i -c exit para medir tempo de arranque	funcoes
 
 # =========================================================
 # Prompt
 # =========================================================
-Que informação mostra o prompt?	Hostname (amarelo) + directório (cyan) + git branch (magenta)	prompt
-Porque incluir hostname no prompt?	Distinguir iMac vs MacBook quando ambos estão abertos	prompt
+zU93l2gOoJ	Que informação mostra o prompt?	Hostname (amarelo) + directório (cyan) + git branch (magenta)	prompt
+pDFqShSVpa	Porque incluir hostname no prompt?	Distinguir iMac vs MacBook quando ambos estão abertos	prompt
 
 # =========================================================
 # Ghostty
 # =========================================================
-Onde está o ficheiro de config do Ghostty?	~/.config/ghostty/config	ghostty
-Que fonte usa o Ghostty?	JetBrains Mono 14pt	ghostty
-Que tema usa o Ghostty?	Catppuccin Mocha	ghostty
-O que faz macos-option-as-alt = true?	Permite que Alt+C funcione para fzf no macOS	ghostty
-Ghostty: novo tab	Cmd+T	ghostty
-Ghostty: tab seguinte	Cmd+Shift+Right	ghostty
-Ghostty: tab anterior	Cmd+Shift+Left	ghostty
-Ghostty: tab específico (ex: 3º)	Cmd+3	ghostty
-Ghostty: split horizontal	Cmd+D	ghostty
-Ghostty: split vertical	Cmd+Shift+D	ghostty
-Ghostty: navegar entre splits	Cmd+Alt+setas	ghostty
-Ghostty: redimensionar split	Cmd+Shift+Alt+setas	ghostty
-Ghostty: fechar split/tab	Cmd+W	ghostty
-Ghostty: renomear tab/janela	Cmd+Shift+I	ghostty
-Ghostty: reload da configuração	Cmd+Shift+,	ghostty
-Ghostty pode rearranjar splits ou converter para tab?	Não — gestão básica intencional. Para isso, usar tmux	ghostty
+2H5uH6gFy5	Onde está o ficheiro de config do Ghostty?	~/.config/ghostty/config	ghostty
+rXmIEhgAj4	Que fonte usa o Ghostty?	JetBrains Mono 14pt	ghostty
+Ntplnc2oR6	Que tema usa o Ghostty?	Catppuccin Mocha	ghostty
+ftaxg4pRh2	O que faz macos-option-as-alt = true?	Permite que Alt+C funcione para fzf no macOS	ghostty
+pxZYtf26E6	Ghostty: novo tab	Cmd+T	ghostty
+KdMJze5EFD	Ghostty: tab seguinte	Cmd+Shift+Right	ghostty
+modKb1TLxi	Ghostty: tab anterior	Cmd+Shift+Left	ghostty
+aYkcX3ytQ2	Ghostty: tab específico (ex: 3º)	Cmd+3	ghostty
+fib40SZ9lw	Ghostty: split horizontal	Cmd+D	ghostty
+gjwjdXyYVU	Ghostty: split vertical	Cmd+Shift+D	ghostty
+Sv3RUrBK8s	Ghostty: navegar entre splits	Cmd+Alt+setas	ghostty
+aEi6q2neKg	Ghostty: redimensionar split	Cmd+Shift+Alt+setas	ghostty
+SIzjcCB5e2	Ghostty: fechar split/tab	Cmd+W	ghostty
+0lE6NZbYWV	Ghostty: renomear tab/janela	Cmd+Shift+I	ghostty
+DqeyQI0PLJ	Ghostty: reload da configuração	Cmd+Shift+,	ghostty
+KFTb9RHSeS	Ghostty pode rearranjar splits ou converter para tab?	Não — gestão básica intencional. Para isso, usar tmux	ghostty
 
 # =========================================================
 # Vim — Configuração e plugins
 # =========================================================
-Onde está o ficheiro de config do vim?	~/.vimrc	vim
-Onde estão os plugins vim instalados?	~/.vim/pack/dotfiles/start/	vim
-Como instalar/actualizar plugins vim no dotfiles?	bash ~/.dotfiles/setup/vim-plugins.sh	vim
-Que colorscheme usa o vim?	Catppuccin Mocha (mesmo do Ghostty)	vim
-Que leader key está configurada no vim?	, (vírgula)	vim
+XCib1sB8x6	Onde está o ficheiro de config do vim?	~/.vimrc	vim
+pELQYDKcZH	Onde estão os plugins vim instalados?	~/.vim/pack/dotfiles/start/	vim
+T2OsKIKkJN	Como instalar/actualizar plugins vim no dotfiles?	bash ~/.dotfiles/setup/vim-plugins.sh	vim
+KD1W8lELUw	Que colorscheme usa o vim?	Catppuccin Mocha (mesmo do Ghostty)	vim
+zMfaTvFLzJ	Que leader key está configurada no vim?	, (vírgula)	vim
 
 # =========================================================
 # Vim — Mappings (leader = ,)
 # =========================================================
-Vim: limpar highlight de pesquisa	,n (leader+n)	vim mappings
-Vim: save	,w (leader+w)	vim mappings
-Vim: quit	,q (leader+q)	vim mappings
-Vim: toggle line numbers	,l (leader+l)	vim mappings
+Nxn10r3nKI	Vim: limpar highlight de pesquisa	,n (leader+n)	vim mappings
+wHGOLPP84Y	Vim: save	,w (leader+w)	vim mappings
+kNdeAJj25y	Vim: quit	,q (leader+q)	vim mappings
+rOrPTFG7DM	Vim: toggle line numbers	,l (leader+l)	vim mappings
 
 # =========================================================
 # Vim — Comandos básicos
 # =========================================================
-Vim: entrar modo insert	i (antes do cursor) ou a (depois)	vim
-Vim: sair modo insert	Esc	vim
-Vim: gravar e sair	:wq ou ZZ	vim
-Vim: sair sem gravar	:q!	vim
-Vim: pesquisar para a frente	/texto	vim
-Vim: pesquisar para trás	?texto	vim
-Vim: próxima ocorrência da pesquisa	n	vim
-Vim: ocorrência anterior da pesquisa	N	vim
-Vim: substituir tudo no ficheiro	:%s/velho/novo/g	vim
-Vim: undo	u	vim
-Vim: redo	Ctrl+R	vim
-Vim: ir para linha N	:N ou Ngg	vim
-Vim: ir para fim do ficheiro	G	vim
-Vim: ir para início do ficheiro	gg	vim
+x3LjFpdQLa	Vim: entrar modo insert	i (antes do cursor) ou a (depois)	vim
+pe8UtDUy65	Vim: sair modo insert	Esc	vim
+N7f7X37TjM	Vim: gravar e sair	:wq ou ZZ	vim
+xDAjwWGYYt	Vim: sair sem gravar	:q!	vim
+jsDR866DG7	Vim: pesquisar para a frente	/texto	vim
+WoB9hLQvty	Vim: pesquisar para trás	?texto	vim
+blFHe3XCPt	Vim: próxima ocorrência da pesquisa	n	vim
+Nvpmp2BWlV	Vim: ocorrência anterior da pesquisa	N	vim
+qO7ZhZVVfH	Vim: substituir tudo no ficheiro	:%s/velho/novo/g	vim
+ILXvJn7Q6s	Vim: undo	u	vim
+OH3r4QXhkF	Vim: redo	Ctrl+R	vim
+jIHe53FRUZ	Vim: ir para linha N	:N ou Ngg	vim
+ZDxqFSiPR2	Vim: ir para fim do ficheiro	G	vim
+JGZHh9W1B1	Vim: ir para início do ficheiro	gg	vim
 
 # =========================================================
 # Vim — Plugins (vim-commentary)
 # =========================================================
-Vim commentary: comentar linha actual	gcc	vim plugins
-Vim commentary: comentar selecção visual	gc (em modo visual)	vim plugins
+dNZaPmtypK	Vim commentary: comentar linha actual	gcc	vim plugins
+wc4c5kD0ra	Vim commentary: comentar selecção visual	gc (em modo visual)	vim plugins
 
 # =========================================================
 # Vim — Plugins (vim-surround)
 # =========================================================
-Vim surround: mudar "x" para 'x'	cs"'	vim plugins
-Vim surround: apagar parênteses à volta	ds(	vim plugins
-Vim surround: adicionar aspas à palavra	ysiw"	vim plugins
+o4qxohsyPY	Vim surround: mudar "x" para 'x'	cs"'	vim plugins
+ScFirfZmXF	Vim surround: apagar parênteses à volta	ds(	vim plugins
+DhDQWi44MY	Vim surround: adicionar aspas à palavra	ysiw"	vim plugins
 
 # =========================================================
 # Vim — Plugins (vim-fugitive)
 # =========================================================
-Vim fugitive: ver git status	:Git status (ou :G)	vim plugins
-Vim fugitive: ver git blame	:Git blame	vim plugins
-Vim fugitive: ver git log	:Git log	vim plugins
-Vim fugitive: stage do ficheiro actual	:Gwrite	vim plugins
+0pHEg1eJGp	Vim fugitive: ver git status	:Git status (ou :G)	vim plugins
+lMeggQSgk7	Vim fugitive: ver git blame	:Git blame	vim plugins
+0UtRJgibYX	Vim fugitive: ver git log	:Git log	vim plugins
+UoEInsRtFJ	Vim fugitive: stage do ficheiro actual	:Gwrite	vim plugins
 
 # =========================================================
 # Dotfiles — Estrutura
 # =========================================================
-Onde clonar o repo dotfiles?	~/.dotfiles	dotfiles
-Como testar config shell sem activar?	ZDOTDIR=~/.dotfiles/shell zsh -l	dotfiles
-Que ficheiro corre em login shells?	.zprofile	dotfiles
-Que ficheiro corre em shells interactivas?	.zshrc	dotfiles
-Que ficheiro define variáveis de ambiente?	.exports	dotfiles
-Que ficheiro define aliases?	.aliases	dotfiles
-Como correr o bootstrap em modo teste?	~/.dotfiles/bootstrap.sh --dry-run	dotfiles
+DaAsVzjw8N	Onde clonar o repo dotfiles?	~/.dotfiles	dotfiles
+Lq40CXkGHv	Como testar config shell sem activar?	ZDOTDIR=~/.dotfiles/shell zsh -l	dotfiles
+pXq0kAi76I	Que ficheiro corre em login shells?	.zprofile	dotfiles
+M3ga9nkaOe	Que ficheiro corre em shells interactivas?	.zshrc	dotfiles
+CDHhWP3xiB	Que ficheiro define variáveis de ambiente?	.exports	dotfiles
+pYp6poKlMI	Que ficheiro define aliases?	.aliases	dotfiles
+YZea7VdZ9i	Como correr o bootstrap em modo teste?	~/.dotfiles/bootstrap.sh --dry-run	dotfiles
