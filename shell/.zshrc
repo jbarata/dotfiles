@@ -12,6 +12,19 @@ path=(
     $HOME/Work/cmd-line-importer
     $path
 )
+
+# Bin do node default do nvm (para comandos npm link-ados, sem carregar nvm.sh)
+_nvm_dir="${NVM_DIR:-$HOME/.nvm}"
+if [[ -s "$_nvm_dir/alias/default" ]]; then
+    _nvm_default=$(<"$_nvm_dir/alias/default")
+    while [[ -s "$_nvm_dir/alias/$_nvm_default" ]]; do
+        _nvm_default=$(<"$_nvm_dir/alias/$_nvm_default")
+    done
+    [[ -d "$_nvm_dir/versions/node/$_nvm_default/bin" ]] && \
+        path=("$_nvm_dir/versions/node/$_nvm_default/bin" $path)
+fi
+unset _nvm_dir _nvm_default
+
 export PATH
 
 # =========================================================
