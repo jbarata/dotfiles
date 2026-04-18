@@ -61,6 +61,24 @@ Cmd+Shift+I         # renomear tab
 Cmd+Shift+,         # reload da configuração
 ```
 
+### skhd — Atalhos globais (abrir apps/URLs)
+
+Editar `skhd/.config/skhd/skhdrc` e correr `brew services restart skhd`.
+
+```bash
+Cmd+Alt+Z       # Zoom (sala pessoal)
+Cmd+Alt+S       # Slack
+Cmd+Alt+A       # Claude (activate)
+Cmd+Alt+G       # ChatGPT
+Cmd+Alt+V       # VS Code
+Cmd+Alt+K       # Calendário (open_calendar.scpt do focus.widget)
+Cmd+Alt+D       # Dogfooding
+Cmd+Alt+P/O/R   # Plan / Do / Review
+Cmd+Alt+M       # Mimes (Dia a Dia)
+Cmd+Alt+B       # BudgetBakers
+Cmd+Alt+L       # AnyList (via Atalho iOS)
+```
+
 ### VS Code — Multi-cursor
 
 ```bash
@@ -188,6 +206,24 @@ bash setup/vim-plugins.sh   # clona e gera helptags
 vscode-export   # exporta lista actualizada para o repo
 ```
 
+### Adicionar atalho skhd
+
+Editar `skhd/.config/skhd/skhdrc` e acrescentar uma linha no formato
+`<modificadores> - <tecla> : <comando>`:
+
+```
+cmd + alt - n : open "https://example.com"
+```
+
+Aplicar sem reboot:
+
+```bash
+brew services restart skhd
+```
+
+Primeira instalação: autorizar o binário em **Definições → Privacidade e
+Segurança → Acessibilidade**.
+
 ### Adicionar tema Ghostty
 
 ```bash
@@ -264,6 +300,9 @@ brew bundle cleanup        # remover pacotes não no Brewfile (cuidado!)
 │       ├── config                  # JetBrains Mono + Catppuccin
 │       └── themes/catppuccin-mocha # Tema embutido
 │
+├── skhd/                           # → link_config → ~/.config/skhd/
+│   └── .config/skhd/skhdrc         # Atalhos globais (Cmd+Alt+...)
+│
 ├── vscode/                         # → link_config → ~/Library/.../Code/User/
 │   ├── settings.json               # Settings completas
 │   ├── keybindings.json
@@ -287,6 +326,7 @@ brew bundle cleanup        # remover pacotes não no Brewfile (cuidado!)
     ├── vim-plugins.txt             # URLs dos plugins vim
     ├── vscode-extensions.sh        # Instalar extensões
     ├── ubersicht.sh                # Symlink pasta de widgets Übersicht
+    ├── skhd.sh                     # Arranca/reinicia serviço skhd
     └── macos-defaults.sh           # defaults write
 ```
 
@@ -415,6 +455,17 @@ Histórico das decisões tomadas e seu racional, para contexto futuro.
 | Formato TSV plano | Importável directamente, fácil de editar |
 | Tags hierárquicas (`vim mappings`, `git-config`) | Filtragem fina no Anki |
 | Comentários `#` para organização | Ignorados pelo Anki, ajudam navegação |
+
+### skhd (shortcuts) — 2026-04-18
+
+| Decisão | Racional |
+|---|---|
+| skhd em vez de Atalhos Mac + `/tmp/uber-listener.log` | Config em texto, versionável e sincronizada entre máquinas via git |
+| `cmd + alt` como modificador | Evita os conflitos frequentes de `cmd + shift` com apps |
+| `open "<url>"` directo (em vez de simular clique no widget) | Elimina polling a 500ms do `links.widget` e o ficheiro temporário |
+| Tap `koekeishiya/formulae` | Fórmula oficial do autor (mesmo autor do yabai) |
+| Gerido por `brew services` | Arranca no login, consistente com o ecossistema do repo |
+| Hammerspoon considerado e rejeitado | Overkill para URL→hotkey; skhd é declarativo em 1 ficheiro |
 
 ### Übersicht widgets — 2026-04-18
 

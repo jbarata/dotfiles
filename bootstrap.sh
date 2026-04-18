@@ -220,6 +220,16 @@ if [[ -f "$DOTFILES/setup/ubersicht.sh" ]]; then
     fi
 fi
 
+# --- 9b. Iniciar serviço skhd ---
+if [[ -f "$DOTFILES/setup/skhd.sh" ]]; then
+    echo "==> A iniciar serviço skhd..."
+    if $DRY_RUN; then
+        echo "  [dry-run] brew services start/restart skhd"
+    else
+        bash "$DOTFILES/setup/skhd.sh"
+    fi
+fi
+
 # --- 10. macOS defaults (opcional) ---
 if [[ -f "$DOTFILES/setup/macos-defaults.sh" ]]; then
     echo "==> A aplicar preferências macOS..."
