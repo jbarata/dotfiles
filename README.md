@@ -250,6 +250,23 @@ Comentários `# ...` são ignorados pelo Anki, usar para organizar secções.
 
 Importar: Anki → File → Import → seleccionar ficheiro.
 
+### Debug SSH agent (Fork e outras apps GUI)
+
+Se o Fork (ou outra app GUI) der `Permission denied (publickey)` apesar de o terminal funcionar:
+
+```bash
+# Valor no launchd (deve ser o do 1Password)
+launchctl getenv SSH_AUTH_SOCK
+
+# Valor dentro do processo Fork (deve coincidir)
+ps eww -p "$(pgrep -f 'Fork.app/Contents/MacOS/Fork' | head -1)" | tr ' ' '\n' | grep SSH_AUTH_SOCK
+
+# Recarregar o LaunchAgent e redefinir para a sessão actual
+bash setup/ssh-auth-sock.sh
+```
+
+Se divergirem, quit completo da app (`Cmd+Q`) e reabrir — na maioria dos casos isso basta. Se não bastar, logout e login.
+
 ### Reverter alterações
 
 Backups em:
@@ -320,6 +337,9 @@ brew bundle cleanup        # remover pacotes não no Brewfile (cuidado!)
 ├── ubersicht/                      # Übersicht widgets
 │   └── widgets/                    # Widgets (git subtree de Ubersicht-Widgets)
 │
+├── launchd/                        # → setup/ssh-auth-sock.sh → ~/Library/LaunchAgents/
+│   └── com.mimes.ssh-auth-sock.plist # SSH_AUTH_SOCK → 1Password para apps GUI
+│
 └── setup/                          # Scripts de instalação
     ├── symlinks.sh                 # Stow + link_config
     ├── vim-plugins.sh              # Clonar plugins vim
@@ -327,6 +347,7 @@ brew bundle cleanup        # remover pacotes não no Brewfile (cuidado!)
     ├── vscode-extensions.sh        # Instalar extensões
     ├── ubersicht.sh                # Symlink pasta de widgets Übersicht
     ├── skhd.sh                     # Arranca/reinicia serviço skhd
+    ├── ssh-auth-sock.sh            # Instala LaunchAgent SSH_AUTH_SOCK (1Password)
     └── macos-defaults.sh           # defaults write
 ```
 
@@ -426,6 +447,15 @@ Histórico das decisões tomadas e seu racional, para contexto futuro.
 |---|---|
 | `sops()` wrapper com lazy auth | Evita prompt 1Password a cada shell nova |
 | `op read` on-demand | Segredos nunca em ficheiros |
+
+### SSH_AUTH_SOCK para apps GUI — 2026-04-18
+
+| Decisão | Racional |
+|---|---|
+| LaunchAgent `com.mimes.ssh-auth-sock.plist` vs `launchctl setenv` ad-hoc | `setenv` no terminal não propaga para apps GUI lançadas via LaunchServices (Fork, etc.); LaunchAgent corre no login e define para toda a sessão |
+| `ProgramArguments` com `/bin/sh -c` | Permite expansão `$HOME` em runtime — plists não expandem env vars directamente |
+| Gerido por `setup/ssh-auth-sock.sh` | Symlinka o plist + `launchctl load` + `launchctl setenv` imediato (evita logout/login) |
+| Problema específico: Fork força `-i ~/.ssh/id_rsa -F /dev/null` | Ignora `~/.ssh/config` (e a directiva `IdentityAgent`); só o env var é respeitado |
 
 ### Bootstrap — 2026-04-17
 
