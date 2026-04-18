@@ -106,6 +106,10 @@ DlNKZXfntB	Como ler um segredo do 1Password via CLI?	op read "op://Vault/Item/fi
 utWWiTP18b	Onde está o socket do 1Password SSH agent?	~/Library/Group Containers/2BUA8C4S2C.com.1password/t/agent.sock	1password
 Kljm6eKeKc	Que programa assina commits git via 1Password?	/Applications/1Password.app/Contents/MacOS/op-ssh-sign	1password
 gbU23EuH9y	Onde está a chave privada SSH com 1Password?	Nunca sai do 1Password — assina internamente	1password
+ssA1LaSb21	Porque é que o Fork dá "Permission denied" apesar de o terminal funcionar?	O Fork ignora ~/.ssh/config (-F /dev/null) e não herda SSH_AUTH_SOCK do launchctl setenv — precisa do LaunchAgent	1password ssh
+ssA2LbTc32	Como resolver o SSH_AUTH_SOCK em apps GUI (Fork) permanentemente?	LaunchAgent ~/Library/LaunchAgents/com.mimes.ssh-auth-sock.plist que corre launchctl setenv no login	1password ssh
+ssA3McUd43	Que script versiona o SSH_AUTH_SOCK LaunchAgent?	setup/ssh-auth-sock.sh (symlinka plist + launchctl load + setenv imediato)	1password ssh
+ssA4NdVe54	Como debug ao SSH_AUTH_SOCK divergente entre terminal e Fork?	ps eww -p $(pgrep -f Fork.app/Contents/MacOS/Fork) | tr ' ' '\\n' | grep SSH_AUTH_SOCK	1password ssh
 
 # =========================================================
 # SOPS

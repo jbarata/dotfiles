@@ -234,6 +234,16 @@ if [[ -f "$DOTFILES/setup/skhd.sh" ]]; then
     fi
 fi
 
+# --- 9c. SSH_AUTH_SOCK para apps GUI (Fork, etc.) → 1Password ---
+if [[ -f "$DOTFILES/setup/ssh-auth-sock.sh" ]]; then
+    echo "==> A configurar SSH_AUTH_SOCK (1Password) para apps GUI..."
+    if $DRY_RUN; then
+        echo "  [dry-run] symlink LaunchAgent + launchctl load + setenv"
+    else
+        bash "$DOTFILES/setup/ssh-auth-sock.sh"
+    fi
+fi
+
 # --- 10. macOS defaults (opcional) ---
 if [[ -f "$DOTFILES/setup/macos-defaults.sh" ]]; then
     echo "==> A aplicar preferências macOS..."
