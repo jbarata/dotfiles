@@ -1,4 +1,37 @@
-command: "next-event.widget/GetNextEvent"
+command: """
+dir=""
+for c in "next-event.widget" "." "./next-event.widget" "../next-event.widget" "Ubersicht-Widgets/next-event.widget"; do
+  if [ -f "$c/GetNextEvent.swift" ]; then dir="$c"; break; fi
+done
+if [ -z "$dir" ]; then
+  for root in "$HOME/Library/Application Support/Übersicht/widgets" "$HOME/Library/Application Support/Uebersicht/widgets"; do
+    if [ -d "$root" ]; then
+      found=$(find "$root" -name GetNextEvent.swift -type f 2>/dev/null | head -1)
+      if [ -n "$found" ]; then dir="${found%/*}"; break; fi
+    fi
+  done
+fi
+if [ -z "$dir" ]; then
+  echo "Missing binary: cannot locate next-event.widget (pwd=$PWD)"
+  exit 0
+fi
+bin="$dir/GetNextEvent"
+src="$dir/GetNextEvent.swift"
+if [ ! -x "$bin" ] && [ -f "$src" ] && command -v swiftc >/dev/null 2>&1; then
+  tmpdir=$(mktemp -d) || exit 1
+  if swiftc "$src" -o "$tmpdir/x86_64" -target x86_64-apple-macosx12.0 >/dev/null 2>&1 \
+     && swiftc "$src" -o "$tmpdir/arm64" -target arm64-apple-macosx12.0 >/dev/null 2>&1 \
+     && lipo -create -output "$bin" "$tmpdir/x86_64" "$tmpdir/arm64" >/dev/null 2>&1; then
+    chmod +x "$bin"
+  fi
+  rm -rf "$tmpdir"
+fi
+if [ -x "$bin" ]; then
+  "$bin"
+else
+  echo "Missing binary: build with 'swiftc $src -o $bin' (requires Xcode Command Line Tools)"
+fi
+"""
 
 refreshFrequency: 6000
 
@@ -85,8 +118,12 @@ update: (output, domEl) ->
   content = $(domEl).find('#next-event-content')
   output = output.trim()
 
+  if output.includes("Missing binary")
+    content.html('<div class="no-event" style="color:#ff6b6b">Missing binary<br><span style="font-size:10px">Install Xcode Command Line Tools (xcode-select --install) and reload the widget.</span></div>')
+    return
+
   if output.includes("Access denied")
-    content.html('<div class="no-event" style="color:#ff6b6b">Access Denied<br><span style="font-size:10px">Please run the binary in Terminal once to grant permission.</span></div>')
+    content.html('<div class="no-event" style="color:#ff6b6b">Access Denied<br><span style="font-size:10px">Run next-event.widget/GetNextEvent in Terminal once to grant Calendar access.</span></div>')
     return
   
   if output == "None" or output == ""
