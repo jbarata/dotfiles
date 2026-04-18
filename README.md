@@ -128,7 +128,7 @@ O bootstrap:
 7. Clona/actualiza plugins vim para `~/.vim/pack/dotfiles/start/`
 8. Migra remote git para SSH
 9. Instala extensões VS Code
-10. Clona widgets Übersicht
+10. Symlinka widgets Übersicht (geridos no repo, em `ubersicht/widgets/`)
 11. Aplica macOS defaults
 12. Cria `~/.cache` para fzf
 
@@ -279,13 +279,14 @@ brew bundle cleanup        # remover pacotes não no Brewfile (cuidado!)
 │   └── macbook.sh
 │
 ├── ubersicht/                      # Übersicht widgets
-│   └── install.sh                  # Clone do repo Ubersicht-Widgets
+│   └── widgets/                    # Widgets (git subtree de Ubersicht-Widgets)
 │
 └── setup/                          # Scripts de instalação
     ├── symlinks.sh                 # Stow + link_config
     ├── vim-plugins.sh              # Clonar plugins vim
     ├── vim-plugins.txt             # URLs dos plugins vim
     ├── vscode-extensions.sh        # Instalar extensões
+    ├── ubersicht.sh                # Symlink pasta de widgets Übersicht
     └── macos-defaults.sh           # defaults write
 ```
 
@@ -414,6 +415,15 @@ Histórico das decisões tomadas e seu racional, para contexto futuro.
 | Formato TSV plano | Importável directamente, fácil de editar |
 | Tags hierárquicas (`vim mappings`, `git-config`) | Filtragem fina no Anki |
 | Comentários `#` para organização | Ignorados pelo Anki, ajudam navegação |
+
+### Übersicht widgets — 2026-04-18
+
+| Decisão | Racional |
+|---|---|
+| Widgets migrados para `ubersicht/widgets/` via `git subtree` | Um só repo, histórico preservado |
+| `setup/ubersicht.sh` symlinka a pasta inteira | Consistente com os outros scripts em `setup/` |
+| Symlink directo em `~/Library/Application Support/Übersicht/widgets` | Sem namespace `Ubersicht-Widgets/` extra |
+| Upstream `mimes70/Ubersicht-Widgets` mantido como fonte opcional | Pode-se `git subtree pull/push --prefix=ubersicht/widgets ubersicht-widgets main` |
 
 ### Repositório — 2026-04-17
 
