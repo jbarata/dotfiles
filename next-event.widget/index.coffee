@@ -86,16 +86,21 @@ style: """
 
   @media (max-width: 1999px) {
     font-size: 11px;
-    right: 205px;
+    right: 220px;
     bottom: 0;
+    height: 30px;
     .event-bg {
       height: 30px;
+      top: 0;
     }
     .event-content {
       flex-direction: row;
       align-items: center;
+      justify-content: flex-end;
       gap: 10px;
-      padding: 0.4rem 0.8rem;
+      padding: 0 0.8rem;
+      height: 30px;
+      box-sizing: border-box;
     }
   }
 """
