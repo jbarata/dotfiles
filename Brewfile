@@ -1,5 +1,8 @@
 # Brewfile — Dependências partilhadas entre todas as máquinas
 
+# Taps
+tap "koekeishiya/formulae"   # skhd
+
 # CLI tools
 brew "git"
 brew "gh"                    # GitHub CLI
@@ -7,6 +10,7 @@ brew "stow"                  # Symlink farm manager para dotfiles
 brew "gcalcli"               # Google Calendar CLI (usado pelo focus.widget)
 brew "fzf"                   # Fuzzy finder (Ctrl+R, Ctrl+T)
 brew "fd"                    # find alternativo (usado pelo fzf)
+brew "koekeishiya/formulae/skhd" # Hotkey daemon (shortcuts → URLs/apps)
 
 # Zsh plugins
 brew "zsh-autosuggestions"

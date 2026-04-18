@@ -63,6 +63,9 @@ link_config "$DOTFILES/ssh/.ssh/config" "$HOME/.ssh/config"
 echo "  Ghostty config..."
 link_config "$DOTFILES/ghostty/.config/ghostty/config" "$HOME/.config/ghostty/config"
 
+echo "  skhd config..."
+link_config "$DOTFILES/skhd/.config/skhd/skhdrc" "$HOME/.config/skhd/skhdrc"
+
 # Ghostty themes (linka todos os ficheiros na pasta themes)
 if [[ -d "$DOTFILES/ghostty/.config/ghostty/themes" ]]; then
     for theme in "$DOTFILES/ghostty/.config/ghostty/themes/"*; do
