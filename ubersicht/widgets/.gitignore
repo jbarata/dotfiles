@@ -1,0 +1,4 @@
+*.swp
+enviroment.sh
+toggl_api_auth.path
+.DS_Store

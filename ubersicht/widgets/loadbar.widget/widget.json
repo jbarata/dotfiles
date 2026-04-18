@@ -1,0 +1,6 @@
+{
+  "name": "CPU load bar",
+  "description": "Displays real CPU usage as a colored bar on the left side of the screen.",
+  "author": "Brett Terpstra",
+  "email": "me+ubersicht@brettterpstra.com"
+}
