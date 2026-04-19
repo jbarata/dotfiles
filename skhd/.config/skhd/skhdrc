@@ -34,23 +34,23 @@
 # --- Modos ---------------------------------------------------------------
 # @ = capture: teclas não ligadas ficam bloqueadas, evitando surpresas.
 # Cada modo escreve em /tmp/skhd-mode (lido pelo skhd-hud.widget).
-:: default : echo "" > /tmp/skhd-mode
-:: cob @ : echo "cob|Plan (p) | Do (o) | Review (r) | Dogfooding (d) | sair (esc)" > /tmp/skhd-mode
-:: personal @ : echo "personal|Mimes (m) | BudgetBakers (b) | AnyList (l) | sair (esc)" > /tmp/skhd-mode
-:: clients @ : echo "clients|Mello (m) | Winestone (w) | Lidl (l) | Rentelecom (r) | sair (esc)" > /tmp/skhd-mode
-:: mello @ : echo "clients › mello|Produção (p) | Qualidade (q) | sair (esc)" > /tmp/skhd-mode
+:: default :     echo "" > /tmp/skhd-mode
+:: cob @ :       echo "cob|Plan (p) | Do (o) | Review (r) | Dogfooding (d) | sair (esc)" > /tmp/skhd-mode
+:: personal @ :  echo "personal|Mimes (m) | BudgetBakers (b) | AnyList (l) | sair (esc)" > /tmp/skhd-mode
+:: clients @ :   echo "clients|Mello (m) | Winestone (w) | Lidl (l) | Rentelecom (r) | sair (esc)" > /tmp/skhd-mode
+:: mello @ :     echo "clients › mello|Produção (p) | Qualidade (q) | sair (esc)" > /tmp/skhd-mode
 :: winestone @ : echo "clients › winestone|Produção (p) | Qualidade (q) | sair (esc)" > /tmp/skhd-mode
-:: lidl @ : echo "clients › lidl|External (e) | Internal (i) | sair (esc)" > /tmp/skhd-mode
-:: review @ : echo "review|Today (t) | Daily (d) | Weekly (w) | Monthly (m) | Quarterly (q) | Yearly (y) | Toggle (o) | sair (esc)" > /tmp/skhd-mode
+:: lidl @ :      echo "clients › lidl|External (e) | Internal (i) | sair (esc)" > /tmp/skhd-mode
+:: review @ :    echo "review|Today (t) | Daily (d) | Weekly (w) | Monthly (m) | Quarterly (q) | Yearly (y) | Toggle (o) | sair (esc)" > /tmp/skhd-mode
 
 # --- Apps principais (convenção antiga: ctrl + alt + cmd) ----------------
-ctrl + alt + cmd - z : open "zoommtg://zoom.us/join?confno=668244305&zc=2&browser=chrome&uname=Miguel"
-ctrl + alt + cmd - s : open "slack://open?team=T02J1N4KH"
-ctrl + alt + cmd - c : osascript -e 'tell application "Claude" to activate'
+ctrl + alt + cmd - z :         open "zoommtg://zoom.us/join?confno=668244305&zc=2&browser=chrome&uname=Miguel"
+ctrl + alt + cmd - s :         open "slack://open?team=T02J1N4KH"
+ctrl + alt + cmd - c :         osascript -e 'tell application "Claude" to activate'
 shift + ctrl + alt + cmd - c : open "https://chatgpt.com/pt-PT"
-ctrl + alt + cmd - v : open "vscode://"
-ctrl + alt + cmd - g : open -a "Ghostty"
-ctrl + alt + cmd - t : osascript "$HOME/.dotfiles/ubersicht/widgets/focus.widget/open_calendar.scpt"
+ctrl + alt + cmd - v :         open "vscode://"
+ctrl + alt + cmd - g :         open -a "Ghostty"
+ctrl + alt + cmd - t :         osascript "$HOME/.dotfiles/ubersicht/widgets/focus.widget/open_calendar.scpt"
 
 # --- Ajuda ---------------------------------------------------------------
 # Ctrl+Alt+Cmd+' alterna o painel do skhd-help.widget. Em teclado PT o
