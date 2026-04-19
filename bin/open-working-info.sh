@@ -2,34 +2,37 @@
 # open-working-info.sh — Abre ~/Documents/Working Info e aciona o preset Rectangle
 # Disparado por skhd (cmd+alt+w). Requer permissão "Acessibilidade" para o skhd
 # (já necessária para o resto do skhdrc).
+#
+# Background: o Finder não faz scaling nativo, portanto redimensiona-se a
+# imagem source para o tamanho exacto da janela via `sips` e aplica-se essa
+# versão cacheada.
 set -euo pipefail
 
 TARGET="$HOME/Documents/Working Info"
-# Background opcional: se existir, é aplicado como icon view background.
-BG="$HOME/.dotfiles/assets/working-info-bg.png"
+# Imagem source (aspect ratio livre — será esticada para caber na janela).
+BG_SOURCE="$HOME/.dotfiles/assets/working-info-bg.png"
+# Imagem cacheada no tamanho da janela actual (regenerada em cada invocação).
+BG_CACHE="/tmp/working-info-bg.png"
 # Tamanho do ícone em pixels (16-128). Default Finder = 64.
 ICON_SIZE=96
-# Log para debug (erros do AppleScript relativos ao background).
+# Log para debug.
 LOG="/tmp/working-info.log"
 mkdir -p "$TARGET"
 
-# Só passa o path do bg se o ficheiro realmente existir, para não disparar
-# "file not found" em POSIX file ... as alias.
-if [[ -f "$BG" ]]; then
-  BG_ARG="$BG"
-else
-  BG_ARG=""
-  echo "$(date '+%F %T') bg missing: $BG" >> "$LOG"
+if [[ ! -f "$BG_SOURCE" ]]; then
+  echo "$(date '+%F %T') bg source missing: $BG_SOURCE" >> "$LOG"
+  BG_SOURCE=""
 fi
 
-# Abrir (ou focar) a janela do Finder em icon view, sem toolbar/sidebar
-# (traditional window), com tamanho de ícones fixo e background se disponível.
-osascript - "$TARGET" "$BG_ARG" "$ICON_SIZE" "$LOG" <<'EOF' 2>>"$LOG" || true
+osascript - "$TARGET" "$BG_SOURCE" "$BG_CACHE" "$ICON_SIZE" "$LOG" <<'EOF' 2>>"$LOG" || true
 on run argv
   set targetPath to item 1 of argv
-  set bgPath to item 2 of argv
-  set iconSize to (item 3 of argv) as integer
-  set logPath to item 4 of argv
+  set bgSource to item 2 of argv
+  set bgCache to item 3 of argv
+  set iconSize to (item 4 of argv) as integer
+  set logPath to item 5 of argv
+
+  -- 1. Abrir/focar janela em icon view, sem toolbar.
   tell application "Finder"
     activate
     set targetFolder to POSIX file targetPath as alias
@@ -50,27 +53,40 @@ on run argv
     set current view of win to icon view
     set toolbar visible of win to false
     set index of win to 1
-    -- Pequena pausa para a janela ficar pronta antes de aplicar icon view opts.
     delay 0.15
     tell icon view options of win
       set icon size to iconSize
       set arrangement to not arranged
-      if bgPath is not "" then
-        try
-          set background picture to (POSIX file bgPath as alias)
-        on error errMsg
-          do shell script "echo " & quoted form of ("bg error: " & errMsg) & " >> " & quoted form of logPath
-        end try
-      end if
     end tell
   end tell
+
+  -- 2. Disparar preset do Rectangle (Ctrl+Option+Return).
+  tell application "System Events" to key code 36 using {control down, option down}
+  delay 0.3
+
+  -- 3. Ler bounds finais da janela (após Rectangle).
+  set winW to 0
+  set winH to 0
+  try
+    tell application "Finder"
+      set b to bounds of win
+      set winW to (item 3 of b) - (item 1 of b)
+      set winH to (item 4 of b) - (item 2 of b)
+    end tell
+  end try
+
+  -- 4. Redimensionar source para o tamanho exacto da janela e aplicar.
+  if bgSource is not "" and winW > 0 and winH > 0 then
+    try
+      do shell script "/usr/bin/sips -z " & winH & " " & winW & " " & quoted form of bgSource & " --out " & quoted form of bgCache & " >/dev/null 2>&1"
+      tell application "Finder"
+        tell icon view options of win
+          set background picture to (POSIX file bgCache as alias)
+        end tell
+      end tell
+    on error errMsg
+      do shell script "echo " & quoted form of ("bg-stretch error: " & errMsg) & " >> " & quoted form of logPath
+    end try
+  end if
 end run
 EOF
-
-# Pequeno delay para a janela ganhar foco antes de enviar o keystroke.
-# Se o redimensionamento falhar, aumentar para 0.4.
-sleep 0.25
-
-# Envia Ctrl+Option+Return → atalho global do Rectangle para o preset desejado.
-# key code 36 = Return.
-osascript -e 'tell application "System Events" to key code 36 using {control down, option down}'
