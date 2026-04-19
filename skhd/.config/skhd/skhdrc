@@ -55,7 +55,7 @@ ctrl + alt + cmd - t : osascript "$HOME/.dotfiles/ubersicht/widgets/focus.widget
 # --- Ajuda ---------------------------------------------------------------
 # Ctrl+Alt+Cmd+' alterna o painel do skhd-help.widget. Em teclado PT o
 # apóstrofo é directo (tecla à direita do 0), sem necessitar shift.
-ctrl + alt + cmd - ' : echo toggle > /tmp/skhd-help-toggle
+ctrl + alt + cmd - 0x1B : echo toggle > /tmp/skhd-help-toggle
 
 # --- Working Info (desktop de arquivo) -----------------------------------
 cmd + alt - w        : "$HOME/.dotfiles/bin/open-working-info.sh"
