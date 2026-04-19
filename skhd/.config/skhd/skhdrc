@@ -18,6 +18,8 @@
 #                                   (t/d/w/m/q/y → today/daily/weekly/
 #                                    monthly/quarterly/year; o → toggle
 #                                    painel).
+#   - shift + ctrl + alt + cmd - ?: alterna o painel de ajuda
+#                                   (skhd-help.widget do Übersicht).
 #   - escape                      : cancela qualquer modo activo (sai
 #                                   directo para default, mesmo aninhado).
 #
@@ -25,6 +27,7 @@
 # polling do links.widget). skhd dispara `open` directamente.
 # Excepções — ficheiros IPC dedicados:
 #   /tmp/focus-review-cmd     ← comandos para o focus.widget (review)
+#   /tmp/skhd-help-toggle     ← alterna o skhd-help.widget
 #   /tmp/skhd-mode            ← mode + cheatsheet para o skhd-hud.widget
 
 # --- Modos ---------------------------------------------------------------
@@ -47,6 +50,12 @@ shift + ctrl + alt + cmd - c : open "https://chatgpt.com/pt-PT"
 ctrl + alt + cmd - v : open "vscode://"
 ctrl + alt + cmd - g : open -a "Ghostty"
 ctrl + alt + cmd - t : osascript "$HOME/.dotfiles/ubersicht/widgets/focus.widget/open_calendar.scpt"
+
+# --- Ajuda ---------------------------------------------------------------
+# Shift+Ctrl+Alt+Cmd+? alterna o painel do skhd-help.widget. O ? obriga a
+# shift na esmagadora maioria dos layouts — usa-se o keycode físico
+# 0x2C (tecla "/") para ser independente do layout activo.
+shift + ctrl + alt + cmd - 0x2C : echo toggle > /tmp/skhd-help-toggle
 
 # --- Working Info (desktop de arquivo) -----------------------------------
 cmd + alt - w        : "$HOME/.dotfiles/bin/open-working-info.sh"

@@ -104,6 +104,9 @@ K → L → E               # Lidl External
 K → L → I               # Lidl Internal
 K → R                   # Rentelecom (directo)
 
+# Painel de ajuda (toggle):
+Shift+Ctrl+Alt+Cmd+?    # Alterna skhd-help.widget com a cheatsheet completa
+
 # Esc cancela qualquer modo (mesmo aninhado sai directo para default).
 ```
 
@@ -560,6 +563,8 @@ Histórico das decisões tomadas e seu racional, para contexto futuro.
 | `open "<url>"` directo (em vez de simular clique no widget) | Elimina polling a 500ms do `links.widget` e o ficheiro temporário |
 | IPC do `focus.widget` (review) via `/tmp/focus-review-cmd` | `open` não consegue mexer no DOM; ficheiro dedicado + whitelist de tokens (toggle/open/close/today/daily/weekly/monthly/quarterly/year) serve o leader `review` sem acoplar o widget ao skhd |
 | Homogenização `trimester → quarterly` (CSS, JS, `.scpt`, HUD, tag Things) | Termo "quarterly" é o padrão em inglês de negócio; remove ambiguidade e simplifica naming |
+| `skhd-help.widget` (overlay) em vez de imprimir shortcuts no terminal | Self-documenting à distância de `⇧⌃⌥⌘ ?`; não depende de abrir o skhdrc/README |
+| Tecla `?` via keycode físico `0x2C` + shift | Layout-agnóstico (PT/US/…); `?` é sempre `Shift + /` no teclado físico |
 | Tap `koekeishiya/formulae` | Fórmula oficial do autor (mesmo autor do yabai) |
 | Gerido por `skhd --install-service` + `--start-service` | A fórmula não define plist para `brew services`; o skhd tem CLI próprio para launchd |
 | Hammerspoon considerado e rejeitado | Overkill para URL→hotkey; skhd é declarativo em 1 ficheiro |
