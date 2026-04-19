@@ -77,7 +77,23 @@ Cmd+Alt+P/O/R   # Plan / Do / Review
 Cmd+Alt+M       # Mimes (Dia a Dia)
 Cmd+Alt+B       # BudgetBakers
 Cmd+Alt+L       # AnyList (via Atalho iOS)
+Cmd+Alt+W       # Abrir ~/Documents/Working Info + preset Rectangle
+Ctrl+Alt+Cmd+W  # Modo arrumação: mover ficheiros do Desktop
 ```
+
+### Working Info — Desktop como workspace temporário
+
+O Desktop é o "rascunho visual" da sessão. No fim, `Ctrl+Alt+Cmd+W`
+dispara o modo arrumação: para cada ficheiro seleccionado no Finder (ou
+todos os do Desktop se nada estiver seleccionado) um diálogo pergunta o
+destino em `~/Documents/Working Info` — projecto existente, novo projecto,
+raiz, saltar ou cancelar tudo. Colisões resolvidas caso a caso
+(renomear `(2)`, substituir, saltar).
+
+`Cmd+Alt+W` abre a pasta no Finder e aciona o atalho global do Rectangle
+(`Ctrl+Alt+Enter`) para aplicar o tamanho/posição predefinidos.
+
+Scripts em `bin/open-working-info.sh` e `bin/desktop-tidy.sh`.
 
 ### VS Code — Multi-cursor
 
@@ -339,6 +355,10 @@ brew bundle cleanup        # remover pacotes não no Brewfile (cuidado!)
 │
 ├── launchd/                        # → setup/ssh-auth-sock.sh → ~/Library/LaunchAgents/
 │   └── com.mimes.ssh-auth-sock.plist # SSH_AUTH_SOCK → 1Password para apps GUI
+│
+├── bin/                            # Scripts helper (chamados pelo skhd)
+│   ├── open-working-info.sh        # Cmd+Alt+W: abrir + preset Rectangle
+│   └── desktop-tidy.sh             # Ctrl+Alt+Cmd+W: arrumação interactiva
 │
 └── setup/                          # Scripts de instalação
     ├── symlinks.sh                 # Stow + link_config

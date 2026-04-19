@@ -26,3 +26,7 @@ cmd + alt - r : open "https://dogfooding.cultofbits.com/recordm/index.html#/cob.
 cmd + alt - m : open "https://mimes.cultofbits.com/recordm/index.html#/cob.custom-resource/Dia a Dia/dash"
 cmd + alt - b : open "https://web.budgetbakers.com/dashboard"
 cmd + alt - l : open "shortcuts://run-shortcut?name=Abrir%20AnyList"
+
+# --- Working Info (desktop de arquivo) -----------------------------------
+cmd + alt - w        : "$HOME/.dotfiles/bin/open-working-info.sh"
+ctrl + alt + cmd - w : "$HOME/.dotfiles/bin/desktop-tidy.sh"

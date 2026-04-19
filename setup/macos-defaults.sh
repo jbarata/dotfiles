@@ -30,4 +30,7 @@ defaults write com.apple.screencapture type -string "png"
 defaults write NSGlobalDomain KeyRepeat -int 2
 defaults write NSGlobalDomain InitialKeyRepeat -int 15
 
+# Pasta "desktop de arquivo" — destino de bin/desktop-tidy.sh
+mkdir -p "$HOME/Documents/Working Info"
+
 echo "  Preferências macOS aplicadas. Algumas podem precisar de logout/restart."
