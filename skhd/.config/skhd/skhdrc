@@ -14,14 +14,16 @@
 #
 # Substitui o mecanismo antigo (Atalhos Mac → /tmp/uber-listener.log →
 # polling do links.widget). skhd dispara `open` directamente.
-# Excepção: o toggle do focus.widget (review) escreve em
-# /tmp/focus-review-toggle (único IPC necessário).
+# Excepções — ficheiros IPC dedicados:
+#   /tmp/focus-review-toggle  ← review toggle do focus.widget
+#   /tmp/skhd-mode            ← mode + cheatsheet para o skhd-hud.widget
 
 # --- Modos ---------------------------------------------------------------
 # @ = capture: teclas não ligadas ficam bloqueadas, evitando surpresas.
-:: default
-:: cob @
-:: personal @
+# Cada modo escreve em /tmp/skhd-mode (lido pelo skhd-hud.widget).
+:: default : echo "" > /tmp/skhd-mode
+:: cob @ : echo "cob|p·Plan   o·Do   r·Review   d·Dogfooding   esc·sair" > /tmp/skhd-mode
+:: personal @ : echo "personal|m·Mimes   b·BudgetBakers   l·AnyList   esc·sair" > /tmp/skhd-mode
 
 # --- Apps principais (convenção antiga: ctrl + alt + cmd) ----------------
 ctrl + alt + cmd - z : open "zoommtg://zoom.us/join?confno=668244305&zc=2&browser=chrome&uname=Miguel"

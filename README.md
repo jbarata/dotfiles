@@ -90,6 +90,11 @@ P → L                   # AnyList (via Atalho iOS)
 # Esc cancela qualquer leader.
 ```
 
+Ao entrar num leader, o widget `skhd-hud.widget` mostra um overlay no topo
+do ecrã com o nome do modo e a cheatsheet de teclas disponíveis. O skhd
+escreve o estado em `/tmp/skhd-mode` e o widget fica invisível quando
+voltamos a `default`.
+
 ### Working Info — Desktop como workspace temporário
 
 O Desktop é o "rascunho visual" da sessão. No fim, `Ctrl+Alt+Cmd+W`
@@ -533,6 +538,7 @@ Histórico das decisões tomadas e seu racional, para contexto futuro.
 | Modos (leaders) `d` e `p` para dashboards/pessoais | Colapsa ≥6 combinações em 2 leaders; mais mnemónico e liberta keymap |
 | Dogfooding (home) passa a `d → d` dentro do modo cob | Home é menos usado que os dashboards Plan/Do/Review; consistência no leader |
 | `@` nos modos (capture) | Teclas não ligadas ficam bloqueadas enquanto em modo — evita surpresas |
+| HUD dos modos via `skhd-hud.widget` (Übersicht) em vez de `display notification` | Latência ~100ms vs segundos da Notification Center; CSS customizável; sem novas deps (Übersicht já corre) |
 | `open "<url>"` directo (em vez de simular clique no widget) | Elimina polling a 500ms do `links.widget` e o ficheiro temporário |
 | Toggle do `focus.widget` via `/tmp/focus-review-toggle` | `open` não consegue mexer no DOM; ficheiro dedicado (não partilhado) torna a intenção explícita |
 | Tap `koekeishiya/formulae` | Fórmula oficial do autor (mesmo autor do yabai) |

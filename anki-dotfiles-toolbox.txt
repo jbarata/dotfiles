@@ -258,4 +258,6 @@ skF2iC8vNt	skhd: como abrir BudgetBakers pelo leader?	Ctrl+Alt+Cmd+P depois b (m
 skG0sH3dWx	skhd: como correr o Atalho iOS AnyList pelo leader?	Ctrl+Alt+Cmd+P depois l (modo "personal")	skhd shortcuts
 skI3kPw7Xm	skhd: como se define um modo e o seu leader?	`:: name @` (captura) + `modifier - key ; name` para entrar; bindings como `name < key : cmd ; default`	skhd
 skJ5bRq2Vn	skhd: o que faz o `@` na declaração `:: mode @`?	Captura: dentro do modo, teclas não ligadas ficam bloqueadas (evita vazar para o OS)	skhd
+skL2pM8nQc	skhd: como se dá feedback visual ao entrar num modo?	O `:: mode @ : echo ...` escreve em /tmp/skhd-mode; o skhd-hud.widget lê e mostra overlay no topo do ecrã	skhd
+skM6vT9rXd	skhd-hud.widget: qual o formato do ficheiro /tmp/skhd-mode?	`mode|cheatsheet` (ex.: `cob|p·Plan  o·Do  r·Review`); vazio ou "default" esconde o HUD	skhd
 
