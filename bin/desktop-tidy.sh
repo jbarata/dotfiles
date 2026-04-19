@@ -164,9 +164,9 @@ while IFS= read -r proj; do
   [[ -n "$proj" ]] && projects+=("$proj")
 done < <(find "$WORKING_INFO" -mindepth 1 -maxdepth 1 -type d -exec basename {} \; 2>/dev/null | LC_ALL=C sort)
 
-items=()
+items=("$OPT_ROOT")
 for p in "${projects[@]}"; do items+=("$p"); done
-items+=("$OPT_NEW" "$OPT_ROOT" "$OPT_CANCEL")
+items+=("$OPT_NEW" "$OPT_CANCEL")
 
 choice="$(choose_from_list "$prompt" "${items[@]}")"
 
