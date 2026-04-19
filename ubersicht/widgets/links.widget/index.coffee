@@ -187,31 +187,6 @@ render: -> """
             <div class="logoCoB">  <div class="symbolCoB">*</div>  </div>
           </a>
         </td>
-        <td>
-          <a href="https://dogfooding.cultofbits.com/recordm/index.html#/cob.custom-resource/Plan:{%22switchView%22:%22yes%22,%22concurrentFilterToggle%22:%22yes%22,%22showFilters%22:%22yes%22}/dash">
-            <div class="logoCoB">  <div class="symbolText">Plan</div>  </div>
-          </a>
-        </td>
-        <td>
-          <a href="https://dogfooding.cultofbits.com/recordm/index.html#/cob.custom-resource/Do/dash?">
-            <div class="logoCoB">  <div class="symbolText">Do</div>  </div>
-          </a>
-        </td>
-        <td>
-          <a href="https://dogfooding.cultofbits.com/recordm/index.html#/cob.custom-resource/Review/dash?">
-            <div class="logoCoB">  <div class="symbolText">Review</div>  </div>
-          </a>
-        </td>
-        <td>
-          <a href="https://dogfooding.cultofbits.com/recordm/index.html#/cob.custom-resource/Visão Geral/dash">
-            <div class="logoCoB">  <div class="symbolText">Sales</div>  </div>
-          </a>
-        </td>
-        <td>
-          <a href="https://dogfooding.cultofbits.com/recordm/index.html#/cob.custom-resource/Resultados/dash">
-            <div class="logoCoB">  <div class="symbolText">€€€</div>  </div>
-          </a>
-        </td>
       </tr>
       <tr>
         <td>
@@ -219,6 +194,8 @@ render: -> """
             <img style="width:35px;margin-left:6px;background-color:#ffffff40;padding:3px 0px 0px 0px;border-radius:7px;" src="links.widget/images/github.png">
           </a>
         </td>
+      </tr>
+      <tr>
         <td>
           <a href="https://gitlab.com/cob">
             <img style="width:25px;margin-left:7px;background-color:#ffffff40;padding:4px;border-radius:7px;" src="links.widget/images/gitlab.svg">
@@ -234,48 +211,6 @@ render: -> """
       </tr>
       <tr>
         <td>
-          <a class="slackLink" href="slack://open?team=T02J1N4KH">
-            <img style="width:24px;margin-left:10px;background-color:#fff;padding:2px;border-radius:7px;" src="links.widget/images/slack.png">
-          </a>
-        </td>
-        <td>
-          <a class="zoomLink" href="zoommtg://zoom.us/join?confno=668244305&zc=2&browser=chrome&uname=Miguel">
-            <img style="width:32px;margin-left:7px" src="links.widget/images/zoom.us.png">
-          </a>
-        </td>
-      </tr>
-      <tr>
-        <td>
-          <a href="https://mdados.cultofbits.com">
-            <div class="logoCoB">  <div class="symbolText">Mello</div>  </div>
-          </a>
-        </td>
-        <td>
-          <a href="https://winestone.cultofbits.com">
-            <div class="logoCoB">  <div class="symbolText">WS</div>  </div>
-          </a>
-        </td>
-        <td>
-          <a href="https://servinform-sam.cultofbits.com">
-            <div class="logoCoB">  <div class="symbolText">SAM</div>  </div>
-          </a>
-        </td>
-      </tr>
-      <tr>
-        <td>
-          <a href="https://mdados-qual.cultofbits.com">
-            <div class="logoCoB qual">  <div class="symbolText">Mello</div>  </div>
-          </a>
-        </td>
-        <td>
-          <a href="https://winestone-qual.cultofbits.com">
-            <div class="logoCoB qual">  <div class="symbolText">WS</div>  </div>
-          </a>
-        </td>
-      </tr>
-
-      <tr>
-        <td>
           <a class="claudeLink"  href="claude://">
             <img style="width:32px;margin-left:7px;border-radius:7px;" src="links.widget/images/claude.svg">
           </a>
@@ -283,20 +218,6 @@ render: -> """
         <td>
           <a class="chatgptLink"  href="https://chatgpt.com/pt-PT">
             <img style="width:26px;margin-left:10px;background-color:#fff;padding:2px;border-radius:7px;" src="links.widget/images/chat.png">
-          </a>
-        </td>
-      </tr>
-      <tr>
-        <td>
-          <a class="visualcodeLink"  href="vscode://">
-            <img style="width:26px;margin-left:10px;background-color:#fff;padding:2px;border-radius:7px;" src="links.widget/images/vc.png">
-          </a>
-        </td>
-      </tr>
-      <tr>
-        <td>
-          <a class="calendarLink"  href="#">
-            <div >  <div style="font-size: 30px; margin-right: 1px">📅</div>  </div>
           </a>
         </td>
       </tr>
