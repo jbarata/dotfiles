@@ -1,8 +1,9 @@
 refreshFrequency: 100
 
 # HUD para os modos leader do skhd. Lê /tmp/skhd-mode (escrito pelo skhd
-# em `:: mode @ : echo ...`) no formato `mode|cheatsheet`. Fica invisível
-# quando o ficheiro está vazio (modo default).
+# em `:: mode @ : echo ...`) no formato `mode|item1 | item2 | …` em que
+# cada item é `Label (tecla)`. Fica invisível quando o ficheiro está
+# vazio (modo default).
 #
 # Posição: barra inferior do ecrã, contida na faixa visível
 # (iMac: 60px, MacBook ≤1999px: 30px). Layout single-row para caber.
@@ -28,9 +29,24 @@ update: (output, domEl) ->
     hud.classList.remove('visible')
     return
 
-  [mode, hints] = content.split('|')
-  domEl.querySelector('.mode').textContent = mode or ''
-  domEl.querySelector('.hints').textContent = hints or ''
+  # Primeiro `|` separa mode de hints; os restantes são separadores de itens.
+  idx = content.indexOf('|')
+  [mode, hints] = if idx >= 0
+    [content.substring(0, idx), content.substring(idx + 1)]
+  else
+    [content, '']
+
+  domEl.querySelector('.mode').textContent = mode
+
+  items = hints.split(' | ').filter (i) -> i.length > 0
+  hintsHTML = items
+    .map (item) ->
+      "<span class='item'>" +
+        item.replace(/\(([^)]+)\)/g, '<span class="key">($1)</span>') +
+      "</span>"
+    .join '<span class="item-sep">|</span>'
+
+  domEl.querySelector('.hints').innerHTML = hintsHTML
   hud.classList.add('visible')
 
 style: """
@@ -50,7 +66,7 @@ style: """
     transition: opacity 120ms ease-out, transform 120ms ease-out
     background: rgba(20, 22, 30, 0.92)
     color: #c0caf5
-    padding: 0 24px
+    padding: 0 28px
     border-radius: 14px 14px 0 0
     font-family: -apple-system, "SF Pro Display", sans-serif
     text-align: center
@@ -60,7 +76,7 @@ style: """
     white-space: nowrap
     display: flex
     align-items: center
-    gap: 12px
+    gap: 16px
 
   .hud.visible
     opacity: 1
@@ -82,12 +98,29 @@ style: """
     font-weight: 500
     color: #c0caf5
     font-variant-numeric: tabular-nums
+    display: inline-flex
+    align-items: center
+    gap: 18px
+
+  .hints .item
+    display: inline-flex
+    align-items: baseline
+    gap: 6px
+
+  .hints .item-sep
+    color: rgba(192, 202, 245, 0.25)
+    font-weight: 300
+
+  .hints .key
+    color: #e0af68
+    font-weight: 600
+    font-variant-numeric: tabular-nums
 
   @media (max-width: 1999px)
     .hud
       height: 30px
-      padding: 0 14px
-      gap: 8px
+      padding: 0 16px
+      gap: 10px
       border-radius: 8px 8px 0 0
 
     .mode
@@ -99,4 +132,11 @@ style: """
 
     .hints
       font-size: 12px
+      gap: 10px
+
+    .hints .item
+      gap: 4px
+
+    .hints .item-sep
+      font-size: 11px
 """
