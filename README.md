@@ -92,7 +92,9 @@ K → M → P               # Mello Produção
 K → M → Q               # Mello Qualidade
 K → W → P               # Winestone Produção
 K → W → Q               # Winestone Qualidade
-K → S                   # SAM (directo)
+K → L → E               # Lidl External
+K → L → I               # Lidl Internal
+K → R                   # Rentelecom (directo)
 
 # Esc cancela qualquer modo (mesmo aninhado sai directo para default).
 ```

@@ -264,5 +264,6 @@ skN4zJ1bWf	skhd: como encadear modos aninhados?	Um modo entra noutro via `; mode
 skO9dQ7vGh	skhd: qual o leader para soluções de clientes?	Ctrl+Alt+Cmd+K (klientes; c está tomado pelo Claude)	skhd shortcuts
 skP2rH5aTn	skhd clients: como abrir Mello Produção vs Qualidade?	K → M → P (produção) ou K → M → Q (qualidade)	skhd shortcuts
 skQ6xB8mEp	skhd clients: como abrir Winestone Produção vs Qualidade?	K → W → P (produção) ou K → W → Q (qualidade)	skhd shortcuts
-skR3nT7cVy	skhd clients: como abrir SAM?	K → S (directo; SAM só tem ambiente de produção)	skhd shortcuts
+skR3nT7cVy	skhd clients: como abrir Lidl External vs Internal?	K → L → E (lidl-external) ou K → L → I (lidl interno)	skhd shortcuts
+skS8kD2pLw	skhd clients: como abrir Rentelecom?	K → R (directo; rentelecom.cultofbits.com)	skhd shortcuts
 

@@ -12,7 +12,8 @@
 #                                   (m/b/l → Mimes/BudgetBakers/AnyList).
 #   - ctrl + alt + cmd - k        : leader do modo "clients" (aninhado)
 #                                   (m/w → mello/winestone → p/q prod/qual;
-#                                    s → SAM).
+#                                    l → lidl → e/i external/internal;
+#                                    r → Rentelecom).
 #   - escape                      : cancela qualquer modo activo (sai
 #                                   directo para default, mesmo aninhado).
 #
@@ -28,9 +29,10 @@
 :: default : echo "" > /tmp/skhd-mode
 :: cob @ : echo "cob|Plan (p) | Do (o) | Review (r) | Dogfooding (d) | sair (esc)" > /tmp/skhd-mode
 :: personal @ : echo "personal|Mimes (m) | BudgetBakers (b) | AnyList (l) | sair (esc)" > /tmp/skhd-mode
-:: clients @ : echo "clients|Mello (m) | Winestone (w) | SAM (s) | sair (esc)" > /tmp/skhd-mode
+:: clients @ : echo "clients|Mello (m) | Winestone (w) | Lidl (l) | Rentelecom (r) | sair (esc)" > /tmp/skhd-mode
 :: mello @ : echo "clients › mello|Produção (p) | Qualidade (q) | sair (esc)" > /tmp/skhd-mode
 :: winestone @ : echo "clients › winestone|Produção (p) | Qualidade (q) | sair (esc)" > /tmp/skhd-mode
+:: lidl @ : echo "clients › lidl|External (e) | Internal (i) | sair (esc)" > /tmp/skhd-mode
 
 # --- Apps principais (convenção antiga: ctrl + alt + cmd) ----------------
 ctrl + alt + cmd - z : open "zoommtg://zoom.us/join?confno=668244305&zc=2&browser=chrome&uname=Miguel"
@@ -69,12 +71,13 @@ personal < l : open "shortcuts://run-shortcut?name=Abrir%20AnyList"; skhd -k "es
 personal < escape ; default
 
 # --- Modo clients (soluções; aninhado) -----------------------------------
-# m/w abrem sub-modos (prod/qual); s abre SAM directamente (só tem prod).
+# m/w/l abrem sub-modos com variantes; r abre Rentelecom directamente.
 # esc em qualquer nível sai directamente para default (design simples;
 # se o user entrou no modo errado, basta re-premir o leader).
 clients < m ; mello
 clients < w ; winestone
-clients < s : open "https://servinform-sam.cultofbits.com"; skhd -k "escape"
+clients < l ; lidl
+clients < r : open "https://rentelecom.cultofbits.com"; skhd -k "escape"
 clients < escape ; default
 
 mello < p : open "https://mdados.cultofbits.com"; skhd -k "escape"
@@ -84,3 +87,7 @@ mello < escape ; default
 winestone < p : open "https://winestone.cultofbits.com"; skhd -k "escape"
 winestone < q : open "https://winestone-qual.cultofbits.com"; skhd -k "escape"
 winestone < escape ; default
+
+lidl < e : open "https://lidl-external.cultofbits.com"; skhd -k "escape"
+lidl < i : open "https://lidl.cultofbits.com"; skhd -k "escape"
+lidl < escape ; default
