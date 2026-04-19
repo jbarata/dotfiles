@@ -5,9 +5,9 @@
 # Fluxo:
 #   1. Alvos = selecção actual do Finder (se toda ela está em ~/Desktop),
 #      caso contrário, todos os itens do Desktop (exceto ocultos/.DS_Store).
-#   2. Para cada alvo: escolher projecto existente, criar novo, deixar na raiz,
-#      saltar ou cancelar tudo.
-#   3. Colisões de nome: renomear com sufixo "(2)", substituir ou saltar.
+#   2. Perguntar UMA VEZ o destino — aplica a mesma decisão a todos os alvos.
+#   3. Colisões de nome: perguntar UMA VEZ a política — renomear com sufixo
+#      "(2)", substituir ou saltar, aplicada a todos os ficheiros que colidam.
 set -euo pipefail
 
 WORKING_INFO="$HOME/Documents/Working Info"
@@ -17,11 +17,10 @@ mkdir -p "$WORKING_INFO"
 # Sentinelas — distinguem acções de nomes de projectos na lista.
 OPT_NEW="[Novo projecto...]"
 OPT_ROOT="[Deixar na raiz (Working Info)]"
-OPT_SKIP="[Saltar este ficheiro]"
 OPT_CANCEL="[Cancelar arrumação]"
-COL_RENAME="[Renomear]"
+COL_RENAME="[Renomear com sufixo (2)]"
 COL_REPLACE="[Substituir]"
-COL_SKIP="[Saltar]"
+COL_SKIP="[Saltar os que colidem]"
 
 # --- Helpers AppleScript ---------------------------------------------------
 # Passam strings como `argv` para evitar escaping manual.
@@ -145,66 +144,98 @@ if [[ ${#TARGETS[@]} -eq 0 ]]; then
   exit 0
 fi
 
-# --- 2. Iterar e mover -----------------------------------------------------
+# --- 2. Perguntar destino UMA vez e aplicar a todos -----------------------
+
+# Preview dos ficheiros para o prompt.
+N=${#TARGETS[@]}
+preview=""
+max_preview=5
+for ((i = 0; i < N && i < max_preview; i++)); do
+  preview+=$'\n'"  • $(basename "${TARGETS[$i]}")"
+done
+if [[ $N -gt $max_preview ]]; then
+  preview+=$'\n'"  … e mais $((N - max_preview))"
+fi
+prompt="Arrumar $N ficheiro(s):$preview"$'\n\n'"Destino:"
+
+# Listar projectos (subpastas top-level), ordenados
+projects=()
+while IFS= read -r proj; do
+  [[ -n "$proj" ]] && projects+=("$proj")
+done < <(find "$WORKING_INFO" -mindepth 1 -maxdepth 1 -type d -exec basename {} \; 2>/dev/null | LC_ALL=C sort)
+
+items=()
+for p in "${projects[@]}"; do items+=("$p"); done
+items+=("$OPT_NEW" "$OPT_ROOT" "$OPT_CANCEL")
+
+choice="$(choose_from_list "$prompt" "${items[@]}")"
+
+case "$choice" in
+  ""|"$OPT_CANCEL")
+    info_dialog "Arrumação cancelada."
+    exit 0
+    ;;
+  "$OPT_NEW")
+    new_name="$(ask_text "Nome do novo projecto:" "")"
+    new_name="${new_name//\//_}"
+    if [[ -z "$new_name" ]]; then
+      info_dialog "Arrumação cancelada (sem nome de projecto)."
+      exit 0
+    fi
+    DEST_DIR="$WORKING_INFO/$new_name"
+    mkdir -p "$DEST_DIR"
+    ;;
+  "$OPT_ROOT")
+    DEST_DIR="$WORKING_INFO"
+    ;;
+  *)
+    DEST_DIR="$WORKING_INFO/$choice"
+    ;;
+esac
+
+# --- 3. Detectar colisões e perguntar política UMA vez --------------------
+
+COLLIDE=()
+for src in "${TARGETS[@]}"; do
+  [[ -e "$src" ]] || continue
+  fname="$(basename "$src")"
+  if [[ -e "$DEST_DIR/$fname" ]]; then
+    COLLIDE+=("$fname")
+  fi
+done
+
+COL_POLICY=""
+if [[ ${#COLLIDE[@]} -gt 0 ]]; then
+  col_preview=""
+  for ((i = 0; i < ${#COLLIDE[@]} && i < max_preview; i++)); do
+    col_preview+=$'\n'"  • ${COLLIDE[$i]}"
+  done
+  if [[ ${#COLLIDE[@]} -gt $max_preview ]]; then
+    col_preview+=$'\n'"  … e mais $((${#COLLIDE[@]} - max_preview))"
+  fi
+  col_prompt="${#COLLIDE[@]} ficheiro(s) já existem em $(basename "$DEST_DIR"):$col_preview"$'\n\n'"O que fazer?"
+  COL_POLICY="$(choose_from_list "$col_prompt" "$COL_RENAME" "$COL_REPLACE" "$COL_SKIP")"
+  if [[ -z "$COL_POLICY" ]]; then
+    info_dialog "Arrumação cancelada."
+    exit 0
+  fi
+fi
+
+# --- 4. Mover ---------------------------------------------------------------
 
 MOVED=0
 SKIPPED=0
-CANCELLED=false
 
 for src in "${TARGETS[@]}"; do
   [[ -e "$src" ]] || { SKIPPED=$((SKIPPED + 1)); continue; }
   fname="$(basename "$src")"
+  dest="$DEST_DIR/$fname"
 
-  # Listar projectos (subpastas top-level de Working Info), ordenados
-  projects=()
-  while IFS= read -r proj; do
-    [[ -n "$proj" ]] && projects+=("$proj")
-  done < <(find "$WORKING_INFO" -mindepth 1 -maxdepth 1 -type d -exec basename {} \; 2>/dev/null | LC_ALL=C sort)
-
-  # Construir argumentos para choose_from_list
-  items=()
-  for p in "${projects[@]}"; do items+=("$p"); done
-  items+=("$OPT_NEW" "$OPT_ROOT" "$OPT_SKIP" "$OPT_CANCEL")
-
-  choice="$(choose_from_list "Arrumar: $fname" "${items[@]}")"
-
-  case "$choice" in
-    ""|"$OPT_CANCEL")
-      CANCELLED=true
-      break
-      ;;
-    "$OPT_SKIP")
-      SKIPPED=$((SKIPPED + 1))
-      continue
-      ;;
-    "$OPT_NEW")
-      new_name="$(ask_text "Nome do novo projecto:" "")"
-      # Sanitizar: remover slashes
-      new_name="${new_name//\//_}"
-      if [[ -z "$new_name" ]]; then
-        SKIPPED=$((SKIPPED + 1))
-        continue
-      fi
-      dest_dir="$WORKING_INFO/$new_name"
-      mkdir -p "$dest_dir"
-      ;;
-    "$OPT_ROOT")
-      dest_dir="$WORKING_INFO"
-      ;;
-    *)
-      dest_dir="$WORKING_INFO/$choice"
-      ;;
-  esac
-
-  dest="$dest_dir/$fname"
-
-  # Resolver colisão
   if [[ -e "$dest" ]]; then
-    col_choice="$(choose_from_list "Já existe '$fname' em $(basename "$dest_dir"). O que fazer?" "$COL_RENAME" "$COL_REPLACE" "$COL_SKIP")"
-    case "$col_choice" in
+    case "$COL_POLICY" in
       "$COL_RENAME")
-        new_fname="$(next_free_name "$dest_dir" "$fname")"
-        dest="$dest_dir/$new_fname"
+        new_fname="$(next_free_name "$DEST_DIR" "$fname")"
+        dest="$DEST_DIR/$new_fname"
         ;;
       "$COL_REPLACE")
         rm -rf "$dest"
@@ -223,10 +254,6 @@ for src in "${TARGETS[@]}"; do
   fi
 done
 
-# --- 3. Relatório final ----------------------------------------------------
+# --- 5. Relatório final ----------------------------------------------------
 
-if $CANCELLED; then
-  info_dialog "Arrumação cancelada.\nMovidos: $MOVED\nSaltados: $SKIPPED"
-else
-  info_dialog "Arrumação concluída.\nMovidos: $MOVED\nSaltados: $SKIPPED"
-fi
+info_dialog "Arrumação concluída.\nMovidos: $MOVED\nSaltados: $SKIPPED\nDestino: $(basename "$DEST_DIR")"
