@@ -72,6 +72,7 @@ Ctrl+Alt+Cmd+S          # Slack
 Ctrl+Alt+Cmd+C          # Claude (activate)
 Shift+Ctrl+Alt+Cmd+C    # ChatGPT
 Ctrl+Alt+Cmd+V          # VS Code
+Ctrl+Alt+Cmd+G          # Ghostty (abre ou activa a janela)
 Ctrl+Alt+Cmd+T          # Calendário (open_calendar.scpt do focus.widget)
 Ctrl+Alt+Cmd+R          # Toggle review mode no focus.widget
 

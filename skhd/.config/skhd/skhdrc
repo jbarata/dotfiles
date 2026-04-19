@@ -29,6 +29,7 @@ ctrl + alt + cmd - s : open "slack://open?team=T02J1N4KH"
 ctrl + alt + cmd - c : osascript -e 'tell application "Claude" to activate'
 shift + ctrl + alt + cmd - c : open "https://chatgpt.com/pt-PT"
 ctrl + alt + cmd - v : open "vscode://"
+ctrl + alt + cmd - g : open -a "Ghostty"
 ctrl + alt + cmd - t : osascript "$HOME/.dotfiles/ubersicht/widgets/focus.widget/open_calendar.scpt"
 ctrl + alt + cmd - r : echo toggle > /tmp/focus-review-toggle
 
