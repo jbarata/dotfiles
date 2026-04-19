@@ -5,13 +5,16 @@
 set -euo pipefail
 
 TARGET="$HOME/Documents/Working Info"
+# Background opcional: se existir, é aplicado como icon view background.
+BG="$HOME/.dotfiles/assets/working-info-bg.png"
 mkdir -p "$TARGET"
 
-# Abrir (ou focar) a janela do Finder em icon view.
-# Se já existir janela aberta em Working Info, reutiliza; caso contrário cria.
-osascript - "$TARGET" <<'EOF'
+# Abrir (ou focar) a janela do Finder em icon view, sem toolbar/sidebar
+# (traditional window), com background picture se disponível.
+osascript - "$TARGET" "$BG" <<'EOF'
 on run argv
   set targetPath to item 1 of argv
+  set bgPath to item 2 of argv
   tell application "Finder"
     activate
     set targetFolder to POSIX file targetPath as alias
@@ -30,7 +33,12 @@ on run argv
       set target of win to targetFolder
     end if
     set current view of win to icon view
+    set toolbar visible of win to false
     set index of win to 1
+    try
+      set bgAlias to POSIX file bgPath as alias
+      set background picture of icon view options of win to bgAlias
+    end try
   end tell
 end run
 EOF
