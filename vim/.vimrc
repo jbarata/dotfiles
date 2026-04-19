@@ -71,10 +71,20 @@ set signcolumn=yes      " coluna de sinais sempre visível
 
 " Cursor shape por modo (DECSCUSR). O Ghostty tem `cursor-style = bar`
 " como default global; estas sequências sobrepõem-no dentro do vim para
-" ter bloco sobre o caracter em normal mode.
-let &t_SI = "\e[6 q"    " insert  → bar
-let &t_SR = "\e[4 q"    " replace → underline
-let &t_EI = "\e[2 q"    " normal  → block
+" ter bloco sobre o caracter em normal mode. Usa `\<Esc>` (notação
+" vim-nativa para ESC) em vez de `\e` para compatibilidade entre versões.
+let &t_SI = "\<Esc>[6 q"    " insert  → bar
+let &t_SR = "\<Esc>[4 q"    " replace → underline
+let &t_EI = "\<Esc>[2 q"    " normal  → block
+
+" Vim só emite t_EI em transições de modo (não no arranque). Este
+" autocmd força o cursor em bloco no start/resume e devolve barra ao
+" sair (alinha com o default do Ghostty).
+augroup VimCursorShape
+  autocmd!
+  autocmd VimEnter,VimResume * silent !printf '\033[2 q' > /dev/tty
+  autocmd VimLeave           * silent !printf '\033[6 q' > /dev/tty
+augroup END
 
 " =========================================================
 " 8. Leader e mappings
