@@ -18,8 +18,9 @@
 #                                   (t/d/w/m/q/y → today/daily/weekly/
 #                                    monthly/quarterly/year; o → toggle
 #                                    painel).
-#   - shift + ctrl + alt + cmd - ?: alterna o painel de ajuda
+#   - ctrl + alt + cmd - '        : alterna o painel de ajuda
 #                                   (skhd-help.widget do Übersicht).
+#                                   ' é directo no teclado PT (sem shift).
 #   - escape                      : cancela qualquer modo activo (sai
 #                                   directo para default, mesmo aninhado).
 #
@@ -52,10 +53,9 @@ ctrl + alt + cmd - g : open -a "Ghostty"
 ctrl + alt + cmd - t : osascript "$HOME/.dotfiles/ubersicht/widgets/focus.widget/open_calendar.scpt"
 
 # --- Ajuda ---------------------------------------------------------------
-# Shift+Ctrl+Alt+Cmd+? alterna o painel do skhd-help.widget. O ? obriga a
-# shift na esmagadora maioria dos layouts — usa-se o keycode físico
-# 0x2C (tecla "/") para ser independente do layout activo.
-shift + ctrl + alt + cmd - 0x2C : echo toggle > /tmp/skhd-help-toggle
+# Ctrl+Alt+Cmd+' alterna o painel do skhd-help.widget. Em teclado PT o
+# apóstrofo é directo (tecla à direita do 0), sem necessitar shift.
+ctrl + alt + cmd - ' : echo toggle > /tmp/skhd-help-toggle
 
 # --- Working Info (desktop de arquivo) -----------------------------------
 cmd + alt - w        : "$HOME/.dotfiles/bin/open-working-info.sh"

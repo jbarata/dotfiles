@@ -255,8 +255,8 @@ skH8mQr5Tj	skhd: Ctrl+Alt+Cmd+R — o que faz?	Entra no modo "review"; depois t/
 skT4yW9sPm	skhd review: como lançar Daily vs Weekly vs Quarterly?	R → D (daily), R → W (weekly), R → Q (quarterly)	skhd shortcuts
 skU2cN6hXk	skhd review: que ficheiro é o IPC para o focus.widget?	/tmp/focus-review-cmd (tokens: toggle, open, close, today, daily, weekly, monthly, quarterly, year)	skhd
 skV5bQ1jFe	focus.widget: como é que o trigger específico (ex. Weekly) é despachado?	O widget polla /tmp/focus-review-cmd, garante que o painel está aberto (click em .review-open) e depois clica .<tipo>-review-trigger (ou .today-plan-trigger)	skhd
-skW8fR3dPj	skhd: como abrir o painel de ajuda com todos os atalhos?	Shift+Ctrl+Alt+Cmd+? alterna o skhd-help.widget do Übersicht	skhd shortcuts
-skX1mS6gBn	skhd: porque é que o binding de `?` usa o keycode 0x2C em vez da letra?	0x2C é o keycode físico da tecla "/" — `?` é sempre Shift+/ no teclado físico, independentemente do layout (PT/US/…)	skhd
+skW8fR3dPj	skhd: como abrir o painel de ajuda com todos os atalhos?	Ctrl+Alt+Cmd+' alterna o skhd-help.widget do Übersicht (apóstrofo é directo no teclado PT)	skhd shortcuts
+skX1mS6gBn	skhd: porque a tecla '?	No teclado PT o apóstrofo é acessível directamente (sem shift); escolhido por ser ergonómico e mnemónico (abrir/fechar aspas ≈ abrir/fechar ajuda)	skhd
 skD1uK6rZp	skhd: dentro do modo cob, que teclas abrem os dashboards?	p → Plan, o → Do, r → Review, d → Dogfooding home; esc cancela	skhd shortcuts
 skE4gX5lBq	skhd: como abrir Mimes — Dia a Dia pelo leader?	Ctrl+Alt+Cmd+P depois m (modo "personal")	skhd shortcuts
 skF2iC8vNt	skhd: como abrir BudgetBakers pelo leader?	Ctrl+Alt+Cmd+P depois b (modo "personal")	skhd shortcuts

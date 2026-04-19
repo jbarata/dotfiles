@@ -69,8 +69,8 @@ render: -> """
           </div>
           <div class="section">
             <div class="section-title">Ajuda</div>
-            <div class="item"><kbd>⇧⌃⌥⌘ ?</kbd><span>Alterna este painel</span></div>
-            <div class="item"><kbd>Esc</kbd><span>Sai de qualquer leader (este painel fecha-se com ?)</span></div>
+            <div class="item"><kbd>⌃⌥⌘ '</kbd><span>Alterna este painel</span></div>
+            <div class="item"><kbd>Esc</kbd><span>Sai de qualquer leader (este painel fecha-se com ' )</span></div>
           </div>
         </div>
       </div>
