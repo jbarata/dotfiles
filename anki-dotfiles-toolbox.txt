@@ -239,7 +239,7 @@ YZea7VdZ9i	Como correr o bootstrap em modo teste?	~/.dotfiles/bootstrap.sh --dry
 # =========================================================
 sk0zR7nQp1	Onde está o ficheiro de config do skhd?	~/.config/skhd/skhdrc (symlink para skhd/.config/skhd/skhdrc do repo)	skhd
 sk1aXpL9Tm	Como aplicar alterações ao skhdrc sem reboot?	skhd --restart-service	skhd
-sk2vYm3BcN	Que modificador é a convenção nos dotfiles para skhd?	ctrl + alt + cmd para os 8 atalhos antigos (herança dos Atalhos Mac); cmd + alt para os novos	skhd
+sk2vYm3BcN	Que modificador é a convenção nos dotfiles para skhd?	ctrl + alt + cmd (hyper único); dashboards e pessoais via modos leader (d e p)	skhd
 sk3hJ8fGdQ	Sintaxe skhd para abrir um URL ao premir Ctrl+Alt+Cmd+N?	ctrl + alt + cmd - n : open "https://example.com"	skhd
 sk4oPzR2sK	Que permissão macOS tem o skhd de ter para funcionar?	Acessibilidade (Definições → Privacidade e Segurança)	skhd
 sk5wV6kA3e	Porque skhd em vez de Atalhos Mac + /tmp/uber-listener?	Config em texto versionável; sem polling; sincroniza por git	skhd
@@ -249,10 +249,12 @@ sk8fI5mH2x	skhd: Ctrl+Alt+Cmd+C — o que faz?	Activa a app Claude (osascript)	s
 sk9bO6uP0y	skhd: Shift+Ctrl+Alt+Cmd+C — o que abre?	ChatGPT (chatgpt.com/pt-PT)	skhd shortcuts
 skAcT3dF4z	skhd: Ctrl+Alt+Cmd+V — o que abre?	VS Code (vscode://)	skhd shortcuts
 skB9eS2qJw	skhd: Ctrl+Alt+Cmd+T — o que faz?	Abre Calendário (open_calendar.scpt do focus.widget)	skhd shortcuts
-skCnY7hM8v	skhd: Ctrl+Alt+Cmd+D — o que abre?	Dogfooding (cultofbits.com)	skhd shortcuts
+skCnY7hM8v	skhd: Ctrl+Alt+Cmd+D — o que faz?	Entra no modo "cob" (leader); depois p/o/r/d → Plan/Do/Review/Dogfooding	skhd shortcuts
 skH8mQr5Tj	skhd: Ctrl+Alt+Cmd+R — o que faz?	Escreve "toggle" em /tmp/focus-review-toggle; o focus.widget lê e alterna modo review	skhd shortcuts
-skD1uK6rZp	skhd: Cmd+Alt+P / O / R — o que abrem?	Plan / Do / Review no Dogfooding	skhd shortcuts
-skE4gX5lBq	skhd: Cmd+Alt+M — o que abre?	Mimes — Dia a Dia (mimes.cultofbits.com)	skhd shortcuts
-skF2iC8vNt	skhd: Cmd+Alt+B — o que abre?	BudgetBakers (web.budgetbakers.com)	skhd shortcuts
-skG0sH3dWx	skhd: Cmd+Alt+L — o que faz?	Corre o Atalho iOS "Abrir AnyList"	skhd shortcuts
+skD1uK6rZp	skhd: dentro do modo cob, que teclas abrem os dashboards?	p → Plan, o → Do, r → Review, d → Dogfooding home; esc cancela	skhd shortcuts
+skE4gX5lBq	skhd: como abrir Mimes — Dia a Dia pelo leader?	Ctrl+Alt+Cmd+P depois m (modo "personal")	skhd shortcuts
+skF2iC8vNt	skhd: como abrir BudgetBakers pelo leader?	Ctrl+Alt+Cmd+P depois b (modo "personal")	skhd shortcuts
+skG0sH3dWx	skhd: como correr o Atalho iOS AnyList pelo leader?	Ctrl+Alt+Cmd+P depois l (modo "personal")	skhd shortcuts
+skI3kPw7Xm	skhd: como se define um modo e o seu leader?	`:: name @` (captura) + `modifier - key ; name` para entrar; bindings como `name < key : cmd ; default`	skhd
+skJ5bRq2Vn	skhd: o que faz o `@` na declaração `:: mode @`?	Captura: dentro do modo, teclas não ligadas ficam bloqueadas (evita vazar para o OS)	skhd
 

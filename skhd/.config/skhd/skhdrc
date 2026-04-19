@@ -3,16 +3,25 @@
 # Docs: https://github.com/koekeishiya/skhd
 #
 # Convenções de teclas:
-#   - ctrl + alt + cmd - <letra>  : atalhos "Start X" herdados dos Atalhos Mac
-#     (Calendar usa 't' e ChatGPT junta shift, para desambiguar com Claude).
-#   - cmd + alt - <letra>         : atalhos novos (dashboards CoB, pessoais).
+#   - ctrl + alt + cmd - <letra>  : atalhos "Start X" herdados dos Atalhos
+#     Mac (Calendar usa 't' e ChatGPT junta shift, para desambiguar com
+#     Claude). Uma tecla, uma acção.
+#   - ctrl + alt + cmd - d        : leader do modo "cob"
+#                                   (p/o/r/d → Plan/Do/Review/Dogfooding).
+#   - ctrl + alt + cmd - p        : leader do modo "personal"
+#                                   (m/b/l → Mimes/BudgetBakers/AnyList).
+#   - escape                      : cancela qualquer modo activo.
 #
 # Substitui o mecanismo antigo (Atalhos Mac → /tmp/uber-listener.log →
-# polling do links.widget). skhd dispara `open` directamente — sem
-# ficheiros temporários, sem polling, versionável neste repo.
-# Excepção: o toggle do focus.widget (review) ainda precisa de comunicar
-# com o DOM do widget, por isso escreve num ficheiro dedicado que o
-# widget lê (/tmp/focus-review-toggle).
+# polling do links.widget). skhd dispara `open` directamente.
+# Excepção: o toggle do focus.widget (review) escreve em
+# /tmp/focus-review-toggle (único IPC necessário).
+
+# --- Modos ---------------------------------------------------------------
+# @ = capture: teclas não ligadas ficam bloqueadas, evitando surpresas.
+:: default
+:: cob @
+:: personal @
 
 # --- Apps principais (convenção antiga: ctrl + alt + cmd) ----------------
 ctrl + alt + cmd - z : open "zoommtg://zoom.us/join?confno=668244305&zc=2&browser=chrome&uname=Miguel"
@@ -21,19 +30,25 @@ ctrl + alt + cmd - c : osascript -e 'tell application "Claude" to activate'
 shift + ctrl + alt + cmd - c : open "https://chatgpt.com/pt-PT"
 ctrl + alt + cmd - v : open "vscode://"
 ctrl + alt + cmd - t : osascript "$HOME/.dotfiles/ubersicht/widgets/focus.widget/open_calendar.scpt"
-ctrl + alt + cmd - d : open "https://dogfooding.cultofbits.com"
 ctrl + alt + cmd - r : echo toggle > /tmp/focus-review-toggle
-
-# --- Cult of Bits (dashboards) -------------------------------------------
-cmd + alt - p : open "https://dogfooding.cultofbits.com/recordm/index.html#/cob.custom-resource/Plan:{%22switchView%22:%22yes%22,%22concurrentFilterToggle%22:%22yes%22,%22showFilters%22:%22yes%22}/dash"
-cmd + alt - o : open "https://dogfooding.cultofbits.com/recordm/index.html#/cob.custom-resource/Do/dash?"
-cmd + alt - r : open "https://dogfooding.cultofbits.com/recordm/index.html#/cob.custom-resource/Review/dash?"
-
-# --- Pessoal -------------------------------------------------------------
-cmd + alt - m : open "https://mimes.cultofbits.com/recordm/index.html#/cob.custom-resource/Dia a Dia/dash"
-cmd + alt - b : open "https://web.budgetbakers.com/dashboard"
-cmd + alt - l : open "shortcuts://run-shortcut?name=Abrir%20AnyList"
 
 # --- Working Info (desktop de arquivo) -----------------------------------
 cmd + alt - w        : "$HOME/.dotfiles/bin/open-working-info.sh"
 ctrl + alt + cmd - w : "$HOME/.dotfiles/bin/desktop-tidy.sh"
+
+# --- Leaders -------------------------------------------------------------
+ctrl + alt + cmd - d ; cob
+ctrl + alt + cmd - p ; personal
+
+# --- Modo cob (dashboards CoB) -------------------------------------------
+cob < p : open "https://dogfooding.cultofbits.com/recordm/index.html#/cob.custom-resource/Plan:{%22switchView%22:%22yes%22,%22concurrentFilterToggle%22:%22yes%22,%22showFilters%22:%22yes%22}/dash" ; default
+cob < o : open "https://dogfooding.cultofbits.com/recordm/index.html#/cob.custom-resource/Do/dash?" ; default
+cob < r : open "https://dogfooding.cultofbits.com/recordm/index.html#/cob.custom-resource/Review/dash?" ; default
+cob < d : open "https://dogfooding.cultofbits.com" ; default
+cob < escape ; default
+
+# --- Modo personal (atalhos pessoais) ------------------------------------
+personal < m : open "https://mimes.cultofbits.com/recordm/index.html#/cob.custom-resource/Dia a Dia/dash" ; default
+personal < b : open "https://web.budgetbakers.com/dashboard" ; default
+personal < l : open "shortcuts://run-shortcut?name=Abrir%20AnyList" ; default
+personal < escape ; default

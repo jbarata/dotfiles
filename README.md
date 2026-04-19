@@ -66,21 +66,27 @@ Cmd+Shift+,         # reload da configuração
 Editar `skhd/.config/skhd/skhdrc` e correr `skhd --restart-service`.
 
 ```bash
-# Convenção antiga (herdada dos Atalhos Mac):
+# Tecla única (herdado dos Atalhos Mac):
 Ctrl+Alt+Cmd+Z          # Zoom (sala pessoal)
 Ctrl+Alt+Cmd+S          # Slack
 Ctrl+Alt+Cmd+C          # Claude (activate)
 Shift+Ctrl+Alt+Cmd+C    # ChatGPT
 Ctrl+Alt+Cmd+V          # VS Code
 Ctrl+Alt+Cmd+T          # Calendário (open_calendar.scpt do focus.widget)
-Ctrl+Alt+Cmd+D          # Dogfooding
 Ctrl+Alt+Cmd+R          # Toggle review mode no focus.widget
 
-# Convenção nova (dashboards / pessoais):
-Cmd+Alt+P/O/R           # Plan / Do / Review no Dogfooding
-Cmd+Alt+M               # Mimes (Dia a Dia)
-Cmd+Alt+B               # BudgetBakers
-Cmd+Alt+L               # AnyList (via Atalho iOS)
+# Leader "cob" (Ctrl+Alt+Cmd+D seguido de...):
+D → P                   # Plan (Dogfooding)
+D → O                   # Do
+D → R                   # Review
+D → D                   # Dogfooding (home)
+
+# Leader "personal" (Ctrl+Alt+Cmd+P seguido de...):
+P → M                   # Mimes (Dia a Dia)
+P → B                   # BudgetBakers
+P → L                   # AnyList (via Atalho iOS)
+
+# Esc cancela qualquer leader.
 ```
 
 ### Working Info — Desktop como workspace temporário
@@ -230,7 +236,16 @@ Editar `skhd/.config/skhd/skhdrc` e acrescentar uma linha no formato
 `<modificadores> - <tecla> : <comando>`:
 
 ```
-cmd + alt - n : open "https://example.com"
+ctrl + alt + cmd - n : open "https://example.com"
+```
+
+Para um modo (leader) novo:
+
+```
+:: mymode @
+ctrl + alt + cmd - x ; mymode
+mymode < a : open "https://..." ; default
+mymode < escape ; default
 ```
 
 Aplicar sem reboot:
@@ -336,7 +351,7 @@ brew bundle cleanup        # remover pacotes não no Brewfile (cuidado!)
 │       └── themes/catppuccin-mocha # Tema embutido
 │
 ├── skhd/                           # → link_config → ~/.config/skhd/
-│   └── .config/skhd/skhdrc         # Atalhos globais (Ctrl+Alt+Cmd+... / Cmd+Alt+...)
+│   └── .config/skhd/skhdrc         # Atalhos globais (Ctrl+Alt+Cmd+... + modos cob/personal)
 │
 ├── vscode/                         # → link_config → ~/Library/.../Code/User/
 │   ├── settings.json               # Settings completas
@@ -513,8 +528,10 @@ Histórico das decisões tomadas e seu racional, para contexto futuro.
 | Decisão | Racional |
 |---|---|
 | skhd em vez de Atalhos Mac + `/tmp/uber-listener.log` | Config em texto, versionável e sincronizada entre máquinas via git |
-| `ctrl + alt + cmd` para os 8 atalhos antigos (z/s/c/shift+c/v/t/d/r) | Preserva a convenção herdada dos Atalhos Mac (muscle memory) |
-| `cmd + alt` para atalhos novos (dashboards CoB, pessoais) | Modificador mais leve; evita conflitos de `cmd + shift` com apps |
+| `ctrl + alt + cmd` como hyper único | Preserva a convenção herdada dos Atalhos Mac (muscle memory) |
+| Modos (leaders) `d` e `p` para dashboards/pessoais | Colapsa ≥6 combinações em 2 leaders; mais mnemónico e liberta keymap |
+| Dogfooding (home) passa a `d → d` dentro do modo cob | Home é menos usado que os dashboards Plan/Do/Review; consistência no leader |
+| `@` nos modos (capture) | Teclas não ligadas ficam bloqueadas enquanto em modo — evita surpresas |
 | `open "<url>"` directo (em vez de simular clique no widget) | Elimina polling a 500ms do `links.widget` e o ficheiro temporário |
 | Toggle do `focus.widget` via `/tmp/focus-review-toggle` | `open` não consegue mexer no DOM; ficheiro dedicado (não partilhado) torna a intenção explícita |
 | Tap `koekeishiya/formulae` | Fórmula oficial do autor (mesmo autor do yabai) |
