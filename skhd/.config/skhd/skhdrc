@@ -14,13 +14,17 @@
 #                                   (m/w → mello/winestone → p/q prod/qual;
 #                                    l → lidl → e/i external/internal;
 #                                    r → Rentelecom).
+#   - ctrl + alt + cmd - r        : leader do modo "review"
+#                                   (t/d/w/m/q/y → today/daily/weekly/
+#                                    monthly/quarterly/year; o → toggle
+#                                    painel).
 #   - escape                      : cancela qualquer modo activo (sai
 #                                   directo para default, mesmo aninhado).
 #
 # Substitui o mecanismo antigo (Atalhos Mac → /tmp/uber-listener.log →
 # polling do links.widget). skhd dispara `open` directamente.
 # Excepções — ficheiros IPC dedicados:
-#   /tmp/focus-review-toggle  ← review toggle do focus.widget
+#   /tmp/focus-review-cmd     ← comandos para o focus.widget (review)
 #   /tmp/skhd-mode            ← mode + cheatsheet para o skhd-hud.widget
 
 # --- Modos ---------------------------------------------------------------
@@ -33,6 +37,7 @@
 :: mello @ : echo "clients › mello|Produção (p) | Qualidade (q) | sair (esc)" > /tmp/skhd-mode
 :: winestone @ : echo "clients › winestone|Produção (p) | Qualidade (q) | sair (esc)" > /tmp/skhd-mode
 :: lidl @ : echo "clients › lidl|External (e) | Internal (i) | sair (esc)" > /tmp/skhd-mode
+:: review @ : echo "review|Today (t) | Daily (d) | Weekly (w) | Monthly (m) | Quarterly (q) | Yearly (y) | Toggle (o) | sair (esc)" > /tmp/skhd-mode
 
 # --- Apps principais (convenção antiga: ctrl + alt + cmd) ----------------
 ctrl + alt + cmd - z : open "zoommtg://zoom.us/join?confno=668244305&zc=2&browser=chrome&uname=Miguel"
@@ -42,7 +47,6 @@ shift + ctrl + alt + cmd - c : open "https://chatgpt.com/pt-PT"
 ctrl + alt + cmd - v : open "vscode://"
 ctrl + alt + cmd - g : open -a "Ghostty"
 ctrl + alt + cmd - t : osascript "$HOME/.dotfiles/ubersicht/widgets/focus.widget/open_calendar.scpt"
-ctrl + alt + cmd - r : echo toggle > /tmp/focus-review-toggle
 
 # --- Working Info (desktop de arquivo) -----------------------------------
 cmd + alt - w        : "$HOME/.dotfiles/bin/open-working-info.sh"
@@ -52,6 +56,7 @@ ctrl + alt + cmd - w : "$HOME/.dotfiles/bin/desktop-tidy.sh"
 ctrl + alt + cmd - d ; cob
 ctrl + alt + cmd - p ; personal
 ctrl + alt + cmd - k ; clients
+ctrl + alt + cmd - r ; review
 
 # --- Modo cob (dashboards CoB) -------------------------------------------
 # Nota: skhd NÃO suporta `: cmd ; default` na mesma linha — tudo a seguir
@@ -91,3 +96,17 @@ winestone < escape ; default
 lidl < e : open "https://lidl-external.cultofbits.com"; skhd -k "escape"
 lidl < i : open "https://lidl.cultofbits.com"; skhd -k "escape"
 lidl < escape ; default
+
+# --- Modo review (focus.widget planning panel) ---------------------------
+# Cada acção escreve um token em /tmp/focus-review-cmd; o focus.widget
+# lê e despacha para o botão equivalente (abrindo o painel primeiro se
+# necessário). "toggle" mantém o comportamento histórico; "open"/"close"
+# forçam estado; os restantes escolhem o tipo de review.
+review < o : echo toggle    > /tmp/focus-review-cmd; skhd -k "escape"
+review < t : echo today     > /tmp/focus-review-cmd; skhd -k "escape"
+review < d : echo daily     > /tmp/focus-review-cmd; skhd -k "escape"
+review < w : echo weekly    > /tmp/focus-review-cmd; skhd -k "escape"
+review < m : echo monthly   > /tmp/focus-review-cmd; skhd -k "escape"
+review < q : echo quarterly > /tmp/focus-review-cmd; skhd -k "escape"
+review < y : echo year      > /tmp/focus-review-cmd; skhd -k "escape"
+review < escape ; default

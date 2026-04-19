@@ -7,7 +7,7 @@ afterRender: (domEl) ->
     daily: widget.find('.daily-review-overlay')
     weekly: widget.find('.weekly-review-overlay')
     monthly: widget.find('.monthly-review-overlay')
-    trimester: widget.find('.trimester-review-overlay')
+    quarterly: widget.find('.quarterly-review-overlay')
     year: widget.find('.year-review-overlay')
 
   hideAllOverlays = ->
@@ -126,10 +126,10 @@ afterRender: (domEl) ->
     @run "osascript focus.widget/review_monthly.scpt"
     @run "osascript focus.widget/large_center.scpt"
 
-  widget.find('.trimester-review-trigger').on 'click', (e) =>
+  widget.find('.quarterly-review-trigger').on 'click', (e) =>
     e.preventDefault()
-    showOverlay('trimester')
-    @run "osascript focus.widget/review_trimester.scpt"
+    showOverlay('quarterly')
+    @run "osascript focus.widget/review_quarterly.scpt"
     @run "osascript focus.widget/large_center.scpt"
 
   widget.find('.year-review-trigger').on 'click', (e) =>
@@ -199,7 +199,7 @@ style: """
     background-color: rgb(170, 128, 0)
   .review-btn.monthly-review-trigger
     background-color: rgb(200, 80, 0)
-  .review-btn.trimester-review-trigger
+  .review-btn.quarterly-review-trigger
     background-color: rgb(225, 40, 0)
   .review-btn.year-review-trigger
     background-color: rgb(255, 0, 0)
@@ -227,7 +227,7 @@ style: """
     background-color: rgba(170, 128, 0, 0.7)
   .badge-monthly
     background-color: rgba(200, 80, 0, 0.7)
-  .badge-trimester
+  .badge-quarterly
     background-color: rgba(225, 40, 0, 0.7)
   .badge-year
     background-color: rgba(255, 0, 0, 0.7)
@@ -270,7 +270,7 @@ style: """
     background-color: rgba(170, 128, 0, 0.3) // Yellow-Orange
   .monthly-review-overlay
     background-color: rgba(200, 80, 0, 0.3) // Orange-Red
-  .trimester-review-overlay
+  .quarterly-review-overlay
     background-color: rgba(225, 50, 0, 0.3) // Red
   .year-review-overlay
     background-color: rgba(255, 0, 0, 0.3) // Darkest Red
@@ -299,7 +299,7 @@ style: """
     background-color: rgb(170, 128, 0)
   .monthly-review-overlay .review-title span
     background-color: rgb(200, 80, 0)
-  .trimester-review-overlay .review-title span
+  .quarterly-review-overlay .review-title span
     background-color: rgb(225, 40, 0)
   .year-review-overlay .review-title span
     background-color: rgb(255, 0, 0)
@@ -448,28 +448,28 @@ render: -> """
           <div class="shortcut left badge-style badge-weekly"><kbd>CTRL+W</kbd> <span>This Month</span></div>
         </div>
         <div class="right-content">
-          <div class="shortcut right badge-style badge-trimester"><span>Maybe Next Trimester</span><kbd>CTRL+T</kbd></div>
+          <div class="shortcut right badge-style badge-quarterly"><span>Maybe Next Quarterly</span><kbd>CTRL+T</kbd></div>
         </div>
       </div>
       <div class="review-schedule">Month Review: todos os dias 1 | 8h30</div>
     </div>
-    <div class="review-overlay trimester-review-overlay hidden">
-      <div class="review-title"><span>Maybe Next Trimester</span></div>
+    <div class="review-overlay quarterly-review-overlay hidden">
+      <div class="review-title"><span>Maybe Next Quarterly</span></div>
       <div class="content-wrapper">
         <div class="left-content">
-          <div class="shortcut left badge-style badge-monthly"><kbd>CTRL+M</kbd> <span>This Trimester</span></div>
+          <div class="shortcut left badge-style badge-monthly"><kbd>CTRL+M</kbd> <span>This Quarterly</span></div>
         </div>
         <div class="right-content">
           <div class="shortcut right badge-style badge-year"><span>Maybe Next Year</span><kbd>CTRL+Y</kbd></div>
         </div>
       </div>
-      <div class="review-schedule">Trimester Review: 2 Jan | 2 Abr | 2 Jul | 2 Out | 09:30</div>
+      <div class="review-schedule">Quarterly Review: 2 Jan | 2 Abr | 2 Jul | 2 Out | 09:30</div>
     </div>
     <div class="review-overlay year-review-overlay hidden">
       <div class="review-title"><span>Maybe Next Year</span></div>
       <div class="content-wrapper">
         <div class="left-content">
-          <div class="shortcut left badge-style badge-trimester"><kbd>CTRL+T</kbd> <span>This Year</span></div>
+          <div class="shortcut left badge-style badge-quarterly"><kbd>CTRL+T</kbd> <span>This Year</span></div>
         </div>
         <div class="right-content"></div>
       </div>
@@ -483,7 +483,7 @@ render: -> """
         <a href="#" class="review-btn daily-review-trigger">DR</a>
         <a href="#" class="review-btn weekly-review-trigger">WR</a>
         <a href="#" class="review-btn monthly-review-trigger">MR</a>
-        <a href="#" class="review-btn trimester-review-trigger">TR</a>
+        <a href="#" class="review-btn quarterly-review-trigger">QR</a>
         <a href="#" class="review-btn year-review-trigger">YR</a>
       </div>
     </div>
@@ -491,24 +491,48 @@ render: -> """
 """
 
 command: """
-# IPC dedicado com o skhd (ctrl+alt+cmd-r) — o toggle de review
-# precisa de manipular o DOM do widget, que `open` não resolve.
-touch /tmp/focus-review-toggle
-content=$(tail -n 1 /tmp/focus-review-toggle | tr -d '\\0')
+# IPC dedicado com o skhd (modo `review`) — precisa de manipular o DOM
+# do widget, que `open` não resolve. Tokens aceites: toggle, open,
+# close, today, daily, weekly, monthly, quarterly, year.
+touch /tmp/focus-review-cmd
+content=$(tail -n 1 /tmp/focus-review-cmd | tr -d '\\0')
 
-if [ "$content" = "toggle" ]; then
-  echo "" > /tmp/focus-review-toggle
-  echo "toggle"
-fi
+case "$content" in
+  toggle|open|close|today|daily|weekly|monthly|quarterly|year)
+    echo "" > /tmp/focus-review-cmd
+    echo "$content"
+    ;;
+esac
 """
 
 update: (output, domEl) ->
   command = output.trim()
+  return unless command
 
-  if command == "toggle"
-    reviewOpen = domEl.querySelector('.review-btn.review-open')
-    reviewClose = domEl.querySelector('.review-btn.review-close')
-    if reviewOpen.classList.contains('hidden')
-      reviewClose?.click()
+  reviewOpen = domEl.querySelector('.review-btn.review-open')
+  reviewClose = domEl.querySelector('.review-btn.review-close')
+
+  # Planning mode ON ⇔ review-open tem a classe `hidden`.
+  isPlanningOpen = -> reviewOpen?.classList.contains('hidden')
+
+  triggerSelectors =
+    today: '.today-plan-trigger'
+    daily: '.daily-review-trigger'
+    weekly: '.weekly-review-trigger'
+    monthly: '.monthly-review-trigger'
+    quarterly: '.quarterly-review-trigger'
+    year: '.year-review-trigger'
+
+  switch command
+    when 'toggle'
+      if isPlanningOpen() then reviewClose?.click() else reviewOpen?.click()
+    when 'open'
+      reviewOpen?.click() unless isPlanningOpen()
+    when 'close'
+      reviewClose?.click() if isPlanningOpen()
     else
-      reviewOpen?.click()
+      # today/daily/weekly/monthly/quarterly/year: garante painel aberto
+      # e depois clica o trigger específico (togglePlanningMode é DOM
+      # síncrono, o selector funciona logo a seguir).
+      reviewOpen?.click() unless isPlanningOpen()
+      domEl.querySelector(".review-btn#{triggerSelectors[command]}")?.click()

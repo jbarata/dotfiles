@@ -74,7 +74,6 @@ Shift+Ctrl+Alt+Cmd+C    # ChatGPT
 Ctrl+Alt+Cmd+V          # VS Code
 Ctrl+Alt+Cmd+G          # Ghostty (abre ou activa a janela)
 Ctrl+Alt+Cmd+T          # Calendário (open_calendar.scpt do focus.widget)
-Ctrl+Alt+Cmd+R          # Toggle review mode no focus.widget
 
 # Leader "cob" (Ctrl+Alt+Cmd+D seguido de...):
 D → P                   # Plan (Dogfooding)
@@ -86,6 +85,15 @@ D → D                   # Dogfooding (home)
 P → M                   # Mimes (Dia a Dia)
 P → B                   # BudgetBakers
 P → L                   # AnyList (via Atalho iOS)
+
+# Leader "review" (Ctrl+Alt+Cmd+R seguido de...):
+R → T                   # Today plan
+R → D                   # Daily review
+R → W                   # Weekly review
+R → M                   # Monthly review
+R → Q                   # Quarterly review
+R → Y                   # Yearly review
+R → O                   # Toggle painel (open/close)
 
 # Leader "clients" — aninhado (Ctrl+Alt+Cmd+K seguido de...):
 K → M → P               # Mello Produção
@@ -550,7 +558,8 @@ Histórico das decisões tomadas e seu racional, para contexto futuro.
 | `@` nos modos (capture) | Teclas não ligadas ficam bloqueadas enquanto em modo — evita surpresas |
 | HUD dos modos via `skhd-hud.widget` (Übersicht) em vez de `display notification` | Latência ~100ms vs segundos da Notification Center; CSS customizável; sem novas deps (Übersicht já corre) |
 | `open "<url>"` directo (em vez de simular clique no widget) | Elimina polling a 500ms do `links.widget` e o ficheiro temporário |
-| Toggle do `focus.widget` via `/tmp/focus-review-toggle` | `open` não consegue mexer no DOM; ficheiro dedicado (não partilhado) torna a intenção explícita |
+| IPC do `focus.widget` (review) via `/tmp/focus-review-cmd` | `open` não consegue mexer no DOM; ficheiro dedicado + whitelist de tokens (toggle/open/close/today/daily/weekly/monthly/quarterly/year) serve o leader `review` sem acoplar o widget ao skhd |
+| Homogenização `trimester → quarterly` (CSS, JS, `.scpt`, HUD, tag Things) | Termo "quarterly" é o padrão em inglês de negócio; remove ambiguidade e simplifica naming |
 | Tap `koekeishiya/formulae` | Fórmula oficial do autor (mesmo autor do yabai) |
 | Gerido por `skhd --install-service` + `--start-service` | A fórmula não define plist para `brew services`; o skhd tem CLI próprio para launchd |
 | Hammerspoon considerado e rejeitado | Overkill para URL→hotkey; skhd é declarativo em 1 ficheiro |

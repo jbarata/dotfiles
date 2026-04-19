@@ -251,7 +251,10 @@ skAcT3dF4z	skhd: Ctrl+Alt+Cmd+V — o que abre?	VS Code (vscode://)	skhd shortcu
 skK7aG4pQs	skhd: Ctrl+Alt+Cmd+G — o que faz?	Abre Ghostty (ou activa a janela se já estiver aberta) via `open -a "Ghostty"`	skhd shortcuts
 skB9eS2qJw	skhd: Ctrl+Alt+Cmd+T — o que faz?	Abre Calendário (open_calendar.scpt do focus.widget)	skhd shortcuts
 skCnY7hM8v	skhd: Ctrl+Alt+Cmd+D — o que faz?	Entra no modo "cob" (leader); depois p/o/r/d → Plan/Do/Review/Dogfooding	skhd shortcuts
-skH8mQr5Tj	skhd: Ctrl+Alt+Cmd+R — o que faz?	Escreve "toggle" em /tmp/focus-review-toggle; o focus.widget lê e alterna modo review	skhd shortcuts
+skH8mQr5Tj	skhd: Ctrl+Alt+Cmd+R — o que faz?	Entra no modo "review"; depois t/d/w/m/q/y escolhem Today/Daily/Weekly/Monthly/Quarterly/Yearly; o alterna o painel (toggle)	skhd shortcuts
+skT4yW9sPm	skhd review: como lançar Daily vs Weekly vs Quarterly?	R → D (daily), R → W (weekly), R → Q (quarterly)	skhd shortcuts
+skU2cN6hXk	skhd review: que ficheiro é o IPC para o focus.widget?	/tmp/focus-review-cmd (tokens: toggle, open, close, today, daily, weekly, monthly, quarterly, year)	skhd
+skV5bQ1jFe	focus.widget: como é que o trigger específico (ex. Weekly) é despachado?	O widget polla /tmp/focus-review-cmd, garante que o painel está aberto (click em .review-open) e depois clica .<tipo>-review-trigger (ou .today-plan-trigger)	skhd
 skD1uK6rZp	skhd: dentro do modo cob, que teclas abrem os dashboards?	p → Plan, o → Do, r → Review, d → Dogfooding home; esc cancela	skhd shortcuts
 skE4gX5lBq	skhd: como abrir Mimes — Dia a Dia pelo leader?	Ctrl+Alt+Cmd+P depois m (modo "personal")	skhd shortcuts
 skF2iC8vNt	skhd: como abrir BudgetBakers pelo leader?	Ctrl+Alt+Cmd+P depois b (modo "personal")	skhd shortcuts
