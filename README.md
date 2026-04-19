@@ -87,7 +87,14 @@ P → M                   # Mimes (Dia a Dia)
 P → B                   # BudgetBakers
 P → L                   # AnyList (via Atalho iOS)
 
-# Esc cancela qualquer leader.
+# Leader "clients" — aninhado (Ctrl+Alt+Cmd+K seguido de...):
+K → M → P               # Mello Produção
+K → M → Q               # Mello Qualidade
+K → W → P               # Winestone Produção
+K → W → Q               # Winestone Qualidade
+K → S                   # SAM (directo)
+
+# Esc cancela qualquer modo (mesmo aninhado sai directo para default).
 ```
 
 Ao entrar num leader, o widget `skhd-hud.widget` mostra um overlay no topo
@@ -535,7 +542,8 @@ Histórico das decisões tomadas e seu racional, para contexto futuro.
 |---|---|
 | skhd em vez de Atalhos Mac + `/tmp/uber-listener.log` | Config em texto, versionável e sincronizada entre máquinas via git |
 | `ctrl + alt + cmd` como hyper único | Preserva a convenção herdada dos Atalhos Mac (muscle memory) |
-| Modos (leaders) `d` e `p` para dashboards/pessoais | Colapsa ≥6 combinações em 2 leaders; mais mnemónico e liberta keymap |
+| Modos (leaders) `d`, `p`, `k` para dashboards/pessoais/clientes | Colapsa muitas combinações em 3 leaders; mais mnemónico e liberta keymap |
+| Modos aninhados para clientes (k → m/w → p/q) | Espelha a hierarquia real (solução × ambiente); esc sai directo para default em qualquer nível |
 | Dogfooding (home) passa a `d → d` dentro do modo cob | Home é menos usado que os dashboards Plan/Do/Review; consistência no leader |
 | `@` nos modos (capture) | Teclas não ligadas ficam bloqueadas enquanto em modo — evita surpresas |
 | HUD dos modos via `skhd-hud.widget` (Übersicht) em vez de `display notification` | Latência ~100ms vs segundos da Notification Center; CSS customizável; sem novas deps (Übersicht já corre) |

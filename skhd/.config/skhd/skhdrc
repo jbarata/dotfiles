@@ -10,7 +10,11 @@
 #                                   (p/o/r/d → Plan/Do/Review/Dogfooding).
 #   - ctrl + alt + cmd - p        : leader do modo "personal"
 #                                   (m/b/l → Mimes/BudgetBakers/AnyList).
-#   - escape                      : cancela qualquer modo activo.
+#   - ctrl + alt + cmd - k        : leader do modo "clients" (aninhado)
+#                                   (m/w → mello/winestone → p/q prod/qual;
+#                                    s → SAM).
+#   - escape                      : cancela qualquer modo activo (sai
+#                                   directo para default, mesmo aninhado).
 #
 # Substitui o mecanismo antigo (Atalhos Mac → /tmp/uber-listener.log →
 # polling do links.widget). skhd dispara `open` directamente.
@@ -24,6 +28,9 @@
 :: default : echo "" > /tmp/skhd-mode
 :: cob @ : echo "cob|Plan (p) | Do (o) | Review (r) | Dogfooding (d) | sair (esc)" > /tmp/skhd-mode
 :: personal @ : echo "personal|Mimes (m) | BudgetBakers (b) | AnyList (l) | sair (esc)" > /tmp/skhd-mode
+:: clients @ : echo "clients|Mello (m) | Winestone (w) | SAM (s) | sair (esc)" > /tmp/skhd-mode
+:: mello @ : echo "clients › mello|Produção (p) | Qualidade (q) | sair (esc)" > /tmp/skhd-mode
+:: winestone @ : echo "clients › winestone|Produção (p) | Qualidade (q) | sair (esc)" > /tmp/skhd-mode
 
 # --- Apps principais (convenção antiga: ctrl + alt + cmd) ----------------
 ctrl + alt + cmd - z : open "zoommtg://zoom.us/join?confno=668244305&zc=2&browser=chrome&uname=Miguel"
@@ -42,6 +49,7 @@ ctrl + alt + cmd - w : "$HOME/.dotfiles/bin/desktop-tidy.sh"
 # --- Leaders -------------------------------------------------------------
 ctrl + alt + cmd - d ; cob
 ctrl + alt + cmd - p ; personal
+ctrl + alt + cmd - k ; clients
 
 # --- Modo cob (dashboards CoB) -------------------------------------------
 # Nota: skhd NÃO suporta `: cmd ; default` na mesma linha — tudo a seguir
@@ -59,3 +67,20 @@ personal < m : open "https://mimes.cultofbits.com/recordm/index.html#/cob.custom
 personal < b : open "https://web.budgetbakers.com/dashboard"; skhd -k "escape"
 personal < l : open "shortcuts://run-shortcut?name=Abrir%20AnyList"; skhd -k "escape"
 personal < escape ; default
+
+# --- Modo clients (soluções; aninhado) -----------------------------------
+# m/w abrem sub-modos (prod/qual); s abre SAM directamente (só tem prod).
+# esc em qualquer nível sai directamente para default (design simples;
+# se o user entrou no modo errado, basta re-premir o leader).
+clients < m ; mello
+clients < w ; winestone
+clients < s : open "https://servinform-sam.cultofbits.com"; skhd -k "escape"
+clients < escape ; default
+
+mello < p : open "https://mdados.cultofbits.com"; skhd -k "escape"
+mello < q : open "https://mdados-qual.cultofbits.com"; skhd -k "escape"
+mello < escape ; default
+
+winestone < p : open "https://winestone.cultofbits.com"; skhd -k "escape"
+winestone < q : open "https://winestone-qual.cultofbits.com"; skhd -k "escape"
+winestone < escape ; default
