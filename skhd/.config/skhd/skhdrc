@@ -44,14 +44,18 @@ ctrl + alt + cmd - d ; cob
 ctrl + alt + cmd - p ; personal
 
 # --- Modo cob (dashboards CoB) -------------------------------------------
-cob < p : open "https://dogfooding.cultofbits.com/recordm/index.html#/cob.custom-resource/Plan:{%22switchView%22:%22yes%22,%22concurrentFilterToggle%22:%22yes%22,%22showFilters%22:%22yes%22}/dash" ; default
-cob < o : open "https://dogfooding.cultofbits.com/recordm/index.html#/cob.custom-resource/Do/dash?" ; default
-cob < r : open "https://dogfooding.cultofbits.com/recordm/index.html#/cob.custom-resource/Review/dash?" ; default
-cob < d : open "https://dogfooding.cultofbits.com" ; default
+# Nota: skhd NÃO suporta `: cmd ; default` na mesma linha — tudo a seguir
+# a `:` é tratado como shell command. Para sair do modo, encadeia-se
+# `skhd -k "escape"` na shell, que faz disparar o binding `cob < escape`
+# (esse sim, transição de modo válida).
+cob < p : open "https://dogfooding.cultofbits.com/recordm/index.html#/cob.custom-resource/Plan:{%22switchView%22:%22yes%22,%22concurrentFilterToggle%22:%22yes%22,%22showFilters%22:%22yes%22}/dash"; skhd -k "escape"
+cob < o : open "https://dogfooding.cultofbits.com/recordm/index.html#/cob.custom-resource/Do/dash?"; skhd -k "escape"
+cob < r : open "https://dogfooding.cultofbits.com/recordm/index.html#/cob.custom-resource/Review/dash?"; skhd -k "escape"
+cob < d : open "https://dogfooding.cultofbits.com"; skhd -k "escape"
 cob < escape ; default
 
 # --- Modo personal (atalhos pessoais) ------------------------------------
-personal < m : open "https://mimes.cultofbits.com/recordm/index.html#/cob.custom-resource/Dia a Dia/dash" ; default
-personal < b : open "https://web.budgetbakers.com/dashboard" ; default
-personal < l : open "shortcuts://run-shortcut?name=Abrir%20AnyList" ; default
+personal < m : open "https://mimes.cultofbits.com/recordm/index.html#/cob.custom-resource/Dia a Dia/dash"; skhd -k "escape"
+personal < b : open "https://web.budgetbakers.com/dashboard"; skhd -k "escape"
+personal < l : open "shortcuts://run-shortcut?name=Abrir%20AnyList"; skhd -k "escape"
 personal < escape ; default
