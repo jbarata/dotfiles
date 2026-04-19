@@ -7,14 +7,17 @@ set -euo pipefail
 TARGET="$HOME/Documents/Working Info"
 # Background opcional: se existir, é aplicado como icon view background.
 BG="$HOME/.dotfiles/assets/working-info-bg.png"
+# Tamanho do ícone em pixels (16-128). Default Finder = 64.
+ICON_SIZE=96
 mkdir -p "$TARGET"
 
 # Abrir (ou focar) a janela do Finder em icon view, sem toolbar/sidebar
-# (traditional window), com background picture se disponível.
-osascript - "$TARGET" "$BG" <<'EOF'
+# (traditional window), com tamanho de ícones fixo e background se disponível.
+osascript - "$TARGET" "$BG" "$ICON_SIZE" <<'EOF'
 on run argv
   set targetPath to item 1 of argv
   set bgPath to item 2 of argv
+  set iconSize to (item 3 of argv) as integer
   tell application "Finder"
     activate
     set targetFolder to POSIX file targetPath as alias
@@ -35,6 +38,7 @@ on run argv
     set current view of win to icon view
     set toolbar visible of win to false
     set index of win to 1
+    set icon size of icon view options of win to iconSize
     try
       set bgAlias to POSIX file bgPath as alias
       set background picture of icon view options of win to bgAlias
