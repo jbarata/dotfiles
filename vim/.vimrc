@@ -69,6 +69,13 @@ set laststatus=2        " sempre mostrar status line
 set noshowmode          " esconder -- INSERT -- (airline já mostra)
 set signcolumn=yes      " coluna de sinais sempre visível
 
+" Cursor shape por modo (DECSCUSR). O Ghostty tem `cursor-style = bar`
+" como default global; estas sequências sobrepõem-no dentro do vim para
+" ter bloco sobre o caracter em normal mode.
+let &t_SI = "\e[6 q"    " insert  → bar
+let &t_SR = "\e[4 q"    " replace → underline
+let &t_EI = "\e[2 q"    " normal  → block
+
 " =========================================================
 " 8. Leader e mappings
 " =========================================================
