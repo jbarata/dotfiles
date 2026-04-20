@@ -23,8 +23,13 @@
 set -euo pipefail
 
 LOG="/tmp/safari-to-note.log"
+# Debug artefacts: HTML extraído (pré-Python) e HTML com imagens inlinadas.
+# Sobrescritos a cada invocação — basta `open /tmp/safari-to-note-article.html`
+# para ver exactamente o que o Notes recebeu.
+DEBUG_RAW="/tmp/safari-to-note-article.html"
+DEBUG_INLINED="/tmp/safari-to-note-article-inlined.html"
 TMPDIR="$(mktemp -d -t safari-to-note 2>/dev/null || mktemp -d /tmp/safari-to-note.XXXXXX)"
-trap 'rm -rf "$TMPDIR"' EXIT
+trap 'cp -f "$TMPDIR/article.html" "$DEBUG_RAW" 2>/dev/null; cp -f "$TMPDIR/article-inlined.html" "$DEBUG_INLINED" 2>/dev/null; rm -rf "$TMPDIR"' EXIT
 
 echo "--- $(date '+%F %T') start ($TMPDIR) ---" >> "$LOG"
 
@@ -62,20 +67,40 @@ on run argv
     });
   });
   if(!best || bestScore < 200) best = clone.body;
+  // Escolhe o melhor src: evita placeholders data:image/svg (lazy-loading
+  // do Substack e outros) — prefere srcset(maior) → data-src → src real.
   best.querySelectorAll('img').forEach(function(img){
-    var src = img.getAttribute('src') || img.getAttribute('data-src') || img.getAttribute('data-lazy-src') || img.getAttribute('data-original') || '';
-    // srcset: escolhe o último candidato (geralmente o maior).
-    if((!src || src.indexOf('data:image/svg') === 0) && img.getAttribute('srcset')){
-      var parts = img.getAttribute('srcset').split(',');
+    var candidates = [];
+    var srcset = img.getAttribute('srcset') || img.getAttribute('data-srcset') || '';
+    if(srcset){
+      var parts = srcset.split(',');
       var last = parts[parts.length - 1].trim().split(/\\s+/)[0];
-      if(last) src = last;
+      if(last) candidates.push(last);
     }
-    if(src) img.setAttribute('src', abs(src));
-    img.removeAttribute('srcset');
-    img.removeAttribute('data-src');
-    img.removeAttribute('data-lazy-src');
-    img.removeAttribute('data-original');
-    img.removeAttribute('loading');
+    ['data-src','data-lazy-src','data-original','data-hi-res-src','data-full-src'].forEach(function(a){
+      var v = img.getAttribute(a);
+      if(v) candidates.push(v);
+    });
+    var rawSrc = img.getAttribute('src') || '';
+    if(rawSrc) candidates.push(rawSrc);
+    // Primeiro candidato que seja http(s) real (não placeholder data:).
+    var finalSrc = '';
+    for(var i=0; i<candidates.length; i++){
+      var c = candidates[i].trim();
+      if(!c) continue;
+      if(c.indexOf('data:') === 0) continue;      // placeholder SVG/GIF
+      if(c.indexOf('javascript:') === 0) continue;
+      finalSrc = c; break;
+    }
+    if(finalSrc){
+      img.setAttribute('src', abs(finalSrc));
+    } else {
+      img.remove();   // sem URL real: remove (evita 'File' no Notes)
+      return;
+    }
+    ['srcset','data-srcset','data-src','data-lazy-src','data-original','data-hi-res-src','data-full-src','loading','decoding'].forEach(function(a){
+      img.removeAttribute(a);
+    });
   });
   best.querySelectorAll('a[href]').forEach(function(a){
     a.setAttribute('href', abs(a.getAttribute('href')));
@@ -248,9 +273,23 @@ def replace(match):
     global count_ok, count_skip
     quote = match.group(1)
     src = match.group(2).strip()
-    if not src or src.startswith("data:") or not src.startswith(("http://", "https://")):
+    if not src:
         count_skip += 1
-        return match.group(0)
+        sys.stderr.write("skip (empty src)\n")
+        return ""
+    if src.startswith("data:"):
+        # Inline PNG/JPEG/GIF legítimos ficam; placeholders SVG etc. removidos.
+        if src.startswith(("data:image/png;", "data:image/jpeg;", "data:image/jpg;", "data:image/gif;")):
+            count_skip += 1
+            sys.stderr.write("keep (valid data: inline)\n")
+            return match.group(0)
+        count_skip += 1
+        sys.stderr.write(f"drop (data: placeholder, {src[:40]}...)\n")
+        return ""
+    if not src.startswith(("http://", "https://")):
+        count_skip += 1
+        sys.stderr.write(f"drop (non-http src: {src[:60]})\n")
+        return ""
     if src in cache:
         data_uri = cache[src]
     else:
@@ -258,7 +297,6 @@ def replace(match):
         cache[src] = data_uri
     if not data_uri:
         count_skip += 1
-        # Remove o <img> falhado para não ficar como "File" no Notes.
         return ""
     count_ok += 1
     return match.group(0).replace(quote + match.group(2) + quote, quote + data_uri + quote, 1)
