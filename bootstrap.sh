@@ -296,6 +296,17 @@ if [[ -f "$DOTFILES/setup/ssh-auth-sock.sh" ]]; then
     fi
 fi
 
+# --- 9d. CLIs COB (cob-cli@beta + cob-md-to-pdf linkado) ---
+if [[ -f "$DOTFILES/setup/cob-tools.sh" ]]; then
+    echo "==> A instalar CLIs COB..."
+    if $DRY_RUN; then
+        echo "  [dry-run] npm install -g cob-cli@beta"
+        echo "  [dry-run] git clone cob-md-to-pdf → \$HOME/.local/src/ && npm i && npm link"
+    else
+        bash "$DOTFILES/setup/cob-tools.sh"
+    fi
+fi
+
 # --- 10. macOS defaults (opcional) ---
 if [[ -f "$DOTFILES/setup/macos-defaults.sh" ]]; then
     echo "==> A aplicar preferências macOS..."
