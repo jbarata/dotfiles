@@ -49,7 +49,7 @@ if ! xcode-select -p &>/dev/null; then
     echo "   Corre: sudo xcode-select --install"
     exit 1
 fi
-CLT_VERSION=$(pkgutil --pkg-info=com.apple.pkg.CLTools_Executables 2>/dev/null | awk '/^version:/ {print $2}')
+CLT_VERSION=$({ pkgutil --pkg-info=com.apple.pkg.CLTools_Executables 2>/dev/null || true; } | awk '/^version:/ {print $2}')
 if [[ -n "$CLT_VERSION" ]]; then
     MACOS_MAJOR=$(sw_vers -productVersion | cut -d. -f1)
     CLT_MAJOR=${CLT_VERSION%%.*}
