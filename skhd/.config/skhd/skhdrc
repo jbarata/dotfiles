@@ -54,7 +54,7 @@ shift + ctrl + alt + cmd - c : open "https://chatgpt.com/pt-PT"
 ctrl + alt + cmd - v :         open "vscode://"
 ctrl + alt + cmd - g :         open -a "Ghostty"
 ctrl + alt + cmd - t :         osascript "$HOME/.dotfiles/ubersicht/widgets/focus.widget/open_calendar.scpt"
-shift + ctrl + alt + cmd - n : "$HOME/.dotfiles/bin/safari-to-note.sh"
+shift + ctrl + alt + cmd - n : open "shortcuts://run-shortcut?name=Safari%20Reader%20to%20Note"
 
 # --- Ajuda ---------------------------------------------------------------
 # Ctrl+Alt+Cmd+' alterna o painel do skhd-help.widget. Em teclado PT o

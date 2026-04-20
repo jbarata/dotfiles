@@ -132,18 +132,34 @@ Scripts em `bin/open-working-info.sh` e `bin/desktop-tidy.sh`.
 
 ### Safari → Notes — Guardar página em modo reader
 
-`Shift+Ctrl+Alt+Cmd+N` dispara `bin/safari-to-note.sh`: lê a página activa do
-Safari, extrai uma versão "reader-friendly" (título, parágrafos e imagens,
-filtrando nav/aside/footer/ads), descarrega cada imagem e inlina como
-`data:` URI base64, e cria uma nota no Notes.app com o título, o link para
-a página original e a tag `#site`.
+`Shift+Ctrl+Alt+Cmd+N` invoca o Atalho **Safari Reader to Note** na app
+Shortcuts (via `shortcuts://run-shortcut?name=…`, padrão igual ao do
+AnyList). O Atalho usa o extractor Reader nativo do Safari (que resolve
+proxies de imagens internamente) e cria uma nota com o conteúdo rico
+— imagens incluídas.
 
-Pré-requisitos (uma vez):
-- Em Safari → Preferences → Advanced, activar **Show Develop menu**.
-- Safari → Develop → **Allow JavaScript from Apple Events**.
-- `python3` no PATH (instalado com Xcode Command Line Tools).
+Criar o Atalho uma vez (Shortcuts.app → **+** → New Shortcut):
 
-Logs de debug em `/tmp/safari-to-note.log`.
+1. **Get Current Web Page from Safari** *(requer "Use with Shortcuts"
+   em Safari → Preferences → Extensions)*
+2. **Get Article from Web Page** — entrada: a página do passo 1
+3. **Make Rich Text from Article** — entrada: o artigo do passo 2
+4. **Get Name of [Web Page]** — entrada: a página do passo 1
+   *(para passar como título)*
+5. **URL** action: coloca o URL do Web Page num texto
+6. **Text** action com: `{URL} \n #site \n {Rich Text do passo 3}`
+   *(concatena link + tag #site + corpo do artigo)*
+7. **Create Note**
+   - Note body: **Text do passo 6**
+   - Note name: **Name do passo 4**
+   - Folder: escolhe o destino habitual
+8. Renomear o Atalho para exactamente **`Safari Reader to Note`**
+   (o nome deve bater certo com o URL do skhd).
+
+Porquê Shortcuts em vez de AppleScript directo: o Notes.app **não
+renderiza `<img src="data:…">` quando o `body` é fixado via AppleScript**
+(trata como attachment genérico — icon "File"). A app Shortcuts usa
+a API rica do Notes que embebe imagens correctamente.
 
 ### VS Code — Multi-cursor
 
@@ -417,8 +433,7 @@ brew bundle cleanup        # remover pacotes não no Brewfile (cuidado!)
 │
 ├── bin/                            # Scripts helper (chamados pelo skhd)
 │   ├── open-working-info.sh        # Cmd+Alt+W: abrir + preset Rectangle
-│   ├── desktop-tidy.sh             # Ctrl+Alt+Cmd+W: arrumação interactiva
-│   └── safari-to-note.sh           # Shift+Ctrl+Alt+Cmd+N: Safari → Notes (reader)
+│   └── desktop-tidy.sh             # Ctrl+Alt+Cmd+W: arrumação interactiva
 │
 └── setup/                          # Scripts de instalação
     ├── symlinks.sh                 # Stow + link_config
@@ -590,15 +605,13 @@ Histórico das decisões tomadas e seu racional, para contexto futuro.
 
 | Decisão | Racional |
 |---|---|
-| `Shift+Ctrl+Alt+Cmd+N` dispara `bin/safari-to-note.sh` | Mantém convenção do hyper; `n` = note, mnemónico |
-| Extracção via `do JavaScript` no tab activo (não via curl) | Usa o DOM já renderizado: cookies, JS client-side e paywalls autenticados ficam automaticamente resolvidos |
-| Heurística inline (sem Readability.js bundled) | Evita 30KB+ de dependência; procura `article`/`main`/`[itemprop=articleBody]` + fallback `body` com score (texto + `<p>` + `<img>`); 99% dos blog posts funcionam |
-| Normaliza imagens e links para URLs absolutos | Notes precisa de URLs completos para resolver o fetch |
-| Imagens inlinadas como `data:image/…;base64,…` via Python | Notes.app não descarrega `<img src="http…">` quando o body é fixado por AppleScript — inline é obrigatório; cap de 3MB por imagem + cache por URL |
-| Python usado só para o fetch+base64 (não para parsing) | stdlib (`urllib`, `base64`, `re`) chega; evita deps externas (`readability-lxml`, `beautifulsoup4`) |
-| 3 passos separados (AppleScript → Python → AppleScript) via ficheiros em `mktemp -d` | ARG_MAX impede passar HTML >MB via argv; ficheiros UTF-8 são simples e debuggáveis |
-| Fallback: se Python falhar, usa HTML com URLs remotos | Nota ainda é criada (texto ok) — melhor degradação que abortar |
-| Tag `#site` escrita como texto no corpo HTML | Notes parseia hashtags em texto livre ao gravar, sem API dedicada |
+| `Shift+Ctrl+Alt+Cmd+N` → `shortcuts://run-shortcut?name=Safari%20Reader%20to%20Note` | Mesmo padrão já usado para AnyList; hyper + `n` = note, mnemónico |
+| **Shortcuts.app** em vez de AppleScript puro | Notes.app **não renderiza `<img src="data:…">` inline quando o body é fixado via AppleScript** — trata como attachment genérico ("File" placeholder). Confirmado em diagnóstico com HTML minimal. A API rica do Notes (usada pelas acções Shortcuts) embebe imagens correctamente |
+| "Get Article from Web Page" em vez de JS custom | Usa o extractor Reader nativo do Safari, que resolve internamente proxies de imagem (Substack, Medium, etc.) — fora do browser esses URLs devolvem 404 |
+| Atalho criado manualmente (não versionado como `.shortcut`) | `.shortcut` é binário opaco que pode ser afectado por updates; setup em 2 min é aceitável; nome fixo garante idempotência do URL |
+| Nome do Atalho fixado: `Safari Reader to Note` | O URL `shortcuts://run-shortcut?name=…` requer correspondência exacta |
+| Tag `#site` injectada via Text action concat no Shortcut | Notes parseia hashtags em texto livre ao gravar |
+| Tentativa inicial (AppleScript + Python inline base64) descartada | Funcionava para texto mas as imagens ficavam sempre como "File"; 4 iterações (WebP→PNG via sips, data-attrs parsing, Substack unproxy) não resolveram porque a limitação está na API do Notes, não no nosso lado |
 | Nota criada no folder default (sem especificar account/folder) | Evita depender de locale (`"Notes"` vs `"Notas"`); o Notes coloca na localização natural do utilizador |
 | Requer "Allow JavaScript from Apple Events" em Safari | Restrição nativa do macOS desde Mojave — one-time setup |
 

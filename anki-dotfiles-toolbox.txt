@@ -276,10 +276,8 @@ skP2rH5aTn	skhd clients: como abrir Mello Produção vs Qualidade?	K → M → P
 skQ6xB8mEp	skhd clients: como abrir Winestone Produção vs Qualidade?	K → W → P (produção) ou K → W → Q (qualidade)	skhd shortcuts
 skR3nT7cVy	skhd clients: como abrir Lidl External vs Internal?	K → L → E (lidl-external) ou K → L → I (lidl interno)	skhd shortcuts
 skS8kD2pLw	skhd clients: como abrir Rentelecom?	K → R (directo; rentelecom.cultofbits.com)	skhd shortcuts
-skY1sN4rQh	skhd: Shift+Ctrl+Alt+Cmd+N — o que faz?	Dispara bin/safari-to-note.sh: extrai versão reader da página Safari e cria nota no Notes.app com título, link e tag #site	skhd shortcuts
-skZ3fJ7kWm	safari-to-note.sh: como extrai o conteúdo reader-friendly?	do JavaScript no tab activo do Safari (sem curl) — heurística que procura article/main/[itemprop=articleBody] com score por texto + parágrafos + imagens; fallback para body	skhd
-skAA5hB2eD	safari-to-note.sh: que pré-requisito manual Safari tem?	Develop → "Allow JavaScript from Apple Events" (com Develop menu visível em Preferences → Advanced)	skhd
-skBB9xT8cK	safari-to-note.sh: como é que a tag #site vai parar à nota?	É escrita como texto (`<p>#site</p>`) no body HTML; o Notes.app parseia hashtags em texto livre ao gravar	skhd
-skCC2pQ6wF	safari-to-note.sh: porque é que as imagens precisam de ser inlinadas como data: URI?	Notes.app não descarrega `<img src="http…">` quando o body é fixado via AppleScript — só renderiza se for data:image/…;base64,… (fetch+base64 em Python)	skhd
-skDD7mR3yV	safari-to-note.sh: porque 3 passos (AppleScript→Python→AppleScript) em vez de tudo num?	ARG_MAX impede passar HTML >MB via argv; separar via mktemp -d + ficheiros UTF-8 é simples e debuggável	skhd
+skY1sN4rQh	skhd: Shift+Ctrl+Alt+Cmd+N — o que faz?	Invoca o Atalho "Safari Reader to Note" (Shortcuts.app) via shortcuts://run-shortcut?name=… — extrai a página em modo reader e cria nota no Notes com título, link, tag #site e imagens inline	skhd shortcuts
+skZ3fJ7kWm	Safari Reader to Note: porque Shortcuts.app em vez de AppleScript directo?	Notes.app NÃO renderiza <img src="data:…"> inline quando o body é fixado via AppleScript — trata como attachment genérico ("File" placeholder). A API rica usada pela Shortcuts embebe imagens correctamente	skhd
+skAA5hB2eD	Safari Reader to Note: quais os passos do Shortcut?	1) Get Current Web Page from Safari 2) Get Article from Web Page 3) Make Rich Text from Article 4) Get Name 5) Concat URL+#site+Rich Text 6) Create Note	skhd
+skBB9xT8cK	Safari Reader to Note: porque o nome exacto importa?	shortcuts://run-shortcut?name= requer correspondência exacta do nome; renomear quebra o atalho skhd	skhd
 
