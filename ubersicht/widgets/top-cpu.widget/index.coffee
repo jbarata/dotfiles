@@ -3,7 +3,7 @@ command: "top -l 2 -s 1 -o cpu -n 1 -stats pid,cpu,command 2>/dev/null | awk '/C
 refreshFrequency: 9000
 
 style: """
-  bottom: 17px
+  bottom: 80px
   right: 17px
   color: rgba(255,255,255,0.35)
   font-family: Helvetica Neue
