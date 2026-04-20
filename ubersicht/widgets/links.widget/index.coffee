@@ -190,7 +190,7 @@ render: -> """
       </tr>
       <tr>
         <td>
-          <a href="https://github.com/cob">
+          <a href="https://github.com/orgs/cob/repositories">
             <img style="width:35px;margin-left:6px;background-color:#ffffff40;padding:3px 0px 0px 0px;border-radius:7px;" src="links.widget/images/github.png">
           </a>
         </td>
