@@ -49,21 +49,21 @@ if ! xcode-select -p &>/dev/null; then
     echo "   Corre: sudo xcode-select --install"
     exit 1
 fi
-CLT_VERSION=$({ pkgutil --pkg-info=com.apple.pkg.CLTools_Executables 2>/dev/null || true; } | awk '/^version:/ {print $2}')
-if [[ -n "$CLT_VERSION" ]]; then
+CLT_SDK=$(xcrun --show-sdk-version 2>/dev/null || true)
+if [[ -n "$CLT_SDK" ]]; then
     MACOS_MAJOR=$(sw_vers -productVersion | cut -d. -f1)
-    CLT_MAJOR=${CLT_VERSION%%.*}
-    if [[ "$CLT_MAJOR" -lt "$MACOS_MAJOR" ]]; then
-        echo "!! Command Line Tools desatualizadas (CLT $CLT_VERSION, macOS $MACOS_MAJOR)."
+    SDK_MAJOR=${CLT_SDK%%.*}
+    if [[ "$SDK_MAJOR" -lt "$MACOS_MAJOR" ]]; then
+        echo "!! Command Line Tools desatualizadas (SDK $CLT_SDK, macOS $MACOS_MAJOR)."
         echo "   Instala via Software Update em System Settings, ou:"
         echo "     sudo rm -rf /Library/Developer/CommandLineTools"
         echo "     sudo xcode-select --install"
         echo "   Alternativa: https://developer.apple.com/download/all/"
         exit 1
     fi
-    echo "   CLT $CLT_VERSION (macOS $MACOS_MAJOR) ✓"
+    echo "   CLT SDK $CLT_SDK (macOS $MACOS_MAJOR) ✓"
 else
-    echo "   CLT presente (versão não determinada via pkgutil) ✓"
+    echo "   CLT presente (SDK não determinado via xcrun) ✓"
 fi
 
 # --- 2. Instalar dependências via Brewfile ---
@@ -175,9 +175,13 @@ if $HAS_CONFLICTS; then
         for f in "${NEW_FILES[@]}"; do
             echo "  [dry-run] backup $f → $BACKUP_DIR/"
         done
-        for stale in "${STALE_LINKS[@]}"; do
-            echo "  [dry-run] remove symlink ${stale%%|*}"
-        done
+
+        if [[ ${#STALE_LINKS[@]} -gt 0 ]]; then
+            for stale in "${STALE_LINKS[@]}"; do
+                link="${stale%%|*}"
+                echo "  [dry-run] remove symlink $link"
+            done
+        fi
     else
         mkdir -p "$BACKUP_DIR"
         for pair in "${DIFFERENT_FILES[@]}"; do
@@ -191,13 +195,15 @@ if $HAS_CONFLICTS; then
             rm "$f"
             echo "  Backup: $f"
         done
-        for stale in "${STALE_LINKS[@]}"; do
-            link="${stale%%|*}"
-            target="${stale##*|}"
-            echo "$link → $target" >> "$BACKUP_DIR/stale-symlinks.log"
-            rm "$link"
-            echo "  Removed stale symlink: $link"
-        done
+        if [[ ${#STALE_LINKS[@]} -gt 0 ]]; then
+            for stale in "${STALE_LINKS[@]}"; do
+                link="${stale%%|*}"
+                target="${stale##*|}"
+                echo "$link → $target" >> "$BACKUP_DIR/stale-symlinks.log"
+                rm "$link"
+                echo "  Removed stale symlink: $link"
+            done
+        fi
         echo "  Guardado em: $BACKUP_DIR/"
     fi
 fi
