@@ -37,7 +37,7 @@ refreshFrequency: 6000
 
 style: """
   bottom: 3px
-  right: 262px
+  right: 340px
 
   color: #fff
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif
@@ -86,7 +86,7 @@ style: """
 
   @media (max-width: 1999px) {
     font-size: 11px;
-    right: 220px;
+    right: 280px;
     bottom: 0;
     height: 30px;
     .event-bg {
