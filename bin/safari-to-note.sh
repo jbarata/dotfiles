@@ -23,15 +23,27 @@
 set -euo pipefail
 
 LOG="/tmp/safari-to-note.log"
-# Debug artefacts: HTML extraído (pré-Python) e HTML com imagens inlinadas.
-# Sobrescritos a cada invocação — basta `open /tmp/safari-to-note-article.html`
-# para ver exactamente o que o Notes recebeu.
+HUD="/tmp/skhd-mode"   # skhd-hud.widget faz poll a 100ms e renderiza inline
 DEBUG_RAW="/tmp/safari-to-note-article.html"
 DEBUG_INLINED="/tmp/safari-to-note-article-inlined.html"
 TMPDIR="$(mktemp -d -t safari-to-note 2>/dev/null || mktemp -d /tmp/safari-to-note.XXXXXX)"
-trap 'cp -f "$TMPDIR/article.html" "$DEBUG_RAW" 2>/dev/null; cp -f "$TMPDIR/article-inlined.html" "$DEBUG_INLINED" 2>/dev/null; rm -rf "$TMPDIR"' EXIT
 
-echo "--- $(date '+%F %T') start ($TMPDIR) ---" >> "$LOG"
+# Formato do HUD: `mode|hint1 | hint2 | …`. Limpa no fim (vazio → invisível).
+hud() { echo "$1" > "$HUD"; }
+cleanup() {
+	cp -f "$TMPDIR/article.html" "$DEBUG_RAW" 2>/dev/null || true
+	cp -f "$TMPDIR/article-inlined.html" "$DEBUG_INLINED" 2>/dev/null || true
+	rm -rf "$TMPDIR"
+	echo "" > "$HUD" 2>/dev/null || true
+}
+trap cleanup EXIT
+
+# Identifica a versão que está a correr (sha curto do repo) para que o
+# log diga sempre que commit foi executado — evita diagnosticar versão errada.
+VERSION="$(cd "$(dirname "$0")/.." 2>/dev/null && git rev-parse --short HEAD 2>/dev/null || echo 'unknown')"
+
+echo "--- $(date '+%F %T') start ($TMPDIR) v=$VERSION ---" >> "$LOG"
+hud "Safari → Notes|A extrair página…"
 
 # ---------------------------------------------------------------------------
 # Passo 1 — Extrair título, URL e HTML do Safari para ficheiros temporários.
@@ -178,8 +190,13 @@ APPLESCRIPT
 
 if [ ! -s "$TMPDIR/article.html" ]; then
 	echo "extraction failed — no article.html" >> "$LOG"
+	hud "Safari → Notes|Falha na extracção (ver /tmp/safari-to-note.log)"
+	sleep 2
 	exit 1
 fi
+
+IMG_COUNT=$(grep -oc '<img' "$TMPDIR/article.html" 2>/dev/null || echo 0)
+hud "Safari → Notes|A inlinar ${IMG_COUNT} imagens (pode demorar)…"
 
 # ---------------------------------------------------------------------------
 # Passo 2 — Descarregar imagens e substituir por data: URIs (Notes inline).
@@ -360,6 +377,8 @@ if [ ! -s "$TMPDIR/article-inlined.html" ]; then
 	echo "python inlining failed — falling back to remote image refs" >> "$LOG"
 	cp "$TMPDIR/article.html" "$TMPDIR/article-inlined.html"
 fi
+
+hud "Safari → Notes|A criar nota…"
 
 # ---------------------------------------------------------------------------
 # Passo 3 — Criar a nota no Notes.app com corpo HTML + imagens inline.
