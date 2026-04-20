@@ -20,7 +20,13 @@ func fetchEvents() {
         return
     }
 
-    let calendars = store.calendars(for: .event)
+    let allowedCalendarTitles: Set<String> = ["MM@CoB", "MM@Home"]
+    let calendars = store.calendars(for: .event).filter { allowedCalendarTitles.contains($0.title) }
+    if calendars.isEmpty {
+        print("None")
+        sema.signal()
+        return
+    }
     let predicate = store.predicateForEvents(withStart: searchStart, end: endDate, calendars: calendars)
     
     let events = store.events(matching: predicate)
