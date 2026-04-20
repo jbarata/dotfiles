@@ -67,10 +67,30 @@ on run argv
     });
   });
   if(!best || bestScore < 200) best = clone.body;
-  // Escolhe o melhor src: evita placeholders data:image/svg (lazy-loading
-  // do Substack e outros) — prefere srcset(maior) → data-src → src real.
+  // Substack-style proxy: https://<host>/p/<transform>/<url-encoded-original>
+  // devolve 404 fora do contexto Safari. Extrai o URL original.
+  function unproxy(u){
+    if(!u) return u;
+    var m = u.match(/^https?:\\/\\/[^/]+\\/p\\/[^/]+\\/(https?%3[aA]%2[fF]%2[fF][^?]+)/);
+    if(m){ try{ return decodeURIComponent(m[1]); }catch(e){} }
+    m = u.match(/^https?:\\/\\/[^/]+\\/p\\/[^/]+\\/(https?:\\/\\/[^?]+)/);
+    if(m) return m[1];
+    return u;
+  }
+  // Escolhe o melhor src: prefere data-attrs.src (Substack embute o URL
+  // real em JSON aqui), srcset(maior), data-*, depois src. Evita
+  // placeholders data:image/svg e proxy URLs que devolvem 404.
   best.querySelectorAll('img').forEach(function(img){
     var candidates = [];
+    // Substack: <img data-attrs='{\"src\":\"https://...\"}'> tem o URL real.
+    var dataAttrs = img.getAttribute('data-attrs');
+    if(dataAttrs){
+      try {
+        var parsed = JSON.parse(dataAttrs);
+        if(parsed && parsed.src) candidates.push(parsed.src);
+        if(parsed && parsed.srcNoWatermark) candidates.push(parsed.srcNoWatermark);
+      } catch(e){}
+    }
     var srcset = img.getAttribute('srcset') || img.getAttribute('data-srcset') || '';
     if(srcset){
       var parts = srcset.split(',');
@@ -86,11 +106,11 @@ on run argv
     // Primeiro candidato que seja http(s) real (não placeholder data:).
     var finalSrc = '';
     for(var i=0; i<candidates.length; i++){
-      var c = candidates[i].trim();
+      var c = (candidates[i] || '').trim();
       if(!c) continue;
       if(c.indexOf('data:') === 0) continue;      // placeholder SVG/GIF
       if(c.indexOf('javascript:') === 0) continue;
-      finalSrc = c; break;
+      finalSrc = unproxy(c); break;
     }
     if(finalSrc){
       img.setAttribute('src', abs(finalSrc));
@@ -98,7 +118,7 @@ on run argv
       img.remove();   // sem URL real: remove (evita 'File' no Notes)
       return;
     }
-    ['srcset','data-srcset','data-src','data-lazy-src','data-original','data-hi-res-src','data-full-src','loading','decoding'].forEach(function(a){
+    ['srcset','data-srcset','data-src','data-lazy-src','data-original','data-hi-res-src','data-full-src','data-attrs','loading','decoding'].forEach(function(a){
       img.removeAttribute(a);
     });
   });
@@ -226,19 +246,45 @@ def to_png_via_sips(data):
     return None
 
 
+def unproxy(url):
+    """Extrai URL original de proxies tipo Substack
+    (https://<host>/p/<transform>/<url-encoded-original>)."""
+    m = re.match(r"^https?://[^/]+/p/[^/]+/(https?%3[aA]%2[fF]%2[fF][^?]+)", url)
+    if m:
+        try: return urllib.parse.unquote(m.group(1))
+        except Exception: pass
+    m = re.match(r"^https?://[^/]+/p/[^/]+/(https?://[^?]+)", url)
+    if m: return m.group(1)
+    return None
+
+
+def _do_fetch(url):
+    req = urllib.request.Request(url, headers={
+        "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X) Safari/605",
+        "Accept": "image/*,*/*;q=0.8",
+    })
+    try:
+        return urllib.request.urlopen(req, timeout=TIMEOUT)
+    except ssl.SSLError:
+        ctx = ssl.create_default_context()
+        ctx.check_hostname = False
+        ctx.verify_mode = ssl.CERT_NONE
+        return urllib.request.urlopen(req, timeout=TIMEOUT, context=ctx)
+
+
 def fetch_data_uri(url):
     try:
-        req = urllib.request.Request(url, headers={
-            "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X) Safari/605",
-            "Accept": "image/*,*/*;q=0.8",
-        })
         try:
-            resp = urllib.request.urlopen(req, timeout=TIMEOUT)
-        except ssl.SSLError:
-            ctx = ssl.create_default_context()
-            ctx.check_hostname = False
-            ctx.verify_mode = ssl.CERT_NONE
-            resp = urllib.request.urlopen(req, timeout=TIMEOUT, context=ctx)
+            resp = _do_fetch(url)
+        except urllib.error.HTTPError as e:
+            # Fallback: proxy URL (ex. Substack) que devolve 404 fora do
+            # contexto do browser → tenta o URL original embebido.
+            unp = unproxy(url)
+            if unp and unp != url:
+                sys.stderr.write(f"retry unproxy: {url[:80]} → {unp[:80]}\n")
+                resp = _do_fetch(unp)
+            else:
+                raise
         with resp as r:
             data = r.read(MAX_BYTES + 1)
             if len(data) > MAX_BYTES:
