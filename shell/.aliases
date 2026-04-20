@@ -20,6 +20,7 @@ alias gl='git pull'
 alias gd='git diff'
 alias gco='git checkout'
 alias gb='git branch'
+alias gf='git fetch --all'
 alias glog='git log --oneline --graph --decorate -20'
 
 # --- Navegação ---
