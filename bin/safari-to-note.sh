@@ -140,7 +140,8 @@ fi
 # Passo 2 — Descarregar imagens e substituir por data: URIs (Notes inline).
 # ---------------------------------------------------------------------------
 python3 - "$TMPDIR" <<'PYTHON' 2>>"$LOG"
-import sys, re, base64, mimetypes, ssl, urllib.request, urllib.parse
+import sys, re, base64, mimetypes, ssl, subprocess, tempfile, os
+import urllib.request, urllib.parse
 
 out_dir = sys.argv[1]
 src_path = f"{out_dir}/article.html"
@@ -152,6 +153,54 @@ with open(src_path, "r", encoding="utf-8") as f:
 MAX_BYTES = 3 * 1024 * 1024  # 3MB por imagem
 TIMEOUT = 10
 
+# Notes.app renderiza inline só estes formatos; os restantes ficam como
+# "File" placeholder. Converte-se o resto para PNG via sips (built-in macOS).
+INLINE_OK = {"image/png", "image/jpeg", "image/gif"}
+
+
+def detect_mime(data):
+    """Detecta formato por magic bytes — mais fiável que Content-Type."""
+    if data[:8] == b"\x89PNG\r\n\x1a\n":
+        return "image/png"
+    if data[:3] == b"\xff\xd8\xff":
+        return "image/jpeg"
+    if data[:6] in (b"GIF87a", b"GIF89a"):
+        return "image/gif"
+    if data[:4] == b"RIFF" and data[8:12] == b"WEBP":
+        return "image/webp"
+    if len(data) >= 12 and data[4:8] == b"ftyp" and data[8:12] in (
+        b"avif", b"avis", b"heic", b"heix", b"mif1", b"msf1"
+    ):
+        return "image/heic" if data[8:12] in (b"heic", b"heix") else "image/avif"
+    if data[:5] == b"<?xml" or data[:4] == b"<svg":
+        return "image/svg+xml"
+    return None
+
+
+def to_png_via_sips(data):
+    """Converte bytes (qualquer formato que o sips leia) para PNG."""
+    in_fd, in_path = tempfile.mkstemp(prefix="s2n-in-", suffix=".bin")
+    out_path = in_path + ".png"
+    try:
+        with os.fdopen(in_fd, "wb") as f:
+            f.write(data)
+        r = subprocess.run(
+            ["/usr/bin/sips", "-s", "format", "png", in_path, "--out", out_path],
+            capture_output=True, timeout=20
+        )
+        if r.returncode == 0 and os.path.exists(out_path):
+            with open(out_path, "rb") as f:
+                return f.read()
+        sys.stderr.write(f"sips fail rc={r.returncode}: {r.stderr.decode('utf-8', 'replace')[:200]}\n")
+    except Exception as e:
+        sys.stderr.write(f"sips exception: {e}\n")
+    finally:
+        for p in (in_path, out_path):
+            try: os.unlink(p)
+            except OSError: pass
+    return None
+
+
 def fetch_data_uri(url):
     try:
         req = urllib.request.Request(url, headers={
@@ -161,7 +210,6 @@ def fetch_data_uri(url):
         try:
             resp = urllib.request.urlopen(req, timeout=TIMEOUT)
         except ssl.SSLError:
-            # Fallback sem verificação para CDNs com chain imperfeita.
             ctx = ssl.create_default_context()
             ctx.check_hostname = False
             ctx.verify_mode = ssl.CERT_NONE
@@ -169,22 +217,29 @@ def fetch_data_uri(url):
         with resp as r:
             data = r.read(MAX_BYTES + 1)
             if len(data) > MAX_BYTES:
+                sys.stderr.write(f"skip (too large): {url}\n")
                 return None
-            mime = (r.headers.get("Content-Type") or "").split(";")[0].strip().lower()
-            if not mime.startswith("image/"):
-                guess = mimetypes.guess_type(url)[0]
-                if guess and guess.startswith("image/"):
-                    mime = guess
-                else:
-                    mime = "image/jpeg"
-            return f"data:{mime};base64,{base64.b64encode(data).decode('ascii')}"
+        detected = detect_mime(data)
+        mime = detected or (r.headers.get("Content-Type") or "").split(";")[0].strip().lower()
+        if not mime or not mime.startswith("image/"):
+            guess = mimetypes.guess_type(url)[0]
+            mime = guess if guess and guess.startswith("image/") else "image/jpeg"
+        # Converte formatos não-renderizáveis pelo Notes para PNG.
+        if mime not in INLINE_OK:
+            converted = to_png_via_sips(data)
+            if converted:
+                data, mime = converted, "image/png"
+                sys.stderr.write(f"converted → png: {url}\n")
+            else:
+                sys.stderr.write(f"convert failed ({mime}): {url}\n")
+                return None  # Melhor skip do que "File" placeholder no Notes.
+        return f"data:{mime};base64,{base64.b64encode(data).decode('ascii')}"
     except Exception as e:
         sys.stderr.write(f"fetch fail {url}: {e}\n")
         return None
 
 img_re = re.compile(r'''<img\b[^>]*?\bsrc=(["'])(.*?)\1[^>]*>''', re.IGNORECASE | re.DOTALL)
 
-# Cache por URL (mesma imagem pode aparecer várias vezes).
 cache = {}
 count_ok = 0
 count_skip = 0
@@ -193,10 +248,7 @@ def replace(match):
     global count_ok, count_skip
     quote = match.group(1)
     src = match.group(2).strip()
-    if not src or src.startswith("data:"):
-        count_skip += 1
-        return match.group(0)
-    if not src.startswith(("http://", "https://")):
+    if not src or src.startswith("data:") or not src.startswith(("http://", "https://")):
         count_skip += 1
         return match.group(0)
     if src in cache:
@@ -206,7 +258,8 @@ def replace(match):
         cache[src] = data_uri
     if not data_uri:
         count_skip += 1
-        return match.group(0)
+        # Remove o <img> falhado para não ficar como "File" no Notes.
+        return ""
     count_ok += 1
     return match.group(0).replace(quote + match.group(2) + quote, quote + data_uri + quote, 1)
 
@@ -234,8 +287,9 @@ on run argv
 	set urlText to my readUTF8(outDir & "/url.txt")
 	set htmlText to my readUTF8(outDir & "/article-inlined.html")
 
-	set noteBody to "<h1>" & my escapeHTML(titleText) & "</h1>" & ¬
-		"<p><a href=\"" & urlText & "\">" & urlText & "</a></p>" & ¬
+	-- Body: só link + tag + artigo. O título da nota vem do `name:` abaixo;
+	-- não injectamos <h1> extra para não duplicar com o H1 nativo do artigo.
+	set noteBody to "<p><a href=\"" & urlText & "\">" & urlText & "</a></p>" & ¬
 		"<p>#site</p>" & ¬
 		htmlText
 
