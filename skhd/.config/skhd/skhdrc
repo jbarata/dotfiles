@@ -21,6 +21,9 @@
 #   - ctrl + alt + cmd - '        : alterna o painel de ajuda
 #                                   (skhd-help.widget do Übersicht).
 #                                   ' é directo no teclado PT (sem shift).
+#   - shift + ctrl + alt + cmd - n: Safari → Notes (versão reader da
+#                                   página activa como nota com título,
+#                                   link e tag #site).
 #   - escape                      : cancela qualquer modo activo (sai
 #                                   directo para default, mesmo aninhado).
 #
@@ -51,6 +54,7 @@ shift + ctrl + alt + cmd - c : open "https://chatgpt.com/pt-PT"
 ctrl + alt + cmd - v :         open "vscode://"
 ctrl + alt + cmd - g :         open -a "Ghostty"
 ctrl + alt + cmd - t :         osascript "$HOME/.dotfiles/ubersicht/widgets/focus.widget/open_calendar.scpt"
+shift + ctrl + alt + cmd - n : "$HOME/.dotfiles/bin/safari-to-note.sh"
 
 # --- Ajuda ---------------------------------------------------------------
 # Ctrl+Alt+Cmd+' alterna o painel do skhd-help.widget. Em teclado PT o

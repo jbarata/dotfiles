@@ -74,6 +74,7 @@ Shift+Ctrl+Alt+Cmd+C    # ChatGPT
 Ctrl+Alt+Cmd+V          # VS Code
 Ctrl+Alt+Cmd+G          # Ghostty (abre ou activa a janela)
 Ctrl+Alt+Cmd+T          # Calendário (open_calendar.scpt do focus.widget)
+Shift+Ctrl+Alt+Cmd+N    # Safari → Notes (guarda a página actual em versão reader)
 
 # Leader "cob" (Ctrl+Alt+Cmd+D seguido de...):
 D → P                   # Plan (Dogfooding)
@@ -128,6 +129,17 @@ raiz, saltar ou cancelar tudo. Colisões resolvidas caso a caso
 (`Ctrl+Alt+Enter`) para aplicar o tamanho/posição predefinidos.
 
 Scripts em `bin/open-working-info.sh` e `bin/desktop-tidy.sh`.
+
+### Safari → Notes — Guardar página em modo reader
+
+`Shift+Ctrl+Alt+Cmd+N` dispara `bin/safari-to-note.sh`: lê a página activa do
+Safari, extrai uma versão "reader-friendly" (título, parágrafos e imagens,
+filtrando nav/aside/footer/ads), e cria uma nota no Notes.app com o título,
+o link para a página original e a tag `#site`.
+
+Pré-requisito (uma vez): em Safari → Develop, activar **Allow JavaScript from
+Apple Events** (e ter o menu Develop visível em Preferences → Advanced).
+Logs de debug em `/tmp/safari-to-note.log`.
 
 ### VS Code — Multi-cursor
 
@@ -401,7 +413,8 @@ brew bundle cleanup        # remover pacotes não no Brewfile (cuidado!)
 │
 ├── bin/                            # Scripts helper (chamados pelo skhd)
 │   ├── open-working-info.sh        # Cmd+Alt+W: abrir + preset Rectangle
-│   └── desktop-tidy.sh             # Ctrl+Alt+Cmd+W: arrumação interactiva
+│   ├── desktop-tidy.sh             # Ctrl+Alt+Cmd+W: arrumação interactiva
+│   └── safari-to-note.sh           # Shift+Ctrl+Alt+Cmd+N: Safari → Notes (reader)
 │
 └── setup/                          # Scripts de instalação
     ├── symlinks.sh                 # Stow + link_config
@@ -568,6 +581,18 @@ Histórico das decisões tomadas e seu racional, para contexto futuro.
 | Tap `koekeishiya/formulae` | Fórmula oficial do autor (mesmo autor do yabai) |
 | Gerido por `skhd --install-service` + `--start-service` | A fórmula não define plist para `brew services`; o skhd tem CLI próprio para launchd |
 | Hammerspoon considerado e rejeitado | Overkill para URL→hotkey; skhd é declarativo em 1 ficheiro |
+
+### Safari → Notes — 2026-04-20
+
+| Decisão | Racional |
+|---|---|
+| `Shift+Ctrl+Alt+Cmd+N` dispara `bin/safari-to-note.sh` | Mantém convenção do hyper; `n` = note, mnemónico |
+| Extracção via `do JavaScript` no tab activo (não via curl) | Usa o DOM já renderizado: cookies, JS client-side e paywalls autenticados ficam automaticamente resolvidos |
+| Heurística inline (sem Readability.js bundled) | Evita 30KB+ de dependência; procura `article`/`main`/`[itemprop=articleBody]` + fallback `body` com score (texto + `<p>` + `<img>`); 99% dos blog posts funcionam |
+| Normaliza imagens e links para URLs absolutos | Notes precisa de URLs completos para renderizar `<img src>` remotos |
+| Tag `#site` escrita como texto no corpo HTML | Notes parseia hashtags em texto livre ao gravar, sem API dedicada |
+| Nota criada no folder default (sem especificar account/folder) | Evita depender de locale (`"Notes"` vs `"Notas"`); o Notes coloca na localização natural do utilizador |
+| Requer "Allow JavaScript from Apple Events" em Safari | Restrição nativa do macOS desde Mojave — one-time setup |
 
 ### Übersicht widgets — 2026-04-18
 
