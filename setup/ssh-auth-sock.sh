@@ -18,15 +18,28 @@ SOCK="$HOME/Library/Group Containers/2BUA8C4S2C.com.1password/t/agent.sock"
 
 mkdir -p "$(dirname "$DST")"
 
+SYMLINK_OK=false
+[[ -L "$DST" && "$(readlink "$DST")" == "$SRC" ]] && SYMLINK_OK=true
+
+AGENT_LOADED=false
+launchctl list 2>/dev/null | grep -q com.mimes.ssh-auth-sock && AGENT_LOADED=true
+
+CURRENT_SOCK=$(launchctl getenv SSH_AUTH_SOCK 2>/dev/null || true)
+
+if $SYMLINK_OK && $AGENT_LOADED && [[ "$CURRENT_SOCK" == "$SOCK" ]]; then
+    echo "  SSH_AUTH_SOCK: já configurado (LaunchAgent activo)"
+    exit 0
+fi
+
 # Symlink do plist
-if [[ ! -L "$DST" || "$(readlink "$DST")" != "$SRC" ]]; then
+if ! $SYMLINK_OK; then
     [[ -e "$DST" ]] && rm "$DST"
     ln -s "$SRC" "$DST"
     echo "  Link: $DST → $SRC"
 fi
 
 # (Re)carregar o agent para apanhar alterações ao plist
-if launchctl list 2>/dev/null | grep -q com.mimes.ssh-auth-sock; then
+if $AGENT_LOADED; then
     launchctl unload "$DST" 2>/dev/null || true
 fi
 launchctl load "$DST"
