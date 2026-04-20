@@ -12,6 +12,24 @@ link_config() {
     # Resolver src para path absoluto (evitar loops)
     src=$(cd "$(dirname "$src")" 2>/dev/null && pwd)/$(basename "$src")
 
+    # Garantir que o parent do dst existe antes de o resolvermos
+    mkdir -p "$(dirname "$dst")"
+
+    # Resolver parents para path canónico (seguindo symlinks) — detecta o caso
+    # em que o parent do dst é um symlink para dentro do source tree, o que
+    # faria com que operações sobre $dst afectassem o próprio ficheiro do repo.
+    local src_parent_real dst_parent_real
+    src_parent_real=$(cd "$(dirname "$src")" && pwd -P)
+    dst_parent_real=$(cd "$(dirname "$dst")" && pwd -P)
+
+    if [[ "$dst_parent_real" == "$src_parent_real" ]]; then
+        echo "  AVISO: $(dirname "$dst") resolve para $(dirname "$src")"
+        echo "         (parent é symlink para o repo) — a saltar $(basename "$dst")."
+        echo "         Remove o symlink do directório e corre de novo:"
+        echo "           rm \"$(dirname "$dst")\" && mkdir -p \"$(dirname "$dst")\""
+        return 0
+    fi
+
     # Recusa criar symlink circular (src == dst)
     if [[ "$src" == "$dst" ]]; then
         echo "  ERRO: src e dst iguais ($src), a saltar"
@@ -22,8 +40,6 @@ link_config() {
     if [[ -L "$dst" && "$(readlink "$dst")" == "$src" ]]; then
         return 0
     fi
-
-    mkdir -p "$(dirname "$dst")"
 
     # Backup se for ficheiro real
     if [[ -e "$dst" && ! -L "$dst" ]]; then
