@@ -11,7 +11,7 @@ func fetchEvents() {
     let now = Date()
     // Look back 10 minutes to catch recently started events
     let searchStart = now.addingTimeInterval(-5 * 60)
-    
+
     // Look until end of today
     let startOfDay = Calendar.current.startOfDay(for: now)
     guard let endDate = Calendar.current.date(byAdding: .day, value: 1, to: startOfDay) else {
@@ -20,7 +20,7 @@ func fetchEvents() {
         return
     }
 
-    let allowedCalendarTitles: Set<String> = ["MM@CoB", "MM@Home"]
+    let allowedCalendarTitles: Set<String> = ["MM@CoB", "MM@Home", "Agendamentos CoB"]
     let calendars = store.calendars(for: .event).filter { allowedCalendarTitles.contains($0.title) }
     if calendars.isEmpty {
         print("None")
@@ -28,28 +28,28 @@ func fetchEvents() {
         return
     }
     let predicate = store.predicateForEvents(withStart: searchStart, end: endDate, calendars: calendars)
-    
+
     let events = store.events(matching: predicate)
-    
+
     // Filter: start date >= searchStart
     // This allows events that started recently to appear
     let candidateEvents = events.filter { $0.startDate >= searchStart }
-    
+
     let sortedEvents = candidateEvents.sorted { $0.startDate < $1.startDate }
-    
+
     if let nextEvent = sortedEvents.first {
         let title = nextEvent.title ?? "No Title"
         let safeTitle = title.replacingOccurrences(of: "\n", with: " ").replacingOccurrences(of: "~", with: "-")
-        
+
         let location = nextEvent.location ?? ""
         let safeLocation = location.replacingOccurrences(of: "\n", with: " ").replacingOccurrences(of: "~", with: "-")
-        
+
         let isAllDay = nextEvent.isAllDay
-        
+
         let df = DateFormatter()
         df.dateFormat = "yyyy-MM-dd'T'HH:mm:ss"
         let startStr = df.string(from: nextEvent.startDate)
-        
+
         print("\(safeTitle)~\(startStr)~\(safeLocation)~\(isAllDay)")
     } else {
         print("None")
