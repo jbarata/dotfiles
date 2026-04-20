@@ -203,6 +203,11 @@ ZDxqFSiPR2	Vim: ir para fim do ficheiro	G	vim
 JGZHh9W1B1	Vim: ir para início do ficheiro	gg	vim
 
 # =========================================================
+# Vim — Folding
+# =========================================================
+vFLD8aK3Mp	Vim folding: comandos principais	zc fecha fold sob cursor; zo abre; za toggle; zM fecha todos; zR abre todos; zj/zk próximo/anterior fold	vim folding
+
+# =========================================================
 # Vim — Plugins (vim-commentary)
 # =========================================================
 dNZaPmtypK	Vim commentary: comentar linha actual	gcc	vim plugins

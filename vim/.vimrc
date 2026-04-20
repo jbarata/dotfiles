@@ -34,6 +34,10 @@ set softtabstop=4       " backspace remove 4 spaces
 set mouse=a
 set clipboard=unnamed   " yank → clipboard sistema
 
+" Folding por indentação — ficheiros abrem sempre expandidos
+set foldmethod=indent
+set foldlevelstart=99
+
 " =========================================================
 " 3. Pesquisa
 " =========================================================
