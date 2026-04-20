@@ -134,11 +134,15 @@ Scripts em `bin/open-working-info.sh` e `bin/desktop-tidy.sh`.
 
 `Shift+Ctrl+Alt+Cmd+N` dispara `bin/safari-to-note.sh`: lê a página activa do
 Safari, extrai uma versão "reader-friendly" (título, parágrafos e imagens,
-filtrando nav/aside/footer/ads), e cria uma nota no Notes.app com o título,
-o link para a página original e a tag `#site`.
+filtrando nav/aside/footer/ads), descarrega cada imagem e inlina como
+`data:` URI base64, e cria uma nota no Notes.app com o título, o link para
+a página original e a tag `#site`.
 
-Pré-requisito (uma vez): em Safari → Develop, activar **Allow JavaScript from
-Apple Events** (e ter o menu Develop visível em Preferences → Advanced).
+Pré-requisitos (uma vez):
+- Em Safari → Preferences → Advanced, activar **Show Develop menu**.
+- Safari → Develop → **Allow JavaScript from Apple Events**.
+- `python3` no PATH (instalado com Xcode Command Line Tools).
+
 Logs de debug em `/tmp/safari-to-note.log`.
 
 ### VS Code — Multi-cursor
@@ -589,7 +593,11 @@ Histórico das decisões tomadas e seu racional, para contexto futuro.
 | `Shift+Ctrl+Alt+Cmd+N` dispara `bin/safari-to-note.sh` | Mantém convenção do hyper; `n` = note, mnemónico |
 | Extracção via `do JavaScript` no tab activo (não via curl) | Usa o DOM já renderizado: cookies, JS client-side e paywalls autenticados ficam automaticamente resolvidos |
 | Heurística inline (sem Readability.js bundled) | Evita 30KB+ de dependência; procura `article`/`main`/`[itemprop=articleBody]` + fallback `body` com score (texto + `<p>` + `<img>`); 99% dos blog posts funcionam |
-| Normaliza imagens e links para URLs absolutos | Notes precisa de URLs completos para renderizar `<img src>` remotos |
+| Normaliza imagens e links para URLs absolutos | Notes precisa de URLs completos para resolver o fetch |
+| Imagens inlinadas como `data:image/…;base64,…` via Python | Notes.app não descarrega `<img src="http…">` quando o body é fixado por AppleScript — inline é obrigatório; cap de 3MB por imagem + cache por URL |
+| Python usado só para o fetch+base64 (não para parsing) | stdlib (`urllib`, `base64`, `re`) chega; evita deps externas (`readability-lxml`, `beautifulsoup4`) |
+| 3 passos separados (AppleScript → Python → AppleScript) via ficheiros em `mktemp -d` | ARG_MAX impede passar HTML >MB via argv; ficheiros UTF-8 são simples e debuggáveis |
+| Fallback: se Python falhar, usa HTML com URLs remotos | Nota ainda é criada (texto ok) — melhor degradação que abortar |
 | Tag `#site` escrita como texto no corpo HTML | Notes parseia hashtags em texto livre ao gravar, sem API dedicada |
 | Nota criada no folder default (sem especificar account/folder) | Evita depender de locale (`"Notes"` vs `"Notas"`); o Notes coloca na localização natural do utilizador |
 | Requer "Allow JavaScript from Apple Events" em Safari | Restrição nativa do macOS desde Mojave — one-time setup |

@@ -280,4 +280,6 @@ skY1sN4rQh	skhd: Shift+Ctrl+Alt+Cmd+N — o que faz?	Dispara bin/safari-to-note.
 skZ3fJ7kWm	safari-to-note.sh: como extrai o conteúdo reader-friendly?	do JavaScript no tab activo do Safari (sem curl) — heurística que procura article/main/[itemprop=articleBody] com score por texto + parágrafos + imagens; fallback para body	skhd
 skAA5hB2eD	safari-to-note.sh: que pré-requisito manual Safari tem?	Develop → "Allow JavaScript from Apple Events" (com Develop menu visível em Preferences → Advanced)	skhd
 skBB9xT8cK	safari-to-note.sh: como é que a tag #site vai parar à nota?	É escrita como texto (`<p>#site</p>`) no body HTML; o Notes.app parseia hashtags em texto livre ao gravar	skhd
+skCC2pQ6wF	safari-to-note.sh: porque é que as imagens precisam de ser inlinadas como data: URI?	Notes.app não descarrega `<img src="http…">` quando o body é fixado via AppleScript — só renderiza se for data:image/…;base64,… (fetch+base64 em Python)	skhd
+skDD7mR3yV	safari-to-note.sh: porque 3 passos (AppleScript→Python→AppleScript) em vez de tudo num?	ARG_MAX impede passar HTML >MB via argv; separar via mktemp -d + ficheiros UTF-8 é simples e debuggável	skhd
 
