@@ -42,6 +42,30 @@ else
     echo "==> Homebrew já instalado"
 fi
 
+# --- 1b. Verificar Command Line Tools (compilação de fórmulas como skhd) ---
+echo "==> A verificar Command Line Tools..."
+if ! xcode-select -p &>/dev/null; then
+    echo "!! Command Line Tools não instaladas."
+    echo "   Corre: sudo xcode-select --install"
+    exit 1
+fi
+CLT_VERSION=$(pkgutil --pkg-info=com.apple.pkg.CLTools_Executables 2>/dev/null | awk '/^version:/ {print $2}')
+if [[ -n "$CLT_VERSION" ]]; then
+    MACOS_MAJOR=$(sw_vers -productVersion | cut -d. -f1)
+    CLT_MAJOR=${CLT_VERSION%%.*}
+    if [[ "$CLT_MAJOR" -lt "$MACOS_MAJOR" ]]; then
+        echo "!! Command Line Tools desatualizadas (CLT $CLT_VERSION, macOS $MACOS_MAJOR)."
+        echo "   Instala via Software Update em System Settings, ou:"
+        echo "     sudo rm -rf /Library/Developer/CommandLineTools"
+        echo "     sudo xcode-select --install"
+        echo "   Alternativa: https://developer.apple.com/download/all/"
+        exit 1
+    fi
+    echo "   CLT $CLT_VERSION (macOS $MACOS_MAJOR) ✓"
+else
+    echo "   CLT presente (versão não determinada via pkgutil) ✓"
+fi
+
 # --- 2. Instalar dependências via Brewfile ---
 echo "==> A instalar pacotes Homebrew..."
 run brew bundle --file="$DOTFILES/Brewfile" || true
