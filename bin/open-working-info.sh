@@ -14,7 +14,7 @@ BG_SOURCE="$HOME/.dotfiles/assets/working-info-bg.png"
 # Imagem cacheada no tamanho da janela actual (regenerada em cada invocação).
 BG_CACHE="/tmp/working-info-bg.png"
 # Tamanho do ícone em pixels (16-128). Default Finder = 64.
-ICON_SIZE=48
+ICON_SIZE=32
 # Log para debug.
 LOG="/tmp/working-info.log"
 mkdir -p "$TARGET"
