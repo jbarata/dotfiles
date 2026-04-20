@@ -12,10 +12,12 @@ if ! command -v skhd &>/dev/null; then
 fi
 
 PLIST="$HOME/Library/LaunchAgents/com.koekeishiya.skhd.plist"
+FIRST_INSTALL=false
 
 if [[ ! -f "$PLIST" ]]; then
     echo "  skhd: a instalar launchd agent..."
     skhd --install-service >/dev/null
+    FIRST_INSTALL=true
 fi
 
 if launchctl list 2>/dev/null | grep -q "com.koekeishiya.skhd"; then
@@ -26,5 +28,7 @@ else
     skhd --start-service >/dev/null
 fi
 
-echo "  NOTA: na primeira execução, autorizar skhd em"
-echo "        Definições → Privacidade e Segurança → Acessibilidade"
+if $FIRST_INSTALL; then
+    echo "  NOTA: na primeira execução, autorizar skhd em"
+    echo "        Definições → Privacidade e Segurança → Acessibilidade"
+fi
