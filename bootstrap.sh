@@ -60,7 +60,6 @@ fi
 
 # --- 4. Backup de ficheiros existentes ---
 BACKUP_DIR="$HOME/dotfiles-backup/pre-bootstrap-$(date +%Y%m%d-%H%M%S)"
-NEED_BACKUP=false
 
 # Pares: ficheiro local | ficheiro no repo
 PAIRS=(
@@ -74,8 +73,11 @@ PAIRS=(
     "$HOME/.vimrc|$DOTFILES/vim/.vimrc"
 )
 
-# Detectar ficheiros reais (a fazer backup) e symlinks stale (a remover)
+# Categorizar ficheiros locais: idênticos ao repo, diferentes, novos, ou symlinks stale
 STALE_LINKS=()
+IDENTICAL_FILES=()
+DIFFERENT_FILES=()
+NEW_FILES=()
 for pair in "${PAIRS[@]}"; do
     local_f="${pair%%|*}"
     repo_f="${pair##*|}"
@@ -90,31 +92,35 @@ for pair in "${PAIRS[@]}"; do
             STALE_LINKS+=("$local_f|$current_target")
         fi
     elif [[ -e "$local_f" ]]; then
-        NEED_BACKUP=true
+        if [[ -f "$repo_f" ]] && diff -q "$local_f" "$repo_f" &>/dev/null; then
+            IDENTICAL_FILES+=("$local_f")
+        elif [[ -f "$repo_f" ]]; then
+            DIFFERENT_FILES+=("$local_f|$repo_f")
+        else
+            NEW_FILES+=("$local_f")
+        fi
     fi
 done
 
-if $NEED_BACKUP || [[ ${#STALE_LINKS[@]} -gt 0 ]]; then
+HAS_CONFLICTS=false
+if [[ ${#DIFFERENT_FILES[@]} -gt 0 || ${#NEW_FILES[@]} -gt 0 || ${#STALE_LINKS[@]} -gt 0 ]]; then
+    HAS_CONFLICTS=true
+fi
+
+if $HAS_CONFLICTS; then
     # --- 4a. Mostrar diferenças e symlinks stale ---
     echo "==> Diferenças entre ficheiros actuais e repo:"
     echo ""
-    for pair in "${PAIRS[@]}"; do
+    for pair in "${DIFFERENT_FILES[@]}"; do
         local_f="${pair%%|*}"
         repo_f="${pair##*|}"
-        if [[ -e "$local_f" && ! -L "$local_f" ]]; then
-            if [[ -f "$repo_f" ]]; then
-                DIFF_OUTPUT=$(diff "$local_f" "$repo_f" 2>/dev/null || true)
-                if [[ -n "$DIFF_OUTPUT" ]]; then
-                    echo "--- $local_f vs $repo_f ---"
-                    echo "$DIFF_OUTPUT"
-                    echo ""
-                else
-                    echo "  $local_f — sem diferenças"
-                fi
-            else
-                echo "  $local_f — novo (não existe no repo)"
-            fi
-        fi
+        DIFF_OUTPUT=$(diff "$local_f" "$repo_f" 2>/dev/null || true)
+        echo "--- $local_f vs $repo_f ---"
+        echo "$DIFF_OUTPUT"
+        echo ""
+    done
+    for f in "${NEW_FILES[@]}"; do
+        echo "  $f — novo (não existe no repo)"
     done
 
     if [[ ${#STALE_LINKS[@]} -gt 0 ]]; then
@@ -139,24 +145,27 @@ if $NEED_BACKUP || [[ ${#STALE_LINKS[@]} -gt 0 ]]; then
     # --- 4b. Backup de ficheiros reais e remoção de symlinks stale ---
     echo "==> A fazer backup e limpar..."
     if $DRY_RUN; then
-        for pair in "${PAIRS[@]}"; do
-            local_f="${pair%%|*}"
-            [[ -e "$local_f" && ! -L "$local_f" ]] && echo "  [dry-run] backup $local_f → $BACKUP_DIR/"
+        for pair in "${DIFFERENT_FILES[@]}"; do
+            echo "  [dry-run] backup ${pair%%|*} → $BACKUP_DIR/"
+        done
+        for f in "${NEW_FILES[@]}"; do
+            echo "  [dry-run] backup $f → $BACKUP_DIR/"
         done
         for stale in "${STALE_LINKS[@]}"; do
-            link="${stale%%|*}"
-            echo "  [dry-run] remove symlink $link"
+            echo "  [dry-run] remove symlink ${stale%%|*}"
         done
     else
         mkdir -p "$BACKUP_DIR"
-        for pair in "${PAIRS[@]}"; do
+        for pair in "${DIFFERENT_FILES[@]}"; do
             local_f="${pair%%|*}"
-            if [[ -e "$local_f" && ! -L "$local_f" ]]; then
-                local_name=$(basename "$local_f")
-                cp "$local_f" "$BACKUP_DIR/$local_name"
-                rm "$local_f"
-                echo "  Backup: $local_f"
-            fi
+            cp "$local_f" "$BACKUP_DIR/$(basename "$local_f")"
+            rm "$local_f"
+            echo "  Backup: $local_f"
+        done
+        for f in "${NEW_FILES[@]}"; do
+            cp "$f" "$BACKUP_DIR/$(basename "$f")"
+            rm "$f"
+            echo "  Backup: $f"
         done
         for stale in "${STALE_LINKS[@]}"; do
             link="${stale%%|*}"
@@ -167,7 +176,20 @@ if $NEED_BACKUP || [[ ${#STALE_LINKS[@]} -gt 0 ]]; then
         done
         echo "  Guardado em: $BACKUP_DIR/"
     fi
-else
+fi
+
+# Ficheiros idênticos ao repo: remover sem prompt (conteúdo já está no repo)
+if [[ ${#IDENTICAL_FILES[@]} -gt 0 ]]; then
+    echo "==> A remover ficheiros idênticos ao repo (para criar symlinks):"
+    for f in "${IDENTICAL_FILES[@]}"; do
+        if $DRY_RUN; then
+            echo "  [dry-run] remove $f"
+        else
+            rm "$f"
+            echo "  Removido: $f"
+        fi
+    done
+elif ! $HAS_CONFLICTS; then
     echo "==> Nenhum ficheiro para backup (já são symlinks ou não existem)"
 fi
 
