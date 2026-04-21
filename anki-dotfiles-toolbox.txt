@@ -254,6 +254,7 @@ sk8fI5mH2x	skhd: Ctrl+Alt+Cmd+C — o que faz?	Activa a app Claude (osascript)	s
 sk9bO6uP0y	skhd: Shift+Ctrl+Alt+Cmd+C — o que abre?	ChatGPT (chatgpt.com/pt-PT)	skhd shortcuts
 skAcT3dF4z	skhd: Ctrl+Alt+Cmd+V — o que abre?	VS Code (vscode://)	skhd shortcuts
 skK7aG4pQs	skhd: Ctrl+Alt+Cmd+G — o que faz?	Abre Ghostty (ou activa a janela se já estiver aberta) via `open -a "Ghostty"`	skhd shortcuts
+skEE6aL9nB	skhd: Ctrl+Alt+Cmd+B — o que faz?	Abre Safari (ou activa a janela se já estiver aberta) via `open -a "Safari"`	skhd shortcuts
 skB9eS2qJw	skhd: Ctrl+Alt+Cmd+T — o que faz?	Abre Calendário (open_calendar.scpt do focus.widget)	skhd shortcuts
 skCnY7hM8v	skhd: Ctrl+Alt+Cmd+D — o que faz?	Entra no modo "cob" (leader); depois p/o/r/d → Plan/Do/Review/Dogfooding	skhd shortcuts
 skH8mQr5Tj	skhd: Ctrl+Alt+Cmd+R — o que faz?	Entra no modo "review"; depois t/d/w/m/q/y escolhem Today/Daily/Weekly/Monthly/Quarterly/Yearly; o alterna o painel (toggle)	skhd shortcuts

@@ -53,6 +53,7 @@ ctrl + alt + cmd - c :         osascript -e 'tell application "Claude" to activa
 shift + ctrl + alt + cmd - c : open "https://chatgpt.com/pt-PT"
 ctrl + alt + cmd - v :         open "vscode://"
 ctrl + alt + cmd - g :         open -a "Ghostty"
+ctrl + alt + cmd - b :         open -a "Safari"
 ctrl + alt + cmd - t :         osascript "$HOME/.dotfiles/ubersicht/widgets/focus.widget/open_calendar.scpt"
 shift + ctrl + alt + cmd - n : "$HOME/.dotfiles/bin/safari-to-note.sh"
 
