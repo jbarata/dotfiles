@@ -74,6 +74,7 @@ Shift+Ctrl+Alt+Cmd+C    # ChatGPT
 Ctrl+Alt+Cmd+V          # VS Code
 Ctrl+Alt+Cmd+G          # Ghostty (abre ou activa a janela)
 Ctrl+Alt+Cmd+T          # Calendário (open_calendar.scpt do focus.widget)
+Shift+Ctrl+Alt+Cmd+N    # Safari → Notes (guarda a página actual em versão reader)
 
 # Leader "cob" (Ctrl+Alt+Cmd+D seguido de...):
 D → P                   # Plan (Dogfooding)
@@ -128,6 +129,28 @@ raiz, saltar ou cancelar tudo. Colisões resolvidas caso a caso
 (`Ctrl+Alt+Enter`) para aplicar o tamanho/posição predefinidos.
 
 Scripts em `bin/open-working-info.sh` e `bin/desktop-tidy.sh`.
+
+### Safari → Notes — Guardar página em modo reader
+
+`Shift+Ctrl+Alt+Cmd+N` dispara `bin/safari-to-note.sh`: lê a página activa
+do Safari, extrai uma versão "reader-friendly" (título, parágrafos,
+filtrando nav/aside/footer/ads) e cria uma nota no Notes.app com o
+título, o link para a página original, a tag `#site` e o conteúdo.
+
+Imagens: ficam como marcadores `[imagem]` clicáveis que apontam para o
+URL real — o Notes.app não renderiza `<img>` inline quando o body é
+fixado via AppleScript (confirmado com HTML minimal, tanto remotos
+como `data:` URIs aparecem como "File" placeholders). A posição no
+fluxo do artigo fica preservada; abrir e arrastar é o path manual.
+No caso do Substack, os proxies de imagem (que devolvem 404 fora do
+browser) são "unproxied" via regex para o URL directo no S3.
+
+Pré-requisitos (uma vez):
+- Em Safari → Preferences → Advanced, activar **Show Develop menu**.
+- Safari → Develop → **Allow JavaScript from Apple Events**.
+
+Feedback visual via `skhd-hud.widget` (polling `/tmp/skhd-mode` a 100ms).
+Logs de debug em `/tmp/safari-to-note.log` (inclui `v=<sha>` por execução).
 
 ### VS Code — Multi-cursor
 
@@ -401,7 +424,8 @@ brew bundle cleanup        # remover pacotes não no Brewfile (cuidado!)
 │
 ├── bin/                            # Scripts helper (chamados pelo skhd)
 │   ├── open-working-info.sh        # Cmd+Alt+W: abrir + preset Rectangle
-│   └── desktop-tidy.sh             # Ctrl+Alt+Cmd+W: arrumação interactiva
+│   ├── desktop-tidy.sh             # Ctrl+Alt+Cmd+W: arrumação interactiva
+│   └── safari-to-note.sh           # Shift+Ctrl+Alt+Cmd+N: Safari → Notes (texto + placeholders)
 │
 └── setup/                          # Scripts de instalação
     ├── symlinks.sh                 # Stow + link_config
@@ -568,6 +592,23 @@ Histórico das decisões tomadas e seu racional, para contexto futuro.
 | Tap `koekeishiya/formulae` | Fórmula oficial do autor (mesmo autor do yabai) |
 | Gerido por `skhd --install-service` + `--start-service` | A fórmula não define plist para `brew services`; o skhd tem CLI próprio para launchd |
 | Hammerspoon considerado e rejeitado | Overkill para URL→hotkey; skhd é declarativo em 1 ficheiro |
+
+### Safari → Notes — 2026-04-20
+
+| Decisão | Racional |
+|---|---|
+| `Shift+Ctrl+Alt+Cmd+N` dispara `bin/safari-to-note.sh` | Mantém convenção do hyper; `n` = note, mnemónico |
+| AppleScript + `do JavaScript` no tab Safari (não curl) | Usa o DOM renderizado — cookies, client-side JS e paywalls autenticados ficam automaticamente resolvidos |
+| Heurística inline (article/main/[itemprop=articleBody] + score por texto/\<p\>) | Sem deps externas; 99% dos blog posts funcionam |
+| Imagens: `<img>` → placeholder `<p><a>[imagem]</a></p>` com URL real | Notes.app **não** renderiza `<img>` inline via body AppleScript (remotos e `data:` URIs saem ambos como "File" — confirmado com HTML minimal). Preservar a posição + dar URL clicável é o degrau intermédio entre "imagens partidas" e "adicionar manualmente" |
+| Substack: `unproxy()` regex decoda `/p/<transform>/<url-encoded-s3-url>` | Os proxies de `ruben.substack.com/p/…` devolvem 404 fora do browser; o S3 original está URL-encoded no último segmento do proxy e em claro no `data-attrs` JSON — o link do placeholder tem de apontar para um URL que o utilizador consiga abrir |
+| Rejeitada a abordagem **Shortcuts.app** (pivot revertido) | A Shortcuts resolveria as imagens nativamente mas obriga a setup manual não-versionável por máquina, acopla a workflow à app Shortcuts, e o utilizador prefere o controlo do texto no repo em troca de inserir imagens manualmente |
+| Rejeitada a abordagem **base64 inline** (4 iterações: sips WebP→PNG, data-attrs parsing, Substack unproxy, magic-byte detection) | Diagnóstico empírico com HTML minimal confirmou que o Notes trata qualquer `data:` URI no body como attachment genérico, independente do formato, tamanho ou correctness. Limitação está na API do Notes |
+| Feedback visual via `skhd-hud.widget` + `/tmp/skhd-mode` | Widget já existente (poll 100ms); reaproveita o canal usado para leader modes; trap `EXIT` limpa |
+| Tag `#site` escrita como texto no corpo HTML | Notes parseia hashtags em texto livre ao gravar, sem API dedicada |
+| `v=<sha>` no log por invocação | Evita diagnosticar uma versão desactualizada quando o utilizador esquece `dl` (aconteceu durante o desenvolvimento) |
+| Nota criada no folder default (sem especificar account/folder) | Evita depender de locale (`"Notes"` vs `"Notas"`); o Notes coloca na localização natural do utilizador |
+| Requer "Allow JavaScript from Apple Events" em Safari | Restrição nativa do macOS desde Mojave — one-time setup |
 
 ### Übersicht widgets — 2026-04-18
 

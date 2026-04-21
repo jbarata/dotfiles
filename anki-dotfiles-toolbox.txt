@@ -276,4 +276,10 @@ skP2rH5aTn	skhd clients: como abrir Mello Produção vs Qualidade?	K → M → P
 skQ6xB8mEp	skhd clients: como abrir Winestone Produção vs Qualidade?	K → W → P (produção) ou K → W → Q (qualidade)	skhd shortcuts
 skR3nT7cVy	skhd clients: como abrir Lidl External vs Internal?	K → L → E (lidl-external) ou K → L → I (lidl interno)	skhd shortcuts
 skS8kD2pLw	skhd clients: como abrir Rentelecom?	K → R (directo; rentelecom.cultofbits.com)	skhd shortcuts
+skY1sN4rQh	skhd: Shift+Ctrl+Alt+Cmd+N — o que faz?	Dispara bin/safari-to-note.sh: extrai versão reader da página Safari e cria nota no Notes com título, link, tag #site, e corpo do artigo (imagens ficam como marcadores [imagem] clicáveis)	skhd shortcuts
+skZ3fJ7kWm	safari-to-note.sh: como lida com imagens?	<img> é substituído por <p><a>[imagem]</a></p> com URL real — Notes.app não renderiza <img> inline via body AppleScript (remotos e data: URIs aparecem ambos como "File"); utilizador abre e arrasta manualmente se quiser	skhd
+skAA5hB2eD	safari-to-note.sh: como resolve imagens Substack que devolvem 404?	unproxy() decoda URLs do formato /p/<transform>/<url-encoded-s3-url> — o S3 original está URL-encoded no último segmento do proxy e em claro no atributo data-attrs JSON	skhd
+skBB9xT8cK	safari-to-note.sh: que pré-requisito manual Safari tem?	Develop → "Allow JavaScript from Apple Events" (com Develop menu visível em Preferences → Advanced)	skhd
+skCC9dR4vL	safari-to-note.sh: como é que a tag #site vai parar à nota?	Escrita como texto (<p>#site</p>) no body HTML; Notes.app parseia hashtags em texto livre ao gravar	skhd
+skDD2fT8mK	safari-to-note.sh: porque `v=<sha>` nos logs?	Para confirmar que versão do script correu em cada invocação — evita diagnosticar bugs numa versão antiga quando o utilizador esqueceu de fazer dotfiles pull	skhd
 

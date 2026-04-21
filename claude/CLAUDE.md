@@ -30,3 +30,46 @@
 - `pull.rebase = true`
 - `push.autoSetupRemote = true`
 - `init.defaultBranch = main`
+
+## Propagação de alterações (IMPORTANTE)
+
+Sempre que alterares funcionalidade no repo dotfiles — adicionar/remover/modificar
+um atalho, script em `bin/`, variável de ambiente, alias, config de app, etc. —
+tens de **repercutir a alteração em todos os artefactos de documentação**,
+no mesmo commit:
+
+1. **`README.md`** (obrigatório sempre que há mudança de funcionalidade)
+   - Secção de uso relevante (ex.: "skhd", "Safari → Notes", "fzf", etc.)
+   - Entrada na árvore "Estrutura" se ficheiros/pastas mudaram
+   - Entrada em "Decisões" com tabela `| Decisão | Racional |` datada,
+     explicando **o porquê** (não só o quê)
+
+2. **`skhd-help.widget`** (`ubersicht/widgets/skhd-help.widget/index.coffee`)
+   — obrigatório para atalhos skhd novos ou modificados. Adiciona/actualiza
+   um `<div class="item"><kbd>…</kbd><span>…</span></div>` na secção
+   apropriada (Apps / Leader cob / Leader personal / Leader clients /
+   Leader review / Ajuda).
+
+3. **`anki-dotfiles-toolbox.txt`** — quando a mudança introduz conhecimento
+   não-trivial que vale a pena memorizar (atalhos, comandos, decisões
+   arquitecturais, gotchas). Formato TSV: `guid\tFront\tBack\tTags`.
+   Gerar GUID único (ex.: `skXX1aB2cD`) seguindo a convenção da secção.
+   Não é obrigatório para mudanças triviais (typos, refactor sem impacto
+   no uso).
+
+4. **`skhdrc`** (`skhd/.config/skhd/skhdrc`) — se o atalho envolve skhd,
+   actualiza o bloco de convenções no topo do ficheiro (secção `#
+   Convenções de teclas`).
+
+Checklist mental antes de commitar funcionalidade nova:
+- [ ] Código funciona
+- [ ] README.md: uso + estrutura + decisões
+- [ ] skhd-help.widget (se atalho)
+- [ ] skhdrc convenções (se atalho)
+- [ ] anki-dotfiles-toolbox.txt (se há knowledge útil)
+- [ ] Tudo no mesmo commit (não commits separados de "docs follow-up")
+
+Razão: o README é a memória persistente entre sessões do Claude Code; o
+widget é a cheatsheet acessível por `⌃⌥⌘ '`; o Anki é revisão activa.
+Desalinhamento entre estes três e o código = divergência silenciosa que
+custa tempo a detectar depois.
