@@ -116,6 +116,7 @@ style: """
     justify-content: center
     align-items: center
     gap:2px
+    min-width: 260px
     border-radius: 1rem
     background: #{ settings.colors.background }
     box-shadow: #{ settings.shadows.box }
@@ -167,6 +168,7 @@ style: """
   @media (max-width: 1999px)
     .taskDetails
       padding: 1px 28px 2px 10px
+      min-width: 180px
     .project
       font-size: 12px
     .thing
