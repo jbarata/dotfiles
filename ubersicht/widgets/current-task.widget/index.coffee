@@ -132,7 +132,7 @@ style: """
     width: 22px
     height: 15px
     line-height: 13px
-    border-radius: 4px
+    border-radius: 8px
     background-color: #fff
     color: #d5184b
     border: 1px solid #d5184b
