@@ -52,22 +52,31 @@ afterRender: (domEl) ->
     container = widget.find('.container')
     links = widget.find('.links')
     reviewOptions = widget.find('.review-options')
-    reviewOpen = widget.find('.review-open')
 
     if state
       localStorage.setItem('planningMode', 'on')
       container.addClass 'planning'
       links.addClass 'hidden'
-      reviewOpen.addClass 'hidden'
       reviewOptions.removeClass 'hidden'
       showOverlay('today')
     else
       localStorage.removeItem('planningMode')
       container.removeClass 'planning'
       links.removeClass 'hidden'
-      reviewOpen.removeClass 'hidden'
       reviewOptions.addClass 'hidden'
       hideAllOverlays()
+
+  openPlanning = =>
+    togglePlanningMode(true)
+    @run "osascript focus.widget/review_open.scpt"
+    @run "osascript focus.widget/large_center.scpt"
+
+  closePlanning = =>
+    togglePlanningMode(false)
+    @run "osascript focus.widget/review_close.scpt"
+
+  domEl._focusOpenPlanning = openPlanning
+  domEl._focusClosePlanning = closePlanning
 
   # Set initial state from localStorage
   if localStorage.getItem('planningMode') is 'on'
@@ -91,16 +100,9 @@ afterRender: (domEl) ->
     @run "open -a Safari 'https://dogfooding.cultofbits.com/recordm/index.html#/cob.custom-resource/458932:{%22todayVar%22:%221759846813737%22,%22switchView%22:%22yes%22}/dash'"
     @run "osascript focus.widget/large_center.scpt"
 
-  widget.find('.review-open').on 'click', (e) =>
-    togglePlanningMode(true)
-    e.preventDefault()
-    @run "osascript focus.widget/review_open.scpt"
-    @run "osascript focus.widget/large_center.scpt"
-
   widget.find('.review-close').on 'click', (e) =>
-    togglePlanningMode(false)
     e.preventDefault()
-    @run "osascript focus.widget/review_close.scpt"
+    closePlanning()
 
   widget.find('.today-plan-trigger').on 'click', (e) =>
     e.preventDefault()
@@ -172,9 +174,6 @@ style: """
   .review-options.hidden
     display: none
 
-  .review-open.hidden
-    display: none
-
   .review-btn
     z-index: 10
     display: inline-block
@@ -189,8 +188,6 @@ style: """
     text-align: center
     cursor: pointer
 
-  .review-btn.review-open
-    background-color: #d5184b
   .review-btn.today-plan-trigger
     background-color: rgb(0, 128, 0)
   .review-btn.daily-review-trigger
@@ -476,7 +473,6 @@ render: -> """
       <div class="review-schedule">Year Review: 2 Jan</div>
     </div>
     <div class="review-selector">
-      <a href="#" class="review-btn review-open">R</a>
       <div class="review-options ">
         <a href="#" class="review-btn review-close" style="background-color:purple;">X</a>
         <a href="#" class="review-btn today-plan-trigger">T</a>
@@ -509,11 +505,10 @@ update: (output, domEl) ->
   command = output.trim()
   return unless command
 
-  reviewOpen = domEl.querySelector('.review-btn.review-open')
-  reviewClose = domEl.querySelector('.review-btn.review-close')
-
-  # Planning mode ON ⇔ review-open tem a classe `hidden`.
-  isPlanningOpen = -> reviewOpen?.classList.contains('hidden')
+  container = domEl.querySelector('.container')
+  isPlanningOpen = -> container?.classList.contains('planning')
+  openPlanning = -> domEl._focusOpenPlanning?()
+  closePlanning = -> domEl._focusClosePlanning?()
 
   triggerSelectors =
     today: '.today-plan-trigger'
@@ -525,14 +520,11 @@ update: (output, domEl) ->
 
   switch command
     when 'toggle'
-      if isPlanningOpen() then reviewClose?.click() else reviewOpen?.click()
+      if isPlanningOpen() then closePlanning() else openPlanning()
     when 'open'
-      reviewOpen?.click() unless isPlanningOpen()
+      openPlanning() unless isPlanningOpen()
     when 'close'
-      reviewClose?.click() if isPlanningOpen()
+      closePlanning() if isPlanningOpen()
     else
-      # today/daily/weekly/monthly/quarterly/year: garante painel aberto
-      # e depois clica o trigger específico (togglePlanningMode é DOM
-      # síncrono, o selector funciona logo a seguir).
-      reviewOpen?.click() unless isPlanningOpen()
+      openPlanning() unless isPlanningOpen()
       domEl.querySelector(".review-btn#{triggerSelectors[command]}")?.click()
