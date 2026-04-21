@@ -24,7 +24,7 @@ refreshFrequency: 4000
 
 style: """
   bottom: 3px
-  left: 40px
+  left: 6px
   color: #fff
 
   .output
