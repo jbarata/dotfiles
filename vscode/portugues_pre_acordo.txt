@@ -248,13 +248,17 @@ trissector
 # V
 activa
 activar
+activo
 Actores
 Actualiza
 actualização
 Arquitectura
 desseleccionar
+directamente
+directo
 directorias
 directório
+Excepções
 interactivas
 interactivo
 seleccionar
