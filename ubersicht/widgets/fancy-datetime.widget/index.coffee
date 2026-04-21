@@ -85,7 +85,7 @@ refreshFrequency: 1000
 
 style: """
   bottom: -32px
-  right: -158px
+  right: -149px
   font-family: 'Ubuntu', sans-serif
   font-size: 16px
   line-height: 1
@@ -138,8 +138,8 @@ style: """
 
   @media (max-width: 1999px)
     transform: none
-    bottom: 0
-    right: 8px
+    bottom: 2px
+    right: 2px
     .container
       display: flex
       align-items: center

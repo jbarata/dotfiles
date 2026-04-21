@@ -36,8 +36,8 @@ fi
 refreshFrequency: 6000
 
 style: """
-  bottom: 3px
-  right: 340px
+  bottom: 8px
+  right: 308px
 
   color: #fff
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif
@@ -53,7 +53,7 @@ style: """
     top: 0;
     left: 0;
     width: 100%;
-    height: 60px;
+    height: 66px;
     border-radius: 1rem;
     background-color: rgba(0, 0, 0, 0.6);
     backdrop-filter: blur(10px);
@@ -86,8 +86,8 @@ style: """
 
   @media (max-width: 1999px) {
     font-size: 11px;
-    right: 280px;
-    bottom: 0;
+    right: 240px;
+    bottom: 1px;
     height: 30px;
     .event-bg {
       height: 30px;
@@ -101,6 +101,9 @@ style: """
       padding: 0 0.8rem;
       height: 30px;
       box-sizing: border-box;
+    }
+    .event-bg {
+      height: 28px;
     }
   }
 """
