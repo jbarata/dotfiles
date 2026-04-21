@@ -62,23 +62,8 @@ style: """
 
 render: (output) -> @getVisual output
 
-afterRender: (domEl) ->
-  $domEl = $(domEl)
-  applyPlanningMode = ->
-    if localStorage.getItem('planningMode') is 'on'
-      $domEl.hide()
-    else
-      $domEl.show()
-  applyPlanningMode()
-  setInterval applyPlanningMode, 300
-
 update: (output, domEl) ->
-  $domEl = $(domEl)
-  if localStorage.getItem('planningMode') is 'on'
-    $domEl.hide()
-    return
-  $domEl.show()
-  $domEl.html @getVisual output
+  $(domEl).html @getVisual output
 
 encodeTerm: (s) -> encodeURIComponent(s ? '')
 

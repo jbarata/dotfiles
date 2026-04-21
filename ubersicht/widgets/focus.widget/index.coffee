@@ -156,6 +156,7 @@ style: """
     background-image: url('links.widget/images/calm.png')
     background-size: cover
     background-position: center
+    z-index: 5
 
   .links.hidden
     display: none
@@ -243,6 +244,7 @@ style: """
     font-weight: 200
     box-sizing: border-box
     pointer-events: none
+    z-index: 6
 
   .review-overlay.hidden
     display: none
