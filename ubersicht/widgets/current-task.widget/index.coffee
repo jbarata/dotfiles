@@ -110,18 +110,40 @@ style: """
     color:rgba(255,255,255,0.4)
 
   .taskDetails
+    position: relative
     display:flex
-    flex-direction: row 
+    flex-direction: row
     justify-content: center
     align-items: center
     gap:2px
+    min-height: 24px
     border-radius: 1rem
     background: #{ settings.colors.background }
     box-shadow: #{ settings.shadows.box }
     overflow: hidden
     -webkit-backdrop-filter: blur(10px)
     background:rgba(255, 255, 255, .8)
-    padding:3px 15px 4px 15px
+    padding:3px 38px 4px 15px
+
+  .review-trigger
+    position: absolute
+    right: 6px
+    top: 50%
+    transform: translateY(-50%)
+    width: 22px
+    height: 15px
+    line-height: 13px
+    border-radius: 8px
+    background-color: #fff
+    color: #d5184b
+    border: 1px solid #d5184b
+    font-family: verdana
+    font-weight: bolder
+    font-size: 10px
+    text-align: center
+    cursor: pointer
+    text-decoration: none
+    box-sizing: border-box
 
   .thing
     font-size: 12px
@@ -145,11 +167,19 @@ style: """
 
   @media (max-width: 1999px)
     .taskDetails
-      padding: 1px 10px 2px 10px
+      padding: 1px 28px 2px 10px
+      min-height: 15px
     .project
       font-size: 12px
     .thing
       font-size: 10px
+    .review-trigger
+      right: 4px
+      width: 18px
+      height: 12px
+      line-height: 10px
+      font-size: 8px
+      border-radius: 6px
 
 """
 
@@ -163,9 +193,15 @@ render: (output) ->
             <!--img id="toggl" style="vertical-align:3%" src="current-task.widget/images/Inactive-19.png"/-->
             <!--br/> <a class="area">area</a-->
             <a class="project">project</a> <a class="thing">thing</a>
+            <a href="#" class="review-trigger">R</a>
         </div>
       </div>
     """
+
+afterRender: (domEl) ->
+  $(domEl).find('.review-trigger').on 'click', (e) =>
+    e.preventDefault()
+    @run "echo toggle > /tmp/focus-review-cmd"
 
 update: (output, domEl) ->
   data = []
