@@ -131,16 +131,18 @@ style: """
     transform: translateY(-50%)
     width: 22px
     height: 15px
-    line-height: 15px
+    line-height: 13px
     border-radius: 4px
-    background-color: #d5184b
-    color: #fff
+    background-color: #fff
+    color: #d5184b
+    border: 1px solid #d5184b
     font-family: verdana
     font-weight: bolder
     font-size: 10px
     text-align: center
     cursor: pointer
     text-decoration: none
+    box-sizing: border-box
 
   .thing
     font-size: 12px
