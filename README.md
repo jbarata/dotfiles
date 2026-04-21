@@ -73,6 +73,7 @@ Ctrl+Alt+Cmd+C          # Claude (activate)
 Shift+Ctrl+Alt+Cmd+C    # ChatGPT
 Ctrl+Alt+Cmd+V          # VS Code
 Ctrl+Alt+Cmd+G          # Ghostty (abre ou activa a janela)
+Ctrl+Alt+Cmd+B          # Safari (abre ou activa a janela)
 Ctrl+Alt+Cmd+T          # Calendário (open_calendar.scpt do focus.widget)
 Shift+Ctrl+Alt+Cmd+N    # Safari → Notes (guarda a página actual em versão reader)
 
