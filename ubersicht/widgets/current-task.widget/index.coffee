@@ -166,11 +166,18 @@ style: """
 
   @media (max-width: 1999px)
     .taskDetails
-      padding: 1px 32px 2px 10px
+      padding: 1px 28px 2px 10px
     .project
       font-size: 12px
     .thing
       font-size: 10px
+    .review-trigger
+      right: 4px
+      width: 18px
+      height: 12px
+      line-height: 10px
+      font-size: 8px
+      border-radius: 6px
 
 """
 
