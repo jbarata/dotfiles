@@ -83,7 +83,7 @@ refreshFrequency: 3000
 
 
 style: """
-  z-index: 0
+  z-index: -1
   bottom: 0px
   left: 50%
   transform: translateX(-50%)
@@ -149,11 +149,11 @@ style: """
     font-size: 12px
     font-weight: 600
     color: rgba(0, 0, 0, 0.7)
-    
+
   .project
     font-size: 18px
     color: rgba(0, 0, 0, 0.7)
-    
+
   .area
     font-size: 12px
 
