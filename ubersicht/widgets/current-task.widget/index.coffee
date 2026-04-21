@@ -110,8 +110,9 @@ style: """
     color:rgba(255,255,255,0.4)
 
   .taskDetails
+    position: relative
     display:flex
-    flex-direction: row 
+    flex-direction: row
     justify-content: center
     align-items: center
     gap:2px
@@ -121,7 +122,25 @@ style: """
     overflow: hidden
     -webkit-backdrop-filter: blur(10px)
     background:rgba(255, 255, 255, .8)
-    padding:3px 15px 4px 15px
+    padding:3px 38px 4px 15px
+
+  .review-trigger
+    position: absolute
+    right: 6px
+    top: 50%
+    transform: translateY(-50%)
+    width: 22px
+    height: 15px
+    line-height: 15px
+    border-radius: 4px
+    background-color: #d5184b
+    color: #fff
+    font-family: verdana
+    font-weight: bolder
+    font-size: 10px
+    text-align: center
+    cursor: pointer
+    text-decoration: none
 
   .thing
     font-size: 12px
@@ -145,7 +164,7 @@ style: """
 
   @media (max-width: 1999px)
     .taskDetails
-      padding: 1px 10px 2px 10px
+      padding: 1px 32px 2px 10px
     .project
       font-size: 12px
     .thing
@@ -163,9 +182,15 @@ render: (output) ->
             <!--img id="toggl" style="vertical-align:3%" src="current-task.widget/images/Inactive-19.png"/-->
             <!--br/> <a class="area">area</a-->
             <a class="project">project</a> <a class="thing">thing</a>
+            <a href="#" class="review-trigger">R</a>
         </div>
       </div>
     """
+
+afterRender: (domEl) ->
+  $(domEl).find('.review-trigger').on 'click', (e) =>
+    e.preventDefault()
+    @run "echo toggle > /tmp/focus-review-cmd"
 
 update: (output, domEl) ->
   data = []
