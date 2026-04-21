@@ -10,9 +10,9 @@ set -euo pipefail
 
 TARGET="$HOME/Documents/Working Info"
 # Imagem source (aspect ratio livre — será esticada para caber na janela).
-BG_SOURCE="$HOME/.dotfiles/assets/working-info-bg.png"
+BG_SOURCE="$HOME/Documents/Working Info/background.png"
 # Imagem cacheada no tamanho da janela actual (regenerada em cada invocação).
-BG_CACHE="/tmp/working-info-bg.png"
+BG_CACHE="/tmp/background.png"
 # Tamanho do ícone em pixels (16-128). Default Finder = 64.
 ICON_SIZE=32
 # Log para debug.
@@ -78,7 +78,7 @@ on run argv
   -- 4. Redimensionar source para o tamanho exacto da janela e aplicar.
   if bgSource is not "" and winW > 0 and winH > 0 then
     try
-      do shell script "/usr/bin/sips -z " & winH & " " & winW & " " & quoted form of bgSource & " --out " & quoted form of bgCache & " >/dev/null 2>&1"
+      do shell script "/usr/bin/sips -z " & "1130" & " " & "2130" & " " & quoted form of bgSource & " --out " & quoted form of bgCache & " >/dev/null 2>&1"
       tell application "Finder"
         tell icon view options of win
           set background picture to (POSIX file bgCache as alias)
