@@ -13,13 +13,18 @@ set -euo pipefail
 TARGET="$HOME/Documents/Working Info"
 # Imagem source (aspect ratio livre — será esticada para caber na janela).
 BG_SOURCE="$HOME/Documents/Working Info/background.png"
-# Imagem cacheada no tamanho da janela actual (regenerada em cada invocação).
-BG_CACHE="/tmp/background.jpg"
+# Imagem cacheada no tamanho da janela actual. Path único por invocação —
+# o Finder cacheia a background picture por path, por isso reutilizar o
+# mesmo filename faz com que nunca veja o conteúdo novo.
+BG_CACHE="/tmp/working-info-bg-$(date +%s%N).jpg"
 # Tamanho do ícone em pixels (16-128). Default Finder = 64.
 ICON_SIZE=32
 # Log para debug.
 LOG="/tmp/working-info.log"
 mkdir -p "$TARGET"
+
+# Limpar caches antigos (>10 min) para não encher /tmp.
+find /tmp -maxdepth 1 -name 'working-info-bg-*.jpg' -mmin +10 -delete 2>/dev/null || true
 
 if [[ ! -f "$BG_SOURCE" ]]; then
   echo "$(date '+%F %T') bg source missing: $BG_SOURCE" >> "$LOG"
