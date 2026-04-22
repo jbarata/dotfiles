@@ -77,13 +77,17 @@ end run' -- "$1" >/dev/null 2>&1 || true
 }
 
 get_finder_selection() {
+  # `selection as alias list` coage a selecção inteira numa lista de aliases
+  # de uma só vez — funciona uniformemente para ficheiros e pastas. A versão
+  # anterior iterava referências e fazia `f as alias`, o que falhava
+  # silenciosamente para directorias e caía no `on error`.
   osascript <<'EOF' 2>/dev/null || true
 tell application "Finder"
   try
-    set sel to selection
+    set sel to selection as alias list
     set out to ""
-    repeat with f in sel
-      set out to out & (POSIX path of (f as alias)) & linefeed
+    repeat with a in sel
+      set out to out & POSIX path of a & linefeed
     end repeat
     return out
   on error
@@ -236,10 +240,20 @@ fi
 
 MOVED=0
 SKIPPED=0
+ERRORS=""
+
+append_error() {
+  # Acumula erros num relatório que é mostrado no diálogo final.
+  ERRORS+=$'\n'"  • $1: $2"
+}
 
 for src in "${TARGETS[@]}"; do
-  [[ -e "$src" ]] || { SKIPPED=$((SKIPPED + 1)); continue; }
   fname="$(basename "$src")"
+  if [[ ! -e "$src" ]]; then
+    SKIPPED=$((SKIPPED + 1))
+    append_error "$fname" "origem não existe"
+    continue
+  fi
   dest="$DEST_DIR/$fname"
 
   if [[ -e "$dest" ]]; then
@@ -249,7 +263,11 @@ for src in "${TARGETS[@]}"; do
         dest="$DEST_DIR/$new_fname"
         ;;
       "$COL_REPLACE")
-        rm -rf "$dest"
+        if ! rm_err="$(rm -rf "$dest" 2>&1)"; then
+          SKIPPED=$((SKIPPED + 1))
+          append_error "$fname" "rm falhou: ${rm_err:-erro desconhecido}"
+          continue
+        fi
         ;;
       *)
         SKIPPED=$((SKIPPED + 1))
@@ -258,13 +276,18 @@ for src in "${TARGETS[@]}"; do
     esac
   fi
 
-  if mv "$src" "$dest"; then
+  if mv_err="$(mv "$src" "$dest" 2>&1)"; then
     MOVED=$((MOVED + 1))
   else
     SKIPPED=$((SKIPPED + 1))
+    append_error "$fname" "${mv_err:-mv falhou sem mensagem}"
   fi
 done
 
 # --- 5. Relatório final ----------------------------------------------------
 
-info_dialog "Arrumação concluída.\nMovidos: $MOVED\nSaltados: $SKIPPED\nDestino: $(basename "$DEST_DIR")"
+report="Arrumação concluída."$'\n'"Movidos: $MOVED"$'\n'"Saltados: $SKIPPED"$'\n'"Destino: $(basename "$DEST_DIR")"
+if [[ -n "$ERRORS" ]]; then
+  report+=$'\n\n'"Erros:$ERRORS"
+fi
+info_dialog "$report"
