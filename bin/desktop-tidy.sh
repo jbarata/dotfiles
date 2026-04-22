@@ -27,9 +27,12 @@ COL_SKIP="[Saltar os que colidem]"
 
 choose_from_list() {
   # uso: choose_from_list <prompt> <item1> <item2> ...
+  # `tell ... System Events to activate` garante que o diálogo aparece em
+  # primeiro plano e recebe foco (Enter funciona logo, sem rato).
   local prompt="$1"
   shift
   osascript -e 'on run argv
+  tell application "System Events" to activate
   set thePrompt to item 1 of argv
   set theItems to items 2 thru (count of argv) of argv
   set theChoice to choose from list theItems with prompt thePrompt default items {item 1 of theItems}
@@ -46,6 +49,7 @@ ask_text() {
   local prompt="$1"
   local default="${2:-}"
   osascript -e 'on run argv
+  tell application "System Events" to activate
   try
     set theResult to display dialog (item 1 of argv) default answer (item 2 of argv) buttons {"Cancelar", "OK"} default button "OK"
     if button returned of theResult is "OK" then
@@ -61,6 +65,7 @@ end run' -- "$prompt" "$default"
 
 info_dialog() {
   osascript -e 'on run argv
+  tell application "System Events" to activate
   display dialog (item 1 of argv) buttons {"OK"} default button "OK"
 end run' -- "$1" >/dev/null 2>&1 || true
 }
