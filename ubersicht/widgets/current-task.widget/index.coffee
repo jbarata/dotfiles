@@ -167,6 +167,7 @@ style: """
   @media (max-width: 1999px)
     .taskDetails
       padding: 1px 28px 2px 10px
+      height: 18px
     .project
       font-size: 12px
     .thing
