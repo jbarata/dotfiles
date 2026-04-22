@@ -96,6 +96,7 @@ style: """
   .container
     position: relative
     display: table
+    width: 340px
     height: 100%
     padding: 0.6rem 1.5rem
     border-radius: 1rem
@@ -143,6 +144,8 @@ style: """
     .container
       display: flex
       align-items: center
+      justify-content: center
+      width: 280px
       height: 30px
       padding: 0 0.7rem
     .cell
