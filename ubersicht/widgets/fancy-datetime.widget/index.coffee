@@ -85,7 +85,7 @@ refreshFrequency: 1000
 
 style: """
   bottom: -32px
-  right: -149px
+  right: -119px
   font-family: 'Ubuntu', sans-serif
   font-size: 16px
   line-height: 1
@@ -96,7 +96,7 @@ style: """
   .container
     position: relative
     display: table
-    width: 340px
+    width: 280px
     height: 100%
     padding: 0.6rem 1.5rem
     border-radius: 1rem
@@ -126,7 +126,7 @@ style: """
     font-weight: 500
 
   .txt-large
-    font-size: 3rem
+    font-size: 2rem
     font-weight: 700
 
   .divider
@@ -147,7 +147,7 @@ style: """
       align-items: center
       justify-content: center
       width: 280px
-      height: 30px
+      height: 42px
       padding: 0 0.7rem
       box-sizing: border-box
     .cell
@@ -156,7 +156,7 @@ style: """
     .txt-large
       font-size: 1.3rem
     .txt-small
-      font-size: 0.65rem
+      font-size: 1.1rem
     .divider
       margin: 0 0.45rem
       height: 70%
@@ -173,7 +173,6 @@ render: () -> """
       <span class='divider'></span>
     </div>
     <div class='cell txt-small'>
-      <span class='weekday txt-accent'></span>
       <div class='txt-default'>
         <span class='day'></span>
         <span>|</span>
@@ -192,7 +191,6 @@ update: (output, domEl) ->
   $(domEl).find('.hours').text(date.hours)
   $(domEl).find('.minutes').text(date.minutes)
   $(domEl).find('.suffix').text(date.suffix)
-  $(domEl).find('.weekday').text(date.weekday)
   $(domEl).find('.day').text(date.day)
   $(domEl).find('.month').text(date.month)
   $(domEl).find('.year').text(date.year)

@@ -37,7 +37,7 @@ refreshFrequency: 6000
 
 style: """
   bottom: 8px
-  right: 371px
+  right: 311px
 
   color: #fff
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif
@@ -53,7 +53,7 @@ style: """
     top: 0;
     left: 0;
     width: 100%;
-    height: 66px;
+    height: 52px;
     border-radius: 1rem;
     background-color: rgba(0, 0, 0, 0.6);
     backdrop-filter: blur(10px);
@@ -65,7 +65,7 @@ style: """
   .event-content {
     position: relative;
     z-index: 1;
-    padding: 0.9rem 1.5rem;
+    padding: 0.5rem 1.5rem;
     display: flex;
     flex-direction: column;
     align-items: flex-end;
