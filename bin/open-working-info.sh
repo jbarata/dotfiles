@@ -66,25 +66,30 @@ on run argv
   tell application "System Events" to key code 36 using {control down, option down}
   delay 0.3
 
-  -- 3. Ler tamanho real da icon view via Accessibility (exclui title bar e
-  --    sidebar — é onde o Finder desenha a background picture). Fallback para
-  --    bounds da janela se o AX falhar.
+  -- 3. Ler tamanho real da icon view via Accessibility — é onde o Finder
+  --    desenha a background picture. A icon view está dentro de um splitter
+  --    group, por isso usamos `entire contents` para encontrar todas as
+  --    scroll areas na hierarquia e escolhemos a mais larga (a lateral
+  --    sidebar é mais estreita). Fallback para bounds da janela menos a
+  --    altura aproximada da title bar.
   set winW to 0
   set winH to 0
   try
     tell application "System Events"
       tell process "Finder"
-        tell window 1
-          set maxW to 0
-          repeat with sa in (scroll areas)
-            set sSize to size of sa
-            if (item 1 of sSize) > maxW then
-              set maxW to item 1 of sSize
-              set winW to item 1 of sSize
-              set winH to item 2 of sSize
+        set maxW to 0
+        repeat with elem in (entire contents of window 1)
+          try
+            if class of elem is scroll area then
+              set eSize to size of elem
+              if (item 1 of eSize) > maxW then
+                set maxW to item 1 of eSize
+                set winW to item 1 of eSize
+                set winH to item 2 of eSize
+              end if
             end if
-          end repeat
-        end tell
+          end try
+        end repeat
       end tell
     end tell
   end try
@@ -93,10 +98,13 @@ on run argv
       tell application "Finder"
         set b to bounds of win
         set winW to (item 3 of b) - (item 1 of b)
-        set winH to (item 4 of b) - (item 2 of b)
+        -- Subtrair title bar (~28pt). Se for pouco exacto continua cortado,
+        -- mas é melhor do que incluir a title bar toda.
+        set winH to (item 4 of b) - (item 2 of b) - 28
       end tell
     end try
   end if
+  do shell script "date '+%F %T icon view: " & winW & "x" & winH & "' >> " & quoted form of logPath
 
   -- 4. Redimensionar source para o tamanho exacto da icon view e aplicar.
   if bgSource is not "" and winW > 0 and winH > 0 then
