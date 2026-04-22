@@ -59,6 +59,15 @@ on run argv
     end if
     set current view of win to icon view
     set toolbar visible of win to false
+    try
+      set statusbar visible of win to false
+    end try
+    try
+      set pathbar visible of win to false
+    end try
+    try
+      set sidebar width of win to 0
+    end try
     set index of win to 1
     delay 0.15
     tell icon view options of win
@@ -88,20 +97,19 @@ on run argv
   try
     tell application "System Events"
       tell process "Finder"
-        set saIdx to 0
+        set elemIdx to 0
         set maxW to 0
         repeat with elem in (entire contents of window 1)
           try
-            if role of elem is "AXScrollArea" then
-              set saIdx to saIdx + 1
-              set ePos to position of elem
-              set eSize to size of elem
-              do shell script "echo " & quoted form of ("  scroll area " & saIdx & ": pos=" & (item 1 of ePos) & "," & (item 2 of ePos) & " size=" & (item 1 of eSize) & "x" & (item 2 of eSize)) & " >> " & quoted form of logPath
-              if (item 1 of eSize) > maxW then
-                set maxW to item 1 of eSize
-                set winW to item 1 of eSize
-                set winH to item 2 of eSize
-              end if
+            set eRole to role of elem
+            set eSize to size of elem
+            set ePos to position of elem
+            set elemIdx to elemIdx + 1
+            do shell script "echo " & quoted form of ("  [" & elemIdx & "] role=" & eRole & " pos=" & (item 1 of ePos) & "," & (item 2 of ePos) & " size=" & (item 1 of eSize) & "x" & (item 2 of eSize)) & " >> " & quoted form of logPath
+            if eRole is "AXScrollArea" and (item 1 of eSize) > maxW then
+              set maxW to item 1 of eSize
+              set winW to item 1 of eSize
+              set winH to item 2 of eSize
             end if
           end try
         end repeat
