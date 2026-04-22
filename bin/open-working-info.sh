@@ -72,11 +72,11 @@ on run argv
   delay 0.3
 
   -- 3. Ler tamanho real da icon view via Accessibility — é onde o Finder
-  --    desenha a background picture. A icon view está dentro de um splitter
-  --    group, por isso usamos `entire contents` para encontrar todas as
-  --    scroll areas na hierarquia. Registamos posição+tamanho de TODAS para
-  --    diagnóstico, e escolhemos a mais larga. Também logamos os bounds da
-  --    janela do Finder para podermos comparar.
+  --    desenha a background picture. Usamos `role = "AXScrollArea"` (em vez
+  --    de `class is scroll area`, que não estava a fazer match) para
+  --    encontrar as scroll areas em qualquer nível da hierarquia. Registamos
+  --    posição+tamanho de todas, erros do AX, e os bounds da janela para
+  --    comparação.
   set winW to 0
   set winH to 0
   try
@@ -92,7 +92,7 @@ on run argv
         set maxW to 0
         repeat with elem in (entire contents of window 1)
           try
-            if class of elem is scroll area then
+            if role of elem is "AXScrollArea" then
               set saIdx to saIdx + 1
               set ePos to position of elem
               set eSize to size of elem
@@ -107,6 +107,8 @@ on run argv
         end repeat
       end tell
     end tell
+  on error axErr
+    do shell script "echo " & quoted form of ("  AX error: " & axErr) & " >> " & quoted form of logPath
   end try
   if winW = 0 or winH = 0 then
     try
@@ -122,7 +124,8 @@ on run argv
   -- 4. Redimensionar source para o tamanho exacto da icon view e aplicar.
   if bgSource is not "" and winW > 0 and winH > 0 then
     try
-      do shell script "/usr/bin/sips -s format jpeg -s formatOptions 90 -z " & winH & " " & winW & " " & quoted form of bgSource & " --out " & quoted form of bgCache & " >/dev/null 2>&1"
+      do shell script "/usr/bin/sips -s format jpeg -s formatOptions 90 -z " & winH & " " & winW & " " & quoted form of bgSource & " --out " & quoted form of bgCache & " >/dev/null 2>>" & quoted form of logPath
+      do shell script "/usr/bin/sips -g pixelHeight -g pixelWidth " & quoted form of bgCache & " | /usr/bin/awk '/pixel/ {printf \"  output %s=%s\\n\", $1, $2}' >> " & quoted form of logPath
       tell application "Finder"
         tell icon view options of win
           set background picture to (POSIX file bgCache as alias)
