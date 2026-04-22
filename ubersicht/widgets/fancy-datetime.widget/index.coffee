@@ -85,7 +85,7 @@ refreshFrequency: 1000
 
 style: """
   bottom: -32px
-  right: -149px
+  right: -119px
   font-family: 'Ubuntu', sans-serif
   font-size: 16px
   line-height: 1
@@ -96,7 +96,7 @@ style: """
   .container
     position: relative
     display: table
-    width: 340px
+    width: 280px
     height: 100%
     padding: 0.6rem 1.5rem
     border-radius: 1rem
