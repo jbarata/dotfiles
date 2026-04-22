@@ -3,11 +3,14 @@
 # Disparado por skhd (cmd+alt+w). Requer permissão "Acessibilidade" para o skhd
 # (já necessária para o resto do skhdrc).
 #
-# Background: o Finder não faz scaling nativo, portanto redimensiona-se a
-# imagem source para o tamanho exacto da janela via `sips` e aplica-se essa
-# versão cacheada. Converte-se para JPEG para achatar o canal alfa — caso
-# contrário o Finder em dark mode compõe as zonas translúcidas sobre o fundo
-# escuro da janela e escurece a imagem toda (ver exports do Excalidraw).
+# Background: o Finder desenha a background picture ao "natural point size"
+# da imagem (pixels × 72 ÷ DPI), não ao pixel size. Se a source tem DPI ≠ 72
+# (ex.: exports do Excalidraw usam ~63 DPI), mesmo que o sips redimensione
+# para o pixel count certo, a imagem aparece maior/menor do que a icon view
+# por causa da DPI. Por isso forçamos dpiWidth=dpiHeight=72 no output para
+# garantir que 1 pixel = 1 point. Também convertemos para JPEG para achatar
+# o canal alfa — caso contrário o Finder em dark mode compõe as zonas
+# translúcidas sobre o fundo escuro da janela.
 set -euo pipefail
 
 TARGET="$HOME/Documents/Working Info"
@@ -129,7 +132,7 @@ on run argv
   --    property.
   if bgSource is not "" and winW > 0 and winH > 0 then
     try
-      do shell script "/usr/bin/sips -s format jpeg -s formatOptions 90 -z " & winH & " " & winW & " " & quoted form of bgSource & " --out " & quoted form of bgCache & " 2>>" & quoted form of logPath
+      do shell script "/usr/bin/sips -s format jpeg -s formatOptions 90 -s dpiWidth 72 -s dpiHeight 72 -z " & winH & " " & winW & " " & quoted form of bgSource & " --out " & quoted form of bgCache & " 2>>" & quoted form of logPath
       tell application "Finder"
         set current view of win to icon view
         set background picture of icon view options of win to (POSIX file bgCache as alias)
