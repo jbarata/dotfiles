@@ -80,48 +80,31 @@ on run argv
   tell application "System Events" to key code 36 using {control down, option down}
   delay 0.3
 
-  -- 3. Ler tamanho da área desenhável da icon view via Accessibility. A
-  --    AXScrollArea é o viewport (1668x993), mas o Finder desenha o background
-  --    picture dentro de uma AXList aninhada com padding interno (algo como
-  --    1660x963 — 4px laterais, 10 em cima, 20 em baixo). Detectamos a
-  --    maior AXList cujas dimensões não excedem a AXScrollArea e usamo-la.
-  --    Fallback: bounds menos title bar real (32pt).
+  -- 3. Ler tamanho da icon view via Accessibility e aplicar padding empírico.
+  --    A AXScrollArea reporta o viewport (ex. 1668x993) mas o Finder desenha
+  --    o background picture numa AXList aninhada com padding interno (~4px
+  --    laterais, 10 em cima, 20 em baixo — 8 largura, 30 altura no total).
+  --    Esses valores foram observados no log diagnóstico. Fallback: bounds da
+  --    janela menos title bar (32pt) menos o mesmo padding.
   set winW to 0
   set winH to 0
   try
     tell application "System Events"
       tell process "Finder"
         set targetWin to first window whose name is "Working Info"
-        set scrollW to 0
-        set scrollH to 0
-        set listW to 0
-        set listH to 0
+        set maxW to 0
         repeat with elem in (entire contents of targetWin)
           try
-            set eRole to role of elem
-            set eSize to size of elem
-            if eRole is "AXScrollArea" then
-              if (item 1 of eSize) > scrollW then
-                set scrollW to item 1 of eSize
-                set scrollH to item 2 of eSize
-              end if
-            else if eRole is "AXList" then
-              set eW to item 1 of eSize
-              set eH to item 2 of eSize
-              if eW > listW and (scrollW = 0 or (eW ≤ scrollW and eH < scrollH)) then
-                set listW to eW
-                set listH to eH
+            if role of elem is "AXScrollArea" then
+              set eSize to size of elem
+              if (item 1 of eSize) > maxW then
+                set maxW to item 1 of eSize
+                set winW to item 1 of eSize
+                set winH to item 2 of eSize
               end if
             end if
           end try
         end repeat
-        if listW > 0 and listW ≤ scrollW and listH < scrollH then
-          set winW to listW
-          set winH to listH
-        else
-          set winW to scrollW
-          set winH to scrollH
-        end if
       end tell
     end tell
   end try
@@ -134,6 +117,9 @@ on run argv
       end tell
     end try
   end if
+  -- Subtrair padding interno da icon view (drawable area < scroll area).
+  if winW > 8 then set winW to winW - 8
+  if winH > 30 then set winH to winH - 30
   do shell script "date '+%F %T icon view: " & winW & "x" & winH & "' >> " & quoted form of logPath
 
   -- 4. Redimensionar source para o tamanho exacto da icon view e aplicar.
