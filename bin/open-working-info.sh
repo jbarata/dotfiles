@@ -66,18 +66,39 @@ on run argv
   tell application "System Events" to key code 36 using {control down, option down}
   delay 0.3
 
-  -- 3. Ler bounds finais da janela (após Rectangle).
+  -- 3. Ler tamanho real da icon view via Accessibility (exclui title bar e
+  --    sidebar — é onde o Finder desenha a background picture). Fallback para
+  --    bounds da janela se o AX falhar.
   set winW to 0
   set winH to 0
   try
-    tell application "Finder"
-      set b to bounds of win
-      set winW to (item 3 of b) - (item 1 of b)
-      set winH to (item 4 of b) - (item 2 of b)
+    tell application "System Events"
+      tell process "Finder"
+        tell window 1
+          set maxW to 0
+          repeat with sa in (scroll areas)
+            set sSize to size of sa
+            if (item 1 of sSize) > maxW then
+              set maxW to item 1 of sSize
+              set winW to item 1 of sSize
+              set winH to item 2 of sSize
+            end if
+          end repeat
+        end tell
+      end tell
     end tell
   end try
+  if winW = 0 or winH = 0 then
+    try
+      tell application "Finder"
+        set b to bounds of win
+        set winW to (item 3 of b) - (item 1 of b)
+        set winH to (item 4 of b) - (item 2 of b)
+      end tell
+    end try
+  end if
 
-  -- 4. Redimensionar source para o tamanho exacto da janela e aplicar.
+  -- 4. Redimensionar source para o tamanho exacto da icon view e aplicar.
   if bgSource is not "" and winW > 0 and winH > 0 then
     try
       do shell script "/usr/bin/sips -s format jpeg -s formatOptions 90 -z " & winH & " " & winW & " " & quoted form of bgSource & " --out " & quoted form of bgCache & " >/dev/null 2>&1"
