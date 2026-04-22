@@ -94,30 +94,41 @@ on run argv
       do shell script "echo " & quoted form of ("window bounds: " & (item 1 of b) & "," & (item 2 of b) & " -> " & (item 3 of b) & "," & (item 4 of b) & " size=" & ((item 3 of b) - (item 1 of b)) & "x" & ((item 4 of b) - (item 2 of b))) & " >> " & quoted form of logPath
     end tell
   end try
+  set axLog to "AX: start" & linefeed
   try
     tell application "System Events"
       tell process "Finder"
-        set elemIdx to 0
-        set maxW to 0
-        repeat with elem in (entire contents of window 1)
-          try
-            set eRole to role of elem
-            set eSize to size of elem
-            set ePos to position of elem
+        set winCount to count of windows
+        set axLog to axLog & "AX: windows=" & winCount & linefeed
+        if winCount > 0 then
+          set allElems to entire contents of window 1
+          set axLog to axLog & "AX: entire contents count=" & (count of allElems) & linefeed
+          set elemIdx to 0
+          set maxW to 0
+          repeat with elem in allElems
             set elemIdx to elemIdx + 1
-            do shell script "echo " & quoted form of ("  [" & elemIdx & "] role=" & eRole & " pos=" & (item 1 of ePos) & "," & (item 2 of ePos) & " size=" & (item 1 of eSize) & "x" & (item 2 of eSize)) & " >> " & quoted form of logPath
-            if eRole is "AXScrollArea" and (item 1 of eSize) > maxW then
-              set maxW to item 1 of eSize
-              set winW to item 1 of eSize
-              set winH to item 2 of eSize
-            end if
-          end try
-        end repeat
+            try
+              set eRole to role of elem
+              set eSize to size of elem
+              set ePos to position of elem
+              set axLog to axLog & "  [" & elemIdx & "] role=" & eRole & " pos=" & (item 1 of ePos) & "," & (item 2 of ePos) & " size=" & (item 1 of eSize) & "x" & (item 2 of eSize) & linefeed
+              if eRole is "AXScrollArea" and (item 1 of eSize) > maxW then
+                set maxW to item 1 of eSize
+                set winW to item 1 of eSize
+                set winH to item 2 of eSize
+              end if
+            on error elemErr
+              set axLog to axLog & "  [" & elemIdx & "] elem error: " & elemErr & linefeed
+            end try
+          end repeat
+        end if
       end tell
     end tell
   on error axErr
-    do shell script "echo " & quoted form of ("  AX error: " & axErr) & " >> " & quoted form of logPath
+    set axLog to axLog & "AX error: " & axErr & linefeed
   end try
+  do shell script "/bin/cat >> " & quoted form of logPath & " <<'LOGEOF'
+" & axLog & "LOGEOF"
   if winW = 0 or winH = 0 then
     try
       tell application "Finder"
