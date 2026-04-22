@@ -27,15 +27,17 @@ COL_SKIP="[Saltar os que colidem]"
 
 choose_from_list() {
   # uso: choose_from_list <prompt> <item1> <item2> ...
-  # `tell ... System Events to activate` garante que o diálogo aparece em
-  # primeiro plano e recebe foco (Enter funciona logo, sem rato).
+  # O diálogo é apresentado pela app frontmost para herdar o foco e garantir
+  # que Enter/Esc funcionam logo, sem precisar de clicar com o rato.
   local prompt="$1"
   shift
   osascript -e 'on run argv
-  tell application "System Events" to activate
+  set frontApp to path to frontmost application as text
   set thePrompt to item 1 of argv
   set theItems to items 2 thru (count of argv) of argv
-  set theChoice to choose from list theItems with prompt thePrompt default items {item 1 of theItems}
+  tell application frontApp
+    set theChoice to choose from list theItems with prompt thePrompt default items {item 1 of theItems}
+  end tell
   if theChoice is false then
     return ""
   else
@@ -49,9 +51,11 @@ ask_text() {
   local prompt="$1"
   local default="${2:-}"
   osascript -e 'on run argv
-  tell application "System Events" to activate
+  set frontApp to path to frontmost application as text
   try
-    set theResult to display dialog (item 1 of argv) default answer (item 2 of argv) buttons {"Cancelar", "OK"} default button "OK"
+    tell application frontApp
+      set theResult to display dialog (item 1 of argv) default answer (item 2 of argv) buttons {"Cancelar", "OK"} default button "OK"
+    end tell
     if button returned of theResult is "OK" then
       return text returned of theResult
     else
@@ -65,8 +69,10 @@ end run' -- "$prompt" "$default"
 
 info_dialog() {
   osascript -e 'on run argv
-  tell application "System Events" to activate
-  display dialog (item 1 of argv) buttons {"OK"} default button "OK"
+  set frontApp to path to frontmost application as text
+  tell application frontApp
+    display dialog (item 1 of argv) buttons {"OK"} default button "OK"
+  end tell
 end run' -- "$1" >/dev/null 2>&1 || true
 }
 
