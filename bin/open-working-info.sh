@@ -74,19 +74,29 @@ on run argv
   -- 3. Ler tamanho real da icon view via Accessibility — é onde o Finder
   --    desenha a background picture. A icon view está dentro de um splitter
   --    group, por isso usamos `entire contents` para encontrar todas as
-  --    scroll areas na hierarquia e escolhemos a mais larga (a lateral
-  --    sidebar é mais estreita). Fallback para bounds da janela menos a
-  --    altura aproximada da title bar.
+  --    scroll areas na hierarquia. Registamos posição+tamanho de TODAS para
+  --    diagnóstico, e escolhemos a mais larga. Também logamos os bounds da
+  --    janela do Finder para podermos comparar.
   set winW to 0
   set winH to 0
   try
+    tell application "Finder"
+      set b to bounds of win
+      do shell script "echo " & quoted form of ("window bounds: " & (item 1 of b) & "," & (item 2 of b) & " -> " & (item 3 of b) & "," & (item 4 of b) & " size=" & ((item 3 of b) - (item 1 of b)) & "x" & ((item 4 of b) - (item 2 of b))) & " >> " & quoted form of logPath
+    end tell
+  end try
+  try
     tell application "System Events"
       tell process "Finder"
+        set saIdx to 0
         set maxW to 0
         repeat with elem in (entire contents of window 1)
           try
             if class of elem is scroll area then
+              set saIdx to saIdx + 1
+              set ePos to position of elem
               set eSize to size of elem
+              do shell script "echo " & quoted form of ("  scroll area " & saIdx & ": pos=" & (item 1 of ePos) & "," & (item 2 of ePos) & " size=" & (item 1 of eSize) & "x" & (item 2 of eSize)) & " >> " & quoted form of logPath
               if (item 1 of eSize) > maxW then
                 set maxW to item 1 of eSize
                 set winW to item 1 of eSize
@@ -103,8 +113,6 @@ on run argv
       tell application "Finder"
         set b to bounds of win
         set winW to (item 3 of b) - (item 1 of b)
-        -- Subtrair title bar (~28pt). Se for pouco exacto continua cortado,
-        -- mas é melhor do que incluir a title bar toda.
         set winH to (item 4 of b) - (item 2 of b) - 28
       end tell
     end try
