@@ -80,55 +80,31 @@ on run argv
   tell application "System Events" to key code 36 using {control down, option down}
   delay 0.3
 
-  -- 3. Ler tamanho real da icon view via Accessibility — é onde o Finder
-  --    desenha a background picture. Usamos `role = "AXScrollArea"` (em vez
-  --    de `class is scroll area`, que não estava a fazer match) para
-  --    encontrar as scroll areas em qualquer nível da hierarquia. Registamos
-  --    posição+tamanho de todas, erros do AX, e os bounds da janela para
-  --    comparação.
+  -- 3. Ler tamanho real da icon view via Accessibility. A icon view é uma
+  --    AXScrollArea dentro de splitter groups; iteramos com `entire contents`
+  --    e escolhemos a AXScrollArea mais larga (a sidebar, quando visível, é
+  --    mais estreita). Fallback: bounds da janela menos title bar.
   set winW to 0
   set winH to 0
   try
-    tell application "Finder"
-      set b to bounds of win
-      do shell script "echo " & quoted form of ("window bounds: " & (item 1 of b) & "," & (item 2 of b) & " -> " & (item 3 of b) & "," & (item 4 of b) & " size=" & ((item 3 of b) - (item 1 of b)) & "x" & ((item 4 of b) - (item 2 of b))) & " >> " & quoted form of logPath
-    end tell
-  end try
-  set axLog to "AX: start" & linefeed
-  try
     tell application "System Events"
       tell process "Finder"
-        set winCount to count of windows
-        set axLog to axLog & "AX: windows=" & winCount & linefeed
-        if winCount > 0 then
-          set allElems to entire contents of window 1
-          set axLog to axLog & "AX: entire contents count=" & (count of allElems) & linefeed
-          set elemIdx to 0
-          set maxW to 0
-          repeat with elem in allElems
-            set elemIdx to elemIdx + 1
-            try
-              set eRole to role of elem
+        set maxW to 0
+        repeat with elem in (entire contents of window 1)
+          try
+            if role of elem is "AXScrollArea" then
               set eSize to size of elem
-              set ePos to position of elem
-              set axLog to axLog & "  [" & elemIdx & "] role=" & eRole & " pos=" & (item 1 of ePos) & "," & (item 2 of ePos) & " size=" & (item 1 of eSize) & "x" & (item 2 of eSize) & linefeed
-              if eRole is "AXScrollArea" and (item 1 of eSize) > maxW then
+              if (item 1 of eSize) > maxW then
                 set maxW to item 1 of eSize
                 set winW to item 1 of eSize
                 set winH to item 2 of eSize
               end if
-            on error elemErr
-              set axLog to axLog & "  [" & elemIdx & "] elem error: " & elemErr & linefeed
-            end try
-          end repeat
-        end if
+            end if
+          end try
+        end repeat
       end tell
     end tell
-  on error axErr
-    set axLog to axLog & "AX error: " & axErr & linefeed
   end try
-  do shell script "/bin/cat >> " & quoted form of logPath & " <<'LOGEOF'
-" & axLog & "LOGEOF"
   if winW = 0 or winH = 0 then
     try
       tell application "Finder"
@@ -141,14 +117,16 @@ on run argv
   do shell script "date '+%F %T icon view: " & winW & "x" & winH & "' >> " & quoted form of logPath
 
   -- 4. Redimensionar source para o tamanho exacto da icon view e aplicar.
+  --    Nota: usamos a sintaxe directa `set background picture of icon view
+  --    options of win to ...` em vez de nested tell, que estava a perder
+  --    scope e a tentar fazer `set win to alias` em vez de setar a
+  --    property.
   if bgSource is not "" and winW > 0 and winH > 0 then
     try
-      do shell script "/usr/bin/sips -s format jpeg -s formatOptions 90 -z " & winH & " " & winW & " " & quoted form of bgSource & " --out " & quoted form of bgCache & " >/dev/null 2>>" & quoted form of logPath
-      do shell script "/usr/bin/sips -g pixelHeight -g pixelWidth " & quoted form of bgCache & " | /usr/bin/awk '/pixel/ {printf \"  output %s=%s\\n\", $1, $2}' >> " & quoted form of logPath
+      do shell script "/usr/bin/sips -s format jpeg -s formatOptions 90 -z " & winH & " " & winW & " " & quoted form of bgSource & " --out " & quoted form of bgCache & " 2>>" & quoted form of logPath
       tell application "Finder"
-        tell icon view options of win
-          set background picture to (POSIX file bgCache as alias)
-        end tell
+        set current view of win to icon view
+        set background picture of icon view options of win to (POSIX file bgCache as alias)
       end tell
     on error errMsg
       do shell script "echo " & quoted form of ("bg-stretch error: " & errMsg) & " >> " & quoted form of logPath
