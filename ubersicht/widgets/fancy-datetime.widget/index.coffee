@@ -141,6 +141,7 @@ style: """
     transform: none
     bottom: 2px
     right: 2px
+    width: 280px
     .container
       display: flex
       align-items: center
@@ -148,6 +149,7 @@ style: """
       width: 280px
       height: 30px
       padding: 0 0.7rem
+      box-sizing: border-box
     .cell
       display: flex
       align-items: center

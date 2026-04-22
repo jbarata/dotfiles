@@ -86,7 +86,7 @@ style: """
 
   @media (max-width: 1999px) {
     font-size: 11px;
-    right: 290px;
+    right: 300px;
     bottom: 1px;
     height: 30px;
     .event-bg {
