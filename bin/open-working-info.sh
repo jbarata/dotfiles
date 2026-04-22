@@ -78,7 +78,7 @@ on run argv
   -- 4. Redimensionar source para o tamanho exacto da janela e aplicar.
   if bgSource is not "" and winW > 0 and winH > 0 then
     try
-      do shell script "/usr/bin/sips -z " & "1130" & " " & "2130" & " " & quoted form of bgSource & " --out " & quoted form of bgCache & " >/dev/null 2>&1"
+      do shell script "/usr/bin/sips -z " & winH & " " & winW & " " & quoted form of bgSource & " --out " & quoted form of bgCache & " >/dev/null 2>&1"
       tell application "Finder"
         tell icon view options of win
           set background picture to (POSIX file bgCache as alias)
