@@ -276,11 +276,26 @@ for src in "${TARGETS[@]}"; do
     esac
   fi
 
+  # Tentativa 1: mv (rename rápido no mesmo volume).
+  # Pode falhar com EDEADLK/EXDEV quando ~/Desktop e ~/Documents/Working Info
+  # estão em mount-points APFS/iCloud distintos (comum quando um está
+  # sincronizado com iCloud Drive e o outro não). Nesse caso, fallback para
+  # ditto (cópia profunda que preserva xattrs/ACLs no macOS) + rm à origem.
   if mv_err="$(mv "$src" "$dest" 2>&1)"; then
     MOVED=$((MOVED + 1))
+    continue
+  fi
+
+  if ditto_err="$(ditto "$src" "$dest" 2>&1)"; then
+    if rm_err="$(rm -rf "$src" 2>&1)"; then
+      MOVED=$((MOVED + 1))
+    else
+      SKIPPED=$((SKIPPED + 1))
+      append_error "$fname" "copiado mas falhou a remover origem: ${rm_err:-erro desconhecido}"
+    fi
   else
     SKIPPED=$((SKIPPED + 1))
-    append_error "$fname" "${mv_err:-mv falhou sem mensagem}"
+    append_error "$fname" "mv: ${mv_err:-erro}; ditto: ${ditto_err:-erro}"
   fi
 done
 
