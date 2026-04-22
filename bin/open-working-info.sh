@@ -80,17 +80,19 @@ on run argv
   tell application "System Events" to key code 36 using {control down, option down}
   delay 0.3
 
-  -- 3. Ler tamanho real da icon view via Accessibility. A icon view é uma
-  --    AXScrollArea dentro de splitter groups; iteramos com `entire contents`
-  --    e escolhemos a AXScrollArea mais larga (a sidebar, quando visível, é
-  --    mais estreita). Fallback: bounds da janela menos title bar.
+  -- 3. Ler tamanho real da icon view via Accessibility. O utilizador pode ter
+  --    várias janelas Finder abertas, pelo que é preciso identificar a
+  --    Working Info pelo nome (não por `window 1`). A icon view é a
+  --    AXScrollArea mais larga dentro da hierarquia. Fallback: bounds menos
+  --    title bar (cuja altura por AX é 32, não 28).
   set winW to 0
   set winH to 0
   try
     tell application "System Events"
       tell process "Finder"
+        set targetWin to first window whose name is "Working Info"
         set maxW to 0
-        repeat with elem in (entire contents of window 1)
+        repeat with elem in (entire contents of targetWin)
           try
             if role of elem is "AXScrollArea" then
               set eSize to size of elem
@@ -110,7 +112,7 @@ on run argv
       tell application "Finder"
         set b to bounds of win
         set winW to (item 3 of b) - (item 1 of b)
-        set winH to (item 4 of b) - (item 2 of b) - 28
+        set winH to (item 4 of b) - (item 2 of b) - 32
       end tell
     end try
   end if
