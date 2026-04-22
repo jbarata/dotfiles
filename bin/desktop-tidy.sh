@@ -27,12 +27,17 @@ COL_SKIP="[Saltar os que colidem]"
 
 choose_from_list() {
   # uso: choose_from_list <prompt> <item1> <item2> ...
+  # O diálogo é apresentado pela app frontmost para herdar o foco e garantir
+  # que Enter/Esc funcionam logo, sem precisar de clicar com o rato.
   local prompt="$1"
   shift
   osascript -e 'on run argv
+  set frontApp to path to frontmost application as text
   set thePrompt to item 1 of argv
   set theItems to items 2 thru (count of argv) of argv
-  set theChoice to choose from list theItems with prompt thePrompt default items {item 1 of theItems}
+  tell application frontApp
+    set theChoice to choose from list theItems with prompt thePrompt default items {item 1 of theItems}
+  end tell
   if theChoice is false then
     return ""
   else
@@ -46,8 +51,11 @@ ask_text() {
   local prompt="$1"
   local default="${2:-}"
   osascript -e 'on run argv
+  set frontApp to path to frontmost application as text
   try
-    set theResult to display dialog (item 1 of argv) default answer (item 2 of argv) buttons {"Cancelar", "OK"} default button "OK"
+    tell application frontApp
+      set theResult to display dialog (item 1 of argv) default answer (item 2 of argv) buttons {"Cancelar", "OK"} default button "OK"
+    end tell
     if button returned of theResult is "OK" then
       return text returned of theResult
     else
@@ -61,18 +69,25 @@ end run' -- "$prompt" "$default"
 
 info_dialog() {
   osascript -e 'on run argv
-  display dialog (item 1 of argv) buttons {"OK"} default button "OK"
+  set frontApp to path to frontmost application as text
+  tell application frontApp
+    display dialog (item 1 of argv) buttons {"OK"} default button "OK"
+  end tell
 end run' -- "$1" >/dev/null 2>&1 || true
 }
 
 get_finder_selection() {
+  # `selection as alias list` coage a selecção inteira numa lista de aliases
+  # de uma só vez — funciona uniformemente para ficheiros e pastas. A versão
+  # anterior iterava referências e fazia `f as alias`, o que falhava
+  # silenciosamente para directorias e caía no `on error`.
   osascript <<'EOF' 2>/dev/null || true
 tell application "Finder"
   try
-    set sel to selection
+    set sel to selection as alias list
     set out to ""
-    repeat with f in sel
-      set out to out & (POSIX path of (f as alias)) & linefeed
+    repeat with a in sel
+      set out to out & POSIX path of a & linefeed
     end repeat
     return out
   on error
@@ -225,10 +240,20 @@ fi
 
 MOVED=0
 SKIPPED=0
+ERRORS=""
+
+append_error() {
+  # Acumula erros num relatório que é mostrado no diálogo final.
+  ERRORS+=$'\n'"  • $1: $2"
+}
 
 for src in "${TARGETS[@]}"; do
-  [[ -e "$src" ]] || { SKIPPED=$((SKIPPED + 1)); continue; }
   fname="$(basename "$src")"
+  if [[ ! -e "$src" ]]; then
+    SKIPPED=$((SKIPPED + 1))
+    append_error "$fname" "origem não existe"
+    continue
+  fi
   dest="$DEST_DIR/$fname"
 
   if [[ -e "$dest" ]]; then
@@ -238,7 +263,11 @@ for src in "${TARGETS[@]}"; do
         dest="$DEST_DIR/$new_fname"
         ;;
       "$COL_REPLACE")
-        rm -rf "$dest"
+        if ! rm_err="$(rm -rf "$dest" 2>&1)"; then
+          SKIPPED=$((SKIPPED + 1))
+          append_error "$fname" "rm falhou: ${rm_err:-erro desconhecido}"
+          continue
+        fi
         ;;
       *)
         SKIPPED=$((SKIPPED + 1))
@@ -247,13 +276,33 @@ for src in "${TARGETS[@]}"; do
     esac
   fi
 
-  if mv "$src" "$dest"; then
+  # Tentativa 1: mv (rename rápido no mesmo volume).
+  # Pode falhar com EDEADLK/EXDEV quando ~/Desktop e ~/Documents/Working Info
+  # estão em mount-points APFS/iCloud distintos (comum quando um está
+  # sincronizado com iCloud Drive e o outro não). Nesse caso, fallback para
+  # ditto (cópia profunda que preserva xattrs/ACLs no macOS) + rm à origem.
+  if mv_err="$(mv "$src" "$dest" 2>&1)"; then
     MOVED=$((MOVED + 1))
+    continue
+  fi
+
+  if ditto_err="$(ditto "$src" "$dest" 2>&1)"; then
+    if rm_err="$(rm -rf "$src" 2>&1)"; then
+      MOVED=$((MOVED + 1))
+    else
+      SKIPPED=$((SKIPPED + 1))
+      append_error "$fname" "copiado mas falhou a remover origem: ${rm_err:-erro desconhecido}"
+    fi
   else
     SKIPPED=$((SKIPPED + 1))
+    append_error "$fname" "mv: ${mv_err:-erro}; ditto: ${ditto_err:-erro}"
   fi
 done
 
 # --- 5. Relatório final ----------------------------------------------------
 
-info_dialog "Arrumação concluída.\nMovidos: $MOVED\nSaltados: $SKIPPED\nDestino: $(basename "$DEST_DIR")"
+report="Arrumação concluída."$'\n'"Movidos: $MOVED"$'\n'"Saltados: $SKIPPED"$'\n'"Destino: $(basename "$DEST_DIR")"
+if [[ -n "$ERRORS" ]]; then
+  report+=$'\n\n'"Erros:$ERRORS"
+fi
+info_dialog "$report"
