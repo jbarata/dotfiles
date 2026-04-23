@@ -37,7 +37,7 @@ refreshFrequency: 6000
 
 style: """
   bottom: 8px
-  right: 311px
+  right: 290px
 
   color: #fff
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif
@@ -46,18 +46,16 @@ style: """
   font-size: 14px
   font-weight: 500
   cursor: pointer
-  border-radius: 1rem
 
   .event-bg {
     position: absolute;
     top: 0;
     left: 0;
     width: 100%;
-    height: 52px;
+    height: 50.5px;
     border-radius: 1rem;
     background-color: rgba(0, 0, 0, 0.6);
     backdrop-filter: blur(10px);
-    border: 1px solid rgba(255, 255, 255, 0.1);
     z-index: 0;
     transition: background-color 0.5s ease, border-color 0.5s ease;
   }
@@ -86,12 +84,11 @@ style: """
 
   @media (max-width: 1999px) {
     font-size: 11px;
-    right: 300px;
-    bottom: 1px;
-    height: 30px;
+    right: 285px;
+    bottom: 0px;
     .event-bg {
-      height: 30px;
-      top: 0;
+      height: 24px;
+      top: 4px;
     }
     .event-content {
       flex-direction: row;
@@ -101,9 +98,6 @@ style: """
       padding: 0 0.8rem;
       height: 30px;
       box-sizing: border-box;
-    }
-    .event-bg {
-      height: 28px;
     }
   }
 """
