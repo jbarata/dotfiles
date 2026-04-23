@@ -34,6 +34,7 @@ render: -> """
             <div class="item"><kbd>⌃⌥⌘ V</kbd><span>VS Code</span></div>
             <div class="item"><kbd>⌃⌥⌘ G</kbd><span>Ghostty</span></div>
             <div class="item"><kbd>⌃⌥⌘ B</kbd><span>Safari</span></div>
+            <div class="item"><kbd>⇧⌃⌥⌘ B</kbd><span>Google Chrome</span></div>
             <div class="item"><kbd>⌃⌥⌘ T</kbd><span>Calendário</span></div>
             <div class="item"><kbd>⇧⌃⌥⌘ N</kbd><span>Safari → Notes (reader)</span></div>
           </div>
