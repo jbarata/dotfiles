@@ -147,7 +147,7 @@ style: """
       align-items: center
       justify-content: center
       width: 280px
-      height: 42px
+      height: 25px
       padding: 0 0.7rem
       box-sizing: border-box
     .cell
@@ -159,7 +159,8 @@ style: """
       font-size: 1.1rem
     .divider
       margin: 0 0.45rem
-      height: 70%
+      height: 20px
+      width: 2px
 """
 
 render: () -> """
