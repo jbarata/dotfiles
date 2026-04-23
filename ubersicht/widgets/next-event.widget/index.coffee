@@ -36,8 +36,8 @@ fi
 refreshFrequency: 6000
 
 style: """
-  bottom: 8px
-  right: 290px
+  bottom: 7px
+  right: 320px
 
   color: #fff
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif
@@ -52,7 +52,7 @@ style: """
     top: 0;
     left: 0;
     width: 100%;
-    height: 50.5px;
+    height: 49px;
     border-radius: 1rem;
     background-color: rgba(0, 0, 0, 0.6);
     backdrop-filter: blur(10px);

@@ -85,7 +85,7 @@ refreshFrequency: 1000
 
 style: """
   bottom: -20px
-  right: -62px
+  right: -104px
   font-family: 'Ubuntu', sans-serif
   font-size: 18px
   line-height: 1
@@ -96,9 +96,9 @@ style: """
   .container
     position: relative
     display: table
-    width: 230px
+    width: 280px
     height: 100%
-    padding: 0.6rem 1.5rem
+    padding: 0.4rem 1rem
     border-radius: 1rem
     background: #{ settings.colors.background }
     box-shadow: #{ settings.shadows.box }
@@ -122,11 +122,11 @@ style: """
     color: #{ settings.colors.accent }
 
   .txt-small
-    font-size: 1rem
+    font-size: 1.2rem
     font-weight: 500
 
   .txt-large
-    font-size: 2rem
+    font-size: 2.4rem
     font-weight: 700
 
   .divider
@@ -213,7 +213,6 @@ getDate: () ->
   weekday = @locale[@settings.lang].weekdays[date.getDay()]
   day = @zeroFill(date.getDate())
   month = @locale[@settings.lang].months[date.getMonth()]
-  month="Fevereiro"
   year = date.getFullYear()
 
   return {
