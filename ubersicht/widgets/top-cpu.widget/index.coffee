@@ -85,6 +85,6 @@ update: (output, domEl) ->
     table.find(".col#{i+1}").html renderProcess(args...)
 
   totalCpuUsage = parseFloat(processes[1])
-  alarm = totalCpuUsage > 50
+  alarm = totalCpuUsage > 70
 
   table.find("td").toggleClass("alarm", alarm)
