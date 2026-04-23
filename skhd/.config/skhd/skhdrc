@@ -49,7 +49,7 @@
 # --- Apps principais (convenção antiga: ctrl + alt + cmd) ----------------
 ctrl + alt + cmd - z :         open "zoommtg://zoom.us/join?confno=668244305&zc=2&browser=chrome&uname=Miguel"
 ctrl + alt + cmd - s :         open "slack://open?team=T02J1N4KH"
-ctrl + alt + cmd - c :         osascript -e 'tell application "Claude" to activate'
+ctrl + alt + cmd - c :         open -a "Claude" && osascript -e 'tell application "Claude" to activate'
 shift + ctrl + alt + cmd - c : open "https://chatgpt.com/pt-PT"
 ctrl + alt + cmd - v :         open "vscode://"
 ctrl + alt + cmd - g :         open -a "Ghostty"
