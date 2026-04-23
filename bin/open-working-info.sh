@@ -115,8 +115,8 @@ on run argv
     try
       tell application "Finder"
         set b to bounds of win
-        set winW to (item 3 of b) - (item 1 of b)
-        set winH to (item 4 of b) - (item 2 of b) - 32
+        set winW to (item 3 of b) - (item 1 of b) + 22
+        set winH to (item 4 of b) - (item 2 of b)
       end tell
     end try
   end if
