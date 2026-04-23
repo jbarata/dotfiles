@@ -87,5 +87,4 @@ update: (output, domEl) ->
   totalCpuUsage = parseFloat(processes[1])
   alarm = totalCpuUsage > 50
 
-  if(alarm)
-    table.find("td").toggleClass("alarm")
+  table.find("td").toggleClass("alarm", alarm)
