@@ -85,7 +85,7 @@ refreshFrequency: 1000
 
 style: """
   bottom: -20px
-  right: -104px
+  right: -94px
   font-family: 'Ubuntu', sans-serif
   font-size: 18px
   line-height: 1
@@ -96,7 +96,7 @@ style: """
   .container
     position: relative
     display: table
-    width: 280px
+    width: 260px
     height: 100%
     padding: 0.4rem 1rem
     border-radius: 1rem
@@ -112,8 +112,8 @@ style: """
     vertical-align: middle
     overflow: hidden
 
-  .left
-    float: left
+  .cell:first-child
+    text-align: right
 
   .txt-default
     color: #{ settings.colors.default }
@@ -133,20 +133,18 @@ style: """
     display: block
     width: 0.3rem
     height: 100%
-    margin: 0 1rem
+    margin: 0 0.4rem
     background: #{ settings.colors.accent }
     box-shadow: #{ settings.shadows.text }
 
   @media (max-width: 1999px)
     transform: none
     bottom: 2px
-    right: 2px
-    width: 280px
+    right: 0px
     .container
       display: flex
       align-items: center
       justify-content: center
-      width: 280px
       height: 25px
       padding: 0 0.7rem
       box-sizing: border-box
@@ -166,8 +164,8 @@ style: """
 render: () -> """
   <div class='container'>
     <div class='cell'>
-      <span class='hours txt-default txt-large left'></span>
-      <span class='minutes txt-accent txt-large left'></span>
+      <span class='hours txt-default txt-large'></span>
+      <span class='minutes txt-accent txt-large'></span>
       <span class='suffix txt-default txt-small'></span>
     </div>
     <div class='cell'>
@@ -213,6 +211,7 @@ getDate: () ->
   weekday = @locale[@settings.lang].weekdays[date.getDay()]
   day = @zeroFill(date.getDate())
   month = @locale[@settings.lang].months[date.getMonth()]
+  month="Fevereiro"
   year = date.getFullYear()
 
   return {
