@@ -4,13 +4,20 @@ refreshFrequency: 9000
 
 style: """
   bottom: 80px
-  right: 17px
+  right: 1px
   color: rgba(255,255,255,0.35)
   font-family: Helvetica Neue
 
   table
     border-collapse: collapse
     table-layout: fixed
+    transition: opacity 0.4s ease
+
+  table.dimmer
+    opacity: 0.5
+
+  table.invisible
+    opacity: 0
 
   .alarm
     background: rgba(#f00, 0.4)
@@ -85,6 +92,11 @@ update: (output, domEl) ->
     table.find(".col#{i+1}").html renderProcess(args...)
 
   totalCpuUsage = parseFloat(processes[1])
-  alarm = totalCpuUsage > 70
 
-  table.find("td").toggleClass("alarm", alarm)
+  table.removeClass("dimmer invisible")
+  if totalCpuUsage < 20
+    table.addClass("invisible")
+  else if totalCpuUsage < 30
+    table.addClass("dimmer")
+
+  table.find("td").toggleClass("alarm", totalCpuUsage >= 50)

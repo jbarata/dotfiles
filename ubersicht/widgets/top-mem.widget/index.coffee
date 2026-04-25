@@ -4,13 +4,20 @@ refreshFrequency: 9000
 
 style: """
   bottom: 80px
-  right: 150px
+  right: 90px
   color: rgba(255,255,255,0.35)
   font-family: Helvetica Neue
 
   table
     border-collapse: collapse
     table-layout: fixed
+    transition: opacity 0.4s ease
+
+  table.dimmer
+    opacity: 0.5
+
+  table.invisible
+    opacity: 0
 
   .alarm
     background: rgba(#f00, 0.4)
@@ -48,7 +55,6 @@ style: """
 
   @media (max-width: 1999px)
     bottom: 36px
-    right: 110px
     td
       font-size: 14px
       width: 80px
@@ -85,8 +91,12 @@ update: (output, domEl) ->
     args = process.split(',')
     table.find(".col#{i+1}").html renderProcess(args...)
 
-  memFreePercentage = processes[2]
-  alarm = memFreePercentage < 50
+  memUsage = 100 - parseFloat(processes[2])
 
-  if(alarm)
-    table.find("td").toggleClass("alarm")
+  table.removeClass("dimmer invisible")
+  if memUsage < 20
+    table.addClass("invisible")
+  else if memUsage < 30
+    table.addClass("dimmer")
+
+  table.find("td").toggleClass("alarm", memUsage >= 50)

@@ -77,7 +77,7 @@ style: """
 
   .no-event {
     font-style: italic;
-    opacity: 0.3;
+    opacity: 0.1;
     text-align: center;
     width: 100%;
   }
