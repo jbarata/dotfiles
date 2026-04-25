@@ -1,0 +1,104 @@
+#!/bin/bash
+# transcribe.sh — Transcreve ficheiros áudio (m4a do iPhone, qta do
+# Dictafone, mp3, wav, mp4…) usando whisper.cpp offline com modelo grande
+# (qualidade > velocidade). Output: <ficheiro>.txt + <ficheiro>.srt ao
+# lado do original.
+#
+# Uso:
+#   transcribe <ficheiro-audio> [...]
+#
+# Para o Dictafone do macOS (que guarda em CloudKit opaco), arrasta a
+# gravação para o Ghostty — o terminal cola o path do ficheiro `.qta`
+# materializado temporariamente — e Enter.
+#
+# Pré-requisitos:
+#   - bash setup/whisper.sh (descarrega large-v3 + binários)
+#   - brew install ffmpeg (resample 16 kHz mono PCM, formato exigido pelo
+#     whisper.cpp)
+#
+# Tunables (env):
+#   WHISPER_OFFLINE_MODEL  default: large-v3
+#   WHISPER_LANG           default: auto (deixa whisper detectar; útil
+#                          para gravações multi-língua)
+#   WHISPER_THREADS        default: 8 (M2 Max tem 8 cores P; CPU fallback
+#                          quando Metal/Core ML não dão conta)
+#   WHISPER_OUT_DIR        default: ~/Desktop (visível, fácil de mover
+#                          para arquivo depois). Override fixa o destino
+#                          (ex.: ~/Documents/Transcriptions)
+set -euo pipefail
+
+# Forçar locale UTF-8 — paths Unicode (ex.: "Gravação nova.qta" do
+# Dictafone) e o output do whisper-cli precisam de locale consistente.
+# Mesma lógica que dictate.sh: env de skhd/launchd não tem LANG, e mesmo
+# em shell interactiva o fix garante consistência.
+export LANG=en_US.UTF-8
+export LC_ALL=en_US.UTF-8
+
+MODEL="${WHISPER_OFFLINE_MODEL:-large-v3}"
+LANG_CODE="${WHISPER_LANG:-auto}"
+THREADS="${WHISPER_THREADS:-8}"
+OUT_DIR="${WHISPER_OUT_DIR:-$HOME/Desktop}"
+
+MODEL_BIN="$HOME/.local/share/whisper-models/ggml-${MODEL}.bin"
+WHISPER_CLI="$HOME/.local/bin/whisper-cli"
+
+# --- Sanity checks ---------------------------------------------------------
+[[ -x "$WHISPER_CLI" ]] || { echo "✗ whisper-cli em falta — corre setup/whisper.sh" >&2; exit 1; }
+[[ -f "$MODEL_BIN"   ]] || { echo "✗ modelo $MODEL em falta — corre setup/whisper.sh" >&2; exit 1; }
+command -v ffmpeg >/dev/null || { echo "✗ ffmpeg em falta — brew install ffmpeg" >&2; exit 1; }
+
+if [[ $# -eq 0 ]]; then
+    echo "Uso: transcribe <ficheiro-audio> [...]" >&2
+    echo "" >&2
+    echo "Para o Dictafone do macOS: arrasta a gravação para esta janela" >&2
+    echo "(o Ghostty cola o path .qta) e prime Enter." >&2
+    exit 1
+fi
+
+mkdir -p "$OUT_DIR"
+
+# --- Loop de transcrição ---------------------------------------------------
+for INPUT in "$@"; do
+    if [[ ! -f "$INPUT" ]]; then
+        echo "  ✗ ficheiro não existe: $INPUT" >&2
+        continue
+    fi
+
+    BASE=$(basename "${INPUT%.*}")
+    OUT_PREFIX="$OUT_DIR/$BASE"
+    TMP_WAV=$(mktemp -t transcribe).wav
+
+    echo "→ $INPUT"
+    echo "  [1/2] ffmpeg → 16 kHz mono PCM"
+    # -ar 16000: sample rate exigido pelo whisper
+    # -ac 1:     mono
+    # -c:a pcm_s16le: WAV PCM 16-bit little-endian
+    # -loglevel error: sem ruído de progresso (whisper-cli faz o seu)
+    ffmpeg -loglevel error -y -i "$INPUT" -ar 16000 -ac 1 -c:a pcm_s16le "$TMP_WAV"
+
+    echo "  [2/2] whisper-cli ($MODEL/$LANG_CODE)"
+    # -of <prefix>: output prefix (whisper anexa .txt/.srt automaticamente)
+    # -pp:          print progress (útil para ficheiros longos)
+    "$WHISPER_CLI" \
+        -m "$MODEL_BIN" \
+        -t "$THREADS" \
+        -l "$LANG_CODE" \
+        -otxt -osrt \
+        -of "$OUT_PREFIX" \
+        -pp \
+        -f "$TMP_WAV"
+
+    rm -f "$TMP_WAV"
+
+    # whisper-cli pode falhar a escrever silenciosamente (open() EACCES no
+    # sandbox container) e ainda devolver 0. Verificar à mão é a única
+    # garantia.
+    if [[ ! -f "$OUT_PREFIX.txt" || ! -f "$OUT_PREFIX.srt" ]]; then
+        echo "  ✗ outputs não criados em $OUT_DIR/" >&2
+        echo "    (whisper-cli pode ter falhado o open(); ver mensagens acima)" >&2
+        echo "    $OUT_DIR é gravável? Override: WHISPER_OUT_DIR=<dir> transcribe ..." >&2
+        exit 1
+    fi
+    echo "  ✓ $OUT_PREFIX.txt"
+    echo "  ✓ $OUT_PREFIX.srt"
+done

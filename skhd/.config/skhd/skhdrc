@@ -24,6 +24,10 @@
 #   - shift + ctrl + alt + cmd - n: Safari → Notes (versão reader da
 #                                   página activa como nota com título,
 #                                   link e tag #site).
+#   - ctrl + alt + cmd - f        : Dictate (toggle). 1ª pressão arranca
+#                                   whisper-stream em background; 2ª pára,
+#                                   transcreve e cola no app activo.
+#                                   HUD mostra "● REC" enquanto grava.
 #   - escape                      : cancela qualquer modo activo (sai
 #                                   directo para default, mesmo aninhado).
 #
@@ -57,6 +61,7 @@ ctrl + alt + cmd - b :         open -a "Safari"
 shift + ctrl + alt + cmd - b : open -a "Google Chrome"
 ctrl + alt + cmd - t :         osascript "$HOME/.dotfiles/ubersicht/widgets/focus.widget/open_calendar.scpt"
 shift + ctrl + alt + cmd - n : "$HOME/.dotfiles/bin/safari-to-note.sh"
+ctrl + alt + cmd - f :         "$HOME/.dotfiles/bin/dictate.sh"
 
 # --- Ajuda ---------------------------------------------------------------
 # Ctrl+Alt+Cmd+' alterna o painel do skhd-help.widget. Em teclado PT o

@@ -34,6 +34,11 @@ alias rm='rm -i'
 alias mv='mv -i'
 alias cp='cp -i'
 
+# --- Dictate (whisper.cpp toggle) ---
+alias dictate='~/.dotfiles/bin/dictate.sh'
+alias transcribe='~/.dotfiles/bin/transcribe.sh'
+alias transcribe-diarize='~/.dotfiles/bin/transcribe-diarize.sh'
+
 # --- VS Code extensions sync ---
 alias vscode-export='code --list-extensions > ~/.dotfiles/vscode/extensions.txt && echo "Extensions exportadas"'
 alias vscode-import='while IFS= read -r ext; do code --install-extension "$ext" --force; done < ~/.dotfiles/vscode/extensions.txt'

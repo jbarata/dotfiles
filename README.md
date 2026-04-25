@@ -77,6 +77,7 @@ Ctrl+Alt+Cmd+B          # Safari (abre ou activa a janela)
 Shift+Ctrl+Alt+Cmd+B    # Google Chrome (abre ou activa a janela)
 Ctrl+Alt+Cmd+T          # Calendário (open_calendar.scpt do focus.widget)
 Shift+Ctrl+Alt+Cmd+N    # Safari → Notes (guarda a página actual em versão reader)
+Ctrl+Alt+Cmd+F          # Dictate: toggle whisper-stream → paste no app activo
 
 # Leader "cob" (Ctrl+Alt+Cmd+D seguido de...):
 D → P                   # Plan (Dogfooding)
@@ -154,6 +155,91 @@ Pré-requisitos (uma vez):
 Feedback visual via `skhd-hud.widget` (polling `/tmp/skhd-mode` a 100ms).
 Logs de debug em `/tmp/safari-to-note.log` (inclui `v=<sha>` por execução).
 
+### Whisper / Ditado por voz
+
+`Ctrl+Alt+Cmd+F` (ou alias `dictate`) é um toggle. 1ª pressão arranca o
+`whisper-stream` em background a capturar do microfone default; 2ª pressão
+pára, transcreve e cola no app activo (preserva o clipboard anterior).
+
+```bash
+Ctrl+Alt+Cmd+F      # toggle: arrancar / parar+colar
+dictate             # mesmo toggle a partir do terminal
+```
+
+Feedback visual no `skhd-hud.widget`:
+- `● REC (medium/pt) — ⌃⌥⌘F para parar` enquanto grava
+- `⏹ a transcrever…` durante a paragem
+- `✓ colado` no fim (ou `∅ sem áudio` / `∅ sem texto` se vazio)
+
+Modelo default: `medium` (multilingue, ~1.5 GB) — accuracy notável em PT
+em microfone integrado, ainda fluido no M2 Max em Metal puro (latência
+maior nas pausas vs `small` mas resultado mais usável). Override por
+sessão:
+
+```bash
+WHISPER_MODEL=small WHISPER_LANG=auto dictate    # mais rápido, menos preciso
+WHISPER_MODEL=large-v3 dictate                    # melhor qualidade, sem real-time
+```
+
+Logs em `/tmp/dictate.log`.
+
+### Whisper / Transcribe — Áudio gravado (iPhone, etc.)
+
+`transcribe` aceita qualquer formato suportado pelo `ffmpeg` (m4a do
+iPhone, qta do Dictafone macOS, mp3, mp4, wav, opus...) e usa o modelo
+`large-v3` para qualidade máxima — não tempo real, mas só corre quando
+se chama.
+
+```bash
+transcribe ~/Downloads/memo.m4a            # ficheiro concreto
+transcribe *.m4a                            # múltiplos
+```
+
+Output sempre em **`~/Desktop/`** por defeito (visível, fácil de mover
+para arquivo depois — independente de onde está o input):
+```
+memo.m4a  →  ~/Desktop/memo.txt   (texto plano)
+          →  ~/Desktop/memo.srt   (com timestamps; útil para procurar momentos)
+```
+
+**Dictafone do macOS:** os ficheiros não estão num path estável (estão
+num container CloudKit opaco). Arrasta a gravação da app Dictafone
+directamente para a janela do Ghostty — o terminal cola o path do `.qta`
+materializado temporariamente — e prime Enter. O `ffmpeg` lida com a
+extensão `.qta` (é M4A) sem alterações.
+
+Override por sessão:
+```bash
+WHISPER_OFFLINE_MODEL=medium WHISPER_LANG=pt transcribe ficheiro.m4a
+WHISPER_OUT_DIR=~/Documents/Transcriptions transcribe ficheiro.m4a
+```
+
+### Whisper / Transcribe-diarize — Reuniões e diálogos
+
+`transcribe-diarize` faz transcrição **e identifica oradores**
+(`[SPEAKER_00]`, `[SPEAKER_01]`, ...) via [whisperx](https://github.com/m-bain/whisperX)
+(faster-whisper + pyannote.audio + alinhamento word-level).
+
+```bash
+transcribe-diarize ~/Desktop/reuniao.m4a    # ficheiro concreto
+transcribe-diarize *.m4a                     # múltiplos
+```
+
+Output em `~/Desktop/` (igual ao `transcribe`):
+```
+reuniao.txt   # texto plano com prefixos [SPEAKER_NN]
+reuniao.srt   # legendas com timestamps + speakers
+```
+
+Velocidade: ~0.5–1× tempo real no M2 Max (mais lento que `transcribe`
+porque adiciona o passo de diarização do pyannote). Uma reunião de 60
+min processa-se em ~1–2 horas.
+
+Hint para o pyannote se souberes o número de oradores (melhora accuracy):
+```bash
+WHISPERX_MIN_SPEAKERS=2 WHISPERX_MAX_SPEAKERS=2 transcribe-diarize entrevista.m4a
+```
+
 ### VS Code — Multi-cursor
 
 ```bash
@@ -222,8 +308,10 @@ O bootstrap:
 8. Migra remote git para SSH
 9. Instala extensões VS Code
 10. Symlinka widgets Übersicht (geridos no repo, em `ubersicht/widgets/`)
-11. Aplica macOS defaults
-12. Cria `~/.cache` para fzf
+11. Compila `whisper.cpp` + descarrega modelo + gera Core ML (Apple Silicon)
+12. Cria venv whisperx (diarização — modelos descarregam ao 1º uso)
+13. Aplica macOS defaults
+14. Cria `~/.cache` para fzf
 
 O bootstrap é **idempotente** — pode correr várias vezes.
 
@@ -334,6 +422,53 @@ Comentários `# ...` são ignorados pelo Anki, usar para organizar secções.
 
 Importar: Anki → File → Import → seleccionar ficheiro.
 
+### Trocar modelo Whisper
+
+O default do dictate é `medium` (descarregado pelo bootstrap). Para usar
+outro:
+
+```bash
+WHISPER_MODEL=large-v3 bash ~/.dotfiles/setup/whisper.sh
+```
+
+O script é idempotente: descarrega o `.bin` se faltar e gera o
+`.mlmodelc` (Apple Silicon) no venv `~/.local/share/whisper-coreml-venv/`.
+Os modelos ficam em `~/.local/share/whisper-models/`.
+
+Depois exporta `WHISPER_MODEL` no `shell/.exports` ou nas env vars do
+launchd se quiseres mudar o default permanente; senão usa override por
+sessão (`WHISPER_MODEL=small dictate`). Nota que `shell/.exports` só é
+sourced em shells interactivas — não chega ao script lançado pelo skhd,
+portanto para mudar o que o hotkey usa edita o default no próprio
+`bin/dictate.sh`.
+
+### Setup manual WhisperX (HuggingFace + 1Password)
+
+Uma vez por máquina:
+
+1. **Conta HuggingFace gratuita:** [huggingface.co/join](https://huggingface.co/join)
+2. **Access Token** com `read` scope: [huggingface.co/settings/tokens](https://huggingface.co/settings/tokens)
+   → "New token" → Type: Read → Copy
+3. **Aceitar T&C** dos modelos pyannote (clicar "Agree and access repository" em ambos):
+   - [pyannote/speaker-diarization-community-1](https://huggingface.co/pyannote/speaker-diarization-community-1) (modelo de diarização — default actual do whisperx)
+   - [pyannote/segmentation-3.0](https://huggingface.co/pyannote/segmentation-3.0) (VAD interno)
+
+   Nota: versões antigas de whisperx usavam `pyannote/speaker-diarization-3.1`. Se já tens esse aceite, fica como bonus mas não é necessário; o `community-1` é o que precisas hoje.
+4. **Guardar no 1Password:**
+   - Vault: `Private`
+   - Title: `HuggingFace`
+   - Field name: `token` (tipo: password)
+   - Value: o token copiado
+5. **Verificar:**
+   ```bash
+   op read "op://Private/HuggingFace/token"   # deve devolver o token
+   transcribe-diarize ~/Desktop/teste.m4a     # corre o pipeline completo
+   ```
+
+A 1ª invocação do `transcribe-diarize` descarrega ~3.5 GB para
+`~/.cache/huggingface/`: modelo `large-v3` em formato CTranslate2 (~3 GB)
++ modelos pyannote (~500 MB). Ficam cached para invocações seguintes.
+
 ### Debug SSH agent (Fork e outras apps GUI)
 
 Se o Fork (ou outra app GUI) der `Permission denied (publickey)` apesar de o terminal funcionar:
@@ -427,7 +562,10 @@ brew bundle cleanup        # remover pacotes não no Brewfile (cuidado!)
 ├── bin/                            # Scripts helper (chamados pelo skhd)
 │   ├── open-working-info.sh        # Cmd+Alt+W: abrir + preset Rectangle
 │   ├── desktop-tidy.sh             # Ctrl+Alt+Cmd+W: arrumação interactiva
-│   └── safari-to-note.sh           # Shift+Ctrl+Alt+Cmd+N: Safari → Notes (texto + placeholders)
+│   ├── safari-to-note.sh           # Shift+Ctrl+Alt+Cmd+N: Safari → Notes (texto + placeholders)
+│   ├── dictate.sh                  # Ctrl+Alt+Cmd+F: toggle whisper-stream + paste
+│   ├── transcribe.sh               # CLI: m4a/mp3/... → .txt + .srt via whisper-cli + ffmpeg
+│   └── transcribe-diarize.sh       # CLI: como transcribe + diarização (whisperx + pyannote)
 │
 └── setup/                          # Scripts de instalação
     ├── symlinks.sh                 # Stow + link_config
@@ -437,6 +575,8 @@ brew bundle cleanup        # remover pacotes não no Brewfile (cuidado!)
     ├── ubersicht.sh                # Symlink pasta de widgets Übersicht
     ├── skhd.sh                     # Arranca/reinicia serviço skhd
     ├── ssh-auth-sock.sh            # Instala LaunchAgent SSH_AUTH_SOCK (1Password)
+    ├── whisper.sh                  # Build whisper.cpp + modelo + Core ML (Apple Silicon)
+    ├── whisperx.sh                 # Venv whisperx (diarização) — pyannote + faster-whisper
     └── macos-defaults.sh           # defaults write
 ```
 
@@ -611,6 +751,61 @@ Histórico das decisões tomadas e seu racional, para contexto futuro.
 | `v=<sha>` no log por invocação | Evita diagnosticar uma versão desactualizada quando o utilizador esquece `dl` (aconteceu durante o desenvolvimento) |
 | Nota criada no folder default (sem especificar account/folder) | Evita depender de locale (`"Notes"` vs `"Notas"`); o Notes coloca na localização natural do utilizador |
 | Requer "Allow JavaScript from Apple Events" em Safari | Restrição nativa do macOS desde Mojave — one-time setup |
+
+### Whisper / Ditado por voz — 2026-04-25
+
+| Decisão | Racional |
+|---|---|
+| `whisper.cpp` compilado em `~/.local/src/whisper.cpp` (não a fórmula `brew "whisper-cpp"`) | A fórmula não inclui `whisper-stream` (binário SDL2) nem activa Core ML. Compilar é o único caminho para ditado **streaming** real e para o speed-up do encoder no M2/M3 |
+| `cmake -DWHISPER_SDL2=ON -DWHISPER_COREML=1` | SDL2 = captura de áudio nativa do `whisper-stream`; Core ML = encoder a correr na ANE (~3× mais rápido em `small`/`medium`) |
+| Core ML só em `arm64` (auto-detect via `uname -m`) | No iMac Intel não há Neural Engine — gerar o `.mlmodelc` seria desperdício de tempo e disco |
+| Geração do `.mlmodelc` num venv isolado em `~/.local/share/whisper-coreml-venv/` | `coremltools` + `torch` + `ane_transformers` pesam ~2 GB e fixam versões — não devem poluir o Python do sistema. Venv mantém o setup reproducível e descartável |
+| Pin de `python@3.11` no Brewfile, `setup/whisper.sh` usa `python3.11` explicitamente | macOS recente trazia já `python3.14` como `python3`. Esse Python parte na criação do venv (ensurepip) e mesmo que passasse, `torch`/`coremltools` não têm wheels para cp313/cp314, e `ane_transformers` prende `torch 2.x` (Python ≤3.12). 3.11 é a versão com cobertura completa dos três pacotes |
+| Geração Core ML como "best effort" (warn em vez de exit) | `set -e` no bootstrap matava todo o setup se o venv falhasse, deixando passos finais (macos-defaults, cache fzf) por correr. whisper-stream funciona perfeitamente em Metal puro com modelo `medium` no M2 Max; Core ML é optimização, não pré-requisito |
+| Recriação automática do venv se o Python interno divergir | Se um run anterior criou o venv com outro Python (ex.: 3.14), reusar resulta em `pip install` partido. Detectar via `[[ ! -x $venv/bin/$expected_python ]]` e `rm -rf` é mais simples que migração in-place |
+| Build com `-DWHISPER_COREML_ALLOW_FALLBACK=1` | Sem este flag, qualquer falha a carregar o `.mlmodelc` aborta o whisper context inteiro (mensagem `failed to initialize whisper context`) — mesmo com Metal disponível. Acontece quando o `coremltools` gera um `.mlmodelc` incompatível com o `coremlc` do Xcode (visto em macOS Sequoia + M2). Com fallback, perde-se só o speed-up; whisper-stream continua a funcionar |
+| Pre-flight `xcrun --find coremlc` antes de instalar o venv | `coremlc` (compilador `.mlpackage` → `.mlmodelc`) só vem com o **Xcode completo**, não com as Command Line Tools (que o bootstrap já valida). Sem este check, o script instalava 2 GB de `torch+coremltools` e corria ~5 min de conversão PyTorch→MIL para falhar no último passo `xcrun coremlc compile`. Verificar à cabeça poupa tempo e disco; a mensagem orienta o user para `Xcode App Store + xcode-select -s` se quiser activar Core ML depois |
+| Validação de tamanho mínimo no `download_model` | O `download-ggml-model.sh` upstream verifica só "ficheiro existe? skip" — não valida tamanho nem SHA. Se uma run anterior foi interrompida (Ctrl+C, rede cair) o `.bin` parcial fica em `models/` e a próxima execução salta o download e propaga silenciosamente o ficheiro corrupto. O whisper-cli só estoura no fim com `expected N tensors, got M`. Tabela `expected_size_mb` por modelo (calibrada a 90% do **real** — `large-v3` mede 2951 MB, não os 3.1 GB redondinhos da documentação) detecta o problema antes do `mv` para o local centralizado |
+| `DOTFILES="${DOTFILES:-$HOME/.dotfiles}"` no topo do `setup/whisper.sh` | `set -u` faz o script crashar com `DOTFILES: unbound variable` se for invocado directamente (e não via `bootstrap.sh`, que define a var). O default permite o user correr `bash setup/whisper.sh` autonomamente — mais ainda quando uma mensagem de erro aponta para esse mesmo comando |
+| Health-check pós-arranque no `dictate.sh` (sleep 0.8 + `kill -0`) | Sem isto, se o whisper-stream morrer no init (modelo corrupto, permissão de microfone negada, .mlmodelc partido com build sem fallback) o PID fica órfão, a HUD diz "● REC" e cada nova pressão lança outro processo condenado. O sleep de 0.8s cobre a janela típica do erro de inicialização sem atrasar o uso normal |
+| `export LANG=en_US.UTF-8` no topo de `dictate.sh` e `transcribe.sh` | skhd herda um env minimalista do launchd — `LANG` fica unset. `pbcopy` sem `LANG=UTF-8` interpreta bytes UTF-8 como MacRoman ao guardar no clipboard, e cola `"N√£o"` em vez de `"Não"` em qualquer app. Os exports no `shell/.exports` só carregam em shells interactivas (.zshrc), portanto não chegam aos scripts spawned pelo skhd. Forçar a env no início garante encoding consistente independentemente do parent process |
+| Modelo offline `large-v3` separado do streaming `medium` | Streaming precisa de tempo real → `medium` é o tecto sustentável no M2 Max em Metal puro; transcrição offline não tem essa restrição → `large-v3` dá qualidade muito superior em PT (especialmente nomes próprios, pontuação). Os dois coexistem em `~/.local/share/whisper-models/` |
+| `transcribe.sh` faz resample via `ffmpeg` em vez de exigir wav | iPhone Voice Memos grava em `.m4a` (AAC); muitas outras fontes em `.mp3`, `.opus`, `.mp4`. whisper.cpp só aceita 16 kHz mono PCM — `ffmpeg -ar 16000 -ac 1 -c:a pcm_s16le` cobre tudo numa linha. Tmp wav é descartado depois |
+| Output `.txt` + `.srt` por defeito (não opcional) | `.txt` para uso normal; `.srt` (com timestamps) permite procurar "onde é que eu disse X" e abrir directamente no QuickTime/VLC com legendas — o custo extra é zero (whisper-cli aceita `-otxt -osrt` na mesma run) |
+| `transcribe` exige sempre path explícito (sem fzf-magic) | Tentei `fzf` sobre uma pasta canónica de Voice Memos mas o Dictafone do macOS guarda em CloudKit opaco — não há ficheiro estável para listar. Materialização para `.qta` só acontece durante o drag, num path tmp efémero. Em vez de inventar uma "inbox" sintética e treinar o utilizador a mexê-la, o caminho honesto é arrastar do Dictafone para o Ghostty (terminal cola o path) → Enter |
+| Output sempre em `~/Desktop/` por defeito (não em `dirname($INPUT)`) | Auto-detect "se a pasta é gravável fica lá, senão fallback" parecia esperto, mas era inconsistente — outputs em `~/Downloads/` para uns ficheiros, em `~/Desktop/` para outros (Dictafone). Default fixo torna o comportamento previsível: o user sabe sempre onde procurar o `.txt`. Visível no Desktop facilita "ler agora, arrumar depois". `WHISPER_OUT_DIR` permite pin para utilizadores com pipeline diferente (`~/Documents/Transcriptions/`) |
+| Post-flight existence check de `.txt`/`.srt` | Sem isto, o falhanço silencioso do `whisper-cli` (em sandbox ou disco cheio) deixa o script a imprimir "✓ x.txt / ✓ x.srt" para ficheiros que não existem, e o user só descobre o problema mais tarde. `[[ ! -f $OUT_PREFIX.txt || ! -f $OUT_PREFIX.srt ]]` no fim é a única garantia — exit code do whisper-cli não é confiável aqui |
+| `WHISPER_LANG=auto` por defeito no `transcribe.sh` (vs `pt` no `dictate.sh`) | Streaming é uso interactivo, quase sempre PT — fixar evita o overhead de detecção. Batch processa material variado (memos PT, calls EN, mix) — `auto` é mais robusto sem perda perceptível |
+| Modelo default `medium` (multilingue, ~1.5 GB) | `small` reconhecia mal a fala em PT em microfone integrado (visto na prática: "não tem a salvaver com pedem nada"). `medium` melhora drasticamente nomes próprios e pontuação à custa de ~3× mais lento — ainda fluido no M2 Max em Metal puro. EN-only `.en` cobre mal o caso `LANG=pt_PT`. `small` continua disponível via `WHISPER_MODEL=small` |
+| Modelos centralizados em `~/.local/share/whisper-models/` | XDG-friendly; o `.mlmodelc` tem de viver ao lado do `.bin` para o whisper.cpp o detectar automaticamente |
+| `bin/dictate.sh` toggle (em vez de push-to-talk) | Push-to-talk requer escutar key-up, que o skhd não suporta; toggle resolve com PID file e é igualmente confortável para ditado de 5–60s |
+| `whisper-stream --step 0 --length 5000 --keep 200` | Modo VAD-like: só processa em silêncios, evitando que o stream emita transcrições parciais duplicadas que precisariam de dedup no shell. `--keep 200` ms de overlap evita cortes a meio de palavra |
+| Paste via `pbcopy` + `osascript keystroke "v" cmd` em vez de `cliclick t:` | Funciona sem deps extra (cliclick não está no Brewfile); o save/restore do clipboard com `pbpaste` → backup → paste → `pbcopy` mitiga o efeito secundário de tocar no pasteboard |
+| Restaurar clipboard 400 ms após paste (background) | Tempo suficiente para a app activa consumir o Cmd+V antes de o conteúdo voltar ao anterior; assíncrono não atrasa o feedback do HUD |
+| Hotkey `ctrl + alt + cmd - f` (não leader) | Toggle só faz sentido como tecla única; `f` = "fala", livre e mnemónico em PT |
+| HUD reaproveitando `/tmp/skhd-mode` (em vez de `display notification`) | Latência ~100 ms vs segundos; canal já existe e o widget já está a fazer poll. Estados `● REC` / `⏹ transcrevendo` / `✓ colado` são auto-explicativos |
+| `nohup` + redirecção de stdout para `/tmp/dictate.out` | O whisper-stream emite tokens linha-a-linha; ler do ficheiro no momento do STOP é mais simples que pipes ou named pipes e sobrevive a uma shell que feche |
+| Filtro de output via `sed -E '/^###/d; s/^\[[^]]*\][[:space:]]*//'` | O whisper-stream emite headers `### Transcription N START/END` e prefixos `[t1 --> t2]` por segmento — só queremos o texto puro |
+
+### Whisper / WhisperX (diarização) — 2026-04-25
+
+| Decisão | Racional |
+|---|---|
+| Stack separado para diarização (`whisperx`) em vez de tentar adaptar o `whisper.cpp` | whisper.cpp tem `--tinydiarize` mas só EN-only e detecta apenas transições, sem labels. Para PT com `[SPEAKER_NN]` real, o caminho realista é `pyannote.audio` que vive no ecossistema Python. whisperx encapsula faster-whisper (ASR) + pyannote (diarização) + alinhamento — preserva a invariante de "uma ferramenta, um output esperado" |
+| Coexistir com `whisper.cpp` (não substituir) | `transcribe` simples (1 orador, blog post a transcrever) é 5× mais rápido em whisper.cpp do que em whisperx. Manter as duas ferramentas dá ao utilizador a escolha conforme o caso. Disco extra (~5 GB) é o custo da independência |
+| Venv isolado em `~/.local/share/whisperx-venv/` (não reuso do `whisper-coreml-venv`) | Os requisitos de versões divergem (whisperx prende torch numa janela diferente da que `coremltools` exige). Misturar levaria a downgrades cruzados a cada `pip install`. Venvs separados isolam — disco é barato vs debugging de conflitos |
+| HF token via 1Password (`op read` lazy) em vez de ficheiro `.env` ou `huggingface-cli login` | Padrão já estabelecido no repo (`sops`, `op://` no SSH config, etc.). `huggingface-cli login` escreve em `~/.cache/huggingface/token` em plaintext — viola o princípio de "secrets nunca em ficheiros". `op read` é instantâneo com biometric unlock activo |
+| `WHISPERX_HF_TOKEN_OP_REF` configurável (default `op://Private/HuggingFace/token`) | Permite a outros utilizadores do dotfiles apontar para o seu vault sem editar o script. Default razoável para o caso "começo do zero, ainda não tenho o item" — mensagem de erro orienta exactamente o que criar |
+| Modelos descarregam lazy ao 1º uso (não no `setup/whisperx.sh`) | Total ~3.5 GB e dependem de URLs HF que podem mudar; o whisperx tem a sua lógica de cache + retry. Forçar download no setup duplicaria responsabilidade e poderia falhar antes de o user ter o token configurado. Lazy é mais simples e idempotente |
+| Output em `~/Desktop/` por defeito (mesma decisão do `transcribe`) | Consistência entre as duas ferramentas; reduz carga cognitiva ("onde está o `.txt`?") |
+| Pos-flight existence check com mensagem de erro listando causas comuns | whisperx pode falhar silenciosamente quando T&C de um dos modelos pyannote não foi aceite (HTTP 403 do HF, capturado e logado mas com exit 0). Sem o check, o user vê "✓" sem ficheiros. Listar T&C/scope/network como hipóteses poupa um round-trip de debug |
+| `WHISPER_LANG=pt` (não `auto`) por defeito no `transcribe-diarize` | A diarização do pyannote degrada quando whisperx escolhe a língua errada — em audios curtos com pausas, `auto` por vezes detecta EN. Em PT regular, fixar `pt` é mais robusto |
+| `HF_HUB_DISABLE_TELEMETRY=1` exportado dentro do script | `huggingface_hub` envia telemetria anónima (versão lib + nome do modelo, **nunca o input áudio**). Áudio é processado 100% local mesmo sem este flag, mas defesa-em-profundidade é gratuita — uma linha. `HF_HUB_OFFLINE=1` continua opt-in para quem queira garantir zero rede após o 1º download |
+| `${SPEAKER_FLAGS[@]+"${SPEAKER_FLAGS[@]}"}` em vez de `"${SPEAKER_FLAGS[@]}"` | `/bin/bash` no macOS é 3.2 e com `set -u` trata array vazio como variável unbound (`SPEAKER_FLAGS[@]: unbound variable`). O idiomático `${arr[@]+"${arr[@]}"}` expande só se o array tiver pelo menos um elemento — bash ≥4.4 não precisa, mas o repo prioriza compatibilidade com o bash do sistema |
+| `--compute_type int8` por defeito (vs `float32`) | faster-whisper em CPU corre ~2× mais rápido em INT8 quantizado, com perda de qualidade imperceptível em PT para diarização (verificado empiricamente em batch). CTranslate2 não tem MPS no Apple Silicon, portanto a alternativa "GPU" não existe — o speedup tem de vir de quantização. `WHISPERX_COMPUTE_TYPE` permite override (`float16`, `float32`) para casos sensíveis |
+| `PYTHONWARNINGS=ignore::UserWarning` exportado por defeito | `pyannote.audio` importa `torchcodec` para decode acelerado, que falha a carregar as dylibs `libavutil.X.dylib` do ffmpeg do brew (rpath mismatch) e cai em soundfile/librosa silenciosamente. Funciona à mesma mas o warning aparece a cada invocação a poluir output útil. Suprimir todos os UserWarning é mais simples que filtrar por módulo e raramente esconde algo accionável em uso CLI; `PYTHONWARNINGS=default` reverte para debug |
+| Modelo de diarização default `pyannote/speaker-diarization-community-1` (não `speaker-diarization-3.1`) | whisperx mudou recentemente o default de diarização do `3.1` para o `community-1` — modelo novo, licença mais permissiva e activo no upstream. Aceitar T&C do `3.1` (instinto óbvio dada a versão na documentação antiga) não basta; o pipeline pede o `community-1` em runtime e dá `403 GatedRepoError`. Doc + mensagem de erro do script foram alinhadas com o default actual para evitar este round-trip |
+| `--output_format all` + cleanup, em vez de `--output_format srt --output_format txt` | whisperx CLI aceita **apenas um** valor em `--output_format` (último ganha quando passados múltiplos — argparse com `choices`, não `action='append'`). Passar dois flags resultava em só o último (`txt`) ser gerado e o `.srt` desaparecer silenciosamente, falhando a post-flight check com mensagem enganadora. `all` gera todos os formatos (txt, srt, vtt, json, tsv, aud); apagamos os 4 extras para manter o output igual ao do `transcribe.sh` (txt + srt) |
 
 ### Übersicht widgets — 2026-04-18
 

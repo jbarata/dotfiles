@@ -285,3 +285,66 @@ skBB9xT8cK	safari-to-note.sh: que pré-requisito manual Safari tem?	Develop → 
 skCC9dR4vL	safari-to-note.sh: como é que a tag #site vai parar à nota?	Escrita como texto (<p>#site</p>) no body HTML; Notes.app parseia hashtags em texto livre ao gravar	skhd
 skDD2fT8mK	safari-to-note.sh: porque `v=<sha>` nos logs?	Para confirmar que versão do script correu em cada invocação — evita diagnosticar bugs numa versão antiga quando o utilizador esqueceu de fazer dotfiles pull	skhd
 
+
+# =========================================================
+# Whisper / Ditado por voz
+# =========================================================
+whA1eDcT5p	skhd: Ctrl+Alt+Cmd+F — o que faz?	Toggle de ditado: 1ª pressão arranca whisper-stream em background; 2ª pressão pára, transcreve e cola no app activo	whisper dictate skhd
+whB7nFkR3w	dictate.sh: que binário usa para captura + transcrição contínua?	whisper-stream (do whisper.cpp, compilado com WHISPER_SDL2=ON)	whisper dictate
+whC4vJsM2x	Porque compilar whisper.cpp em vez de usar `brew "whisper-cpp"`?	A fórmula brew não inclui whisper-stream (binário SDL2) nem activa Core ML — sem streaming nem aceleração ANE	whisper
+whD9rXqT6k	Que flags cmake são usadas no setup/whisper.sh?	-DWHISPER_SDL2=ON (sempre) + -DWHISPER_COREML=1 (só em arm64)	whisper
+whE2bYcW8h	Onde fica o repo whisper.cpp clonado?	~/.local/src/whisper.cpp/ (mesmo padrão que cob-md-to-pdf)	whisper
+whF6sPnB1q	Onde ficam os modelos ggml descarregados?	~/.local/share/whisper-models/ggml-<modelo>.bin (e .mlmodelc ao lado em arm64)	whisper
+whG3kHzL5j	Modelo default do dictate?	medium (multilingue, ~1.5 GB) — accuracy notável em PT, ainda fluido no M2 Max em Metal puro com latência maior nas pausas	whisper
+whH8mNgQ4d	Porque medium e não small ou base.en?	base.en cobre mal PT (LANG=pt_PT); small reconhecia mal fala em PT no microfone integrado (visto: "não tem a salvaver com pedem nada"); medium melhora drasticamente nomes próprios e pontuação à custa de ~3× mais lento — ainda fluido no M2 Max	whisper
+whI5cVdS9p	Como mudar de modelo por sessão?	WHISPER_MODEL=small dictate (override da env var; o setup/whisper.sh usa o mesmo nome para descarregar/converter)	whisper dictate
+whJ1xRfA7t	Como instalar/converter um modelo novo?	WHISPER_MODEL=medium bash ~/.dotfiles/setup/whisper.sh — descarrega o .bin e gera o .mlmodelc no venv	whisper
+whK4wDtY2v	Que flags do whisper-stream o dictate.sh usa e porquê?	--step 0 --length 5000 --keep 200 → modo VAD-like (só processa em silêncios, sem partials duplicados); 200 ms de overlap evita cortes a meio de palavra	whisper dictate
+whL7uOfP6n	Onde fica o PID do whisper-stream em execução?	/tmp/dictate.pid (toggle: existe = parar; não existe = arrancar)	whisper dictate
+whM2hLkB3z	Onde vai parar o stdout do whisper-stream?	/tmp/dictate.out (filtrado no STOP: remove linhas ### Transcription e prefixos [t1 --> t2])	whisper dictate
+whN9aZsE8c	Como é que o dictate.sh cola o texto na app activa?	pbcopy + osascript "tell System Events to keystroke v using command down"; restaura o clipboard anterior 400 ms depois (background)	whisper dictate
+whO5gMwR1y	Que permissões macOS o dictate.sh requer?	Microfone (1ª execução pede; aprovar ao parent process do skhd) + Acessibilidade para o skhd (já necessária)	whisper dictate
+whP3jCqN0u	Onde está o venv com torch + coremltools para gerar Core ML?	~/.local/share/whisper-coreml-venv/ (isolado para não poluir o Python do sistema; ~2 GB)	whisper
+whQ6vKpD4i	Porque um venv isolado para a conversão Core ML?	coremltools + torch + ane_transformers fixam versões e pesam ~2 GB; venv mantém-se reproducível e descartável sem afectar outros projectos Python	whisper
+whR8tEbX2o	Que speedup dá o Core ML encoder face a Metal puro no M2/M3?	~3× em modelos small/medium (encoder corre na ANE em vez de GPU); irrelevante em modelos tiny/base	whisper
+whS1lFhV7e	Que feedback visual o dictate.sh dá?	skhd-hud.widget mostra "● REC", "⏹ a transcrever…", "✓ colado" (ou "∅ sem áudio" / "∅ sem texto") via /tmp/skhd-mode	whisper dictate
+whT4dNiU9b	Porque toggle e não push-to-talk?	skhd não suporta key-up events; toggle resolve com PID file e é igualmente confortável para ditado de 5–60s	whisper dictate
+
+# =========================================================
+# Whisper / Transcribe (offline)
+# =========================================================
+trA1bC2dE3	Como transcrever um áudio do iPhone para texto?	transcribe ~/Downloads/memo.m4a — gera memo.txt + memo.srt ao lado, com large-v3 a correr offline	whisper transcribe
+trB4cD5eF6	transcribe sem args — o que faz?	Imprime usage e sai. O Dictafone do macOS guarda em CloudKit opaco (sem path estável para listar) — caminho é arrastar a gravação da app para o Ghostty (cola o path .qta) e Enter	whisper transcribe
+trC7dE8fG9	Como passar uma gravação do Dictafone macOS para o transcribe?	Arrastar do Dictafone para a janela do Ghostty: o macOS materializa um .qta temporário em ~/Library/Containers/com.apple.VoiceMemos/Data/tmp/ e cola o path no terminal	whisper transcribe
+trD0eF1gH2	Que modelo o transcribe usa por defeito?	large-v3 (~3 GB) — qualidade alta, ~5× tempo real no M2 Max; medium fica para o streaming via dictate	whisper transcribe
+trE3fG4hI5	Que outputs o transcribe gera?	.txt (texto plano) + .srt (com timestamps) ao lado do ficheiro original — whisper-cli -otxt -osrt -of <prefix>	whisper transcribe
+trF6gH7iJ8	Porque o transcribe precisa de ffmpeg?	whisper.cpp só aceita 16 kHz mono PCM WAV; o ffmpeg converte qualquer formato de entrada (m4a/mp3/mp4/opus...) com `-ar 16000 -ac 1 -c:a pcm_s16le`	whisper transcribe
+trG9hI0jK1	WHISPER_LANG=auto vs pt — quando usar cada?	auto: para gravações multi-língua ou com origem incerta (transcribe usa por defeito). pt: fixar quando se sabe a língua poupa o overhead de detecção (dictate usa por defeito)	whisper
+trH2iJ3kL4	transcribe falha com "modelo large-v3 em falta" — como resolver?	bash ~/.dotfiles/setup/whisper.sh — descarrega o ggml-large-v3.bin (~3 GB) para ~/.local/share/whisper-models/	whisper
+trI5jK6lM7	Como transcrever vários ficheiros de uma vez?	transcribe *.m4a (loop interno) ou xargs: find . -name '*.m4a' | xargs ~/.dotfiles/bin/transcribe.sh	whisper transcribe
+trJ8kL9mN0	Diferença chave entre dictate e transcribe?	dictate: streaming live com medium (toggle Ctrl+Alt+Cmd+F, paste em app activo). transcribe: batch offline com large-v3 sobre ficheiros, output .txt + .srt	whisper
+whU9aB2cD3	setup/whisper.sh: como detecta downloads truncados?	Função expected_size_mb com mínimos por modelo (90% do tamanho real: tiny 65, base 125, small 420, medium 1400, large-v* 2700 MB); valida em 3 pontos (target, source pré-existente, download fresco)	whisper
+whV3eF6gH9	Porque o transcribe falhou com "expected 1259, got 1043"?	O ggml-large-v3.bin estava truncado de uma run anterior interrompida — o download-ggml-model.sh upstream skip-if-exists não valida tamanho. Solução: rm do .bin parcial (target + source) + bash setup/whisper.sh com a validação de tamanho	whisper
+trK1lM2nO3	transcribe: onde aterram os outputs por defeito?	Sempre em ~/Desktop/ (independente da localização do input). Comportamento previsível e visível; arquiva-se manualmente depois. Override: WHISPER_OUT_DIR=<dir>	whisper transcribe
+trL4mN5oP6	Porque é que o whisper-cli falha silenciosamente em sandbox?	open() retorna EACCES no path da pasta tmp/ do container Voice Memos mas o whisper-cli ainda devolve exit code 0 — sem o post-flight existence check no transcribe.sh, o user vê falsos "✓ x.txt"	whisper transcribe
+trM7nO8pQ9	Como fixar destino dos outputs do transcribe?	WHISPER_OUT_DIR=~/Documents/Transcriptions transcribe ficheiro.m4a — o script faz mkdir -p e usa esse path	whisper transcribe
+trN0pQ1rS2	Porque o dictate cola "N√£o" em vez de "Não"?	skhd herda env minimalista do launchd (sem LANG); pbcopy sem LANG=UTF-8 interpreta bytes UTF-8 como MacRoman ao guardar no clipboard. Fix: export LANG=en_US.UTF-8 no topo do dictate.sh	whisper dictate
+trO3qR4sT5	Porque os exports no shell/.exports não chegam ao dictate.sh?	São sourced pelo .zshrc (apenas shells interactivas) — scripts invocados pelo skhd, launchd ou cron não os herdam. Para esses, definir env no próprio script	whisper dictate skhd
+
+# =========================================================
+# WhisperX / Diarização
+# =========================================================
+wxA1bC2dE3	transcribe-diarize — o que faz?	Como transcribe mas com [SPEAKER_00], [SPEAKER_01]... via whisperx (faster-whisper + pyannote.audio + alinhamento word-level); útil para reuniões e diálogos	whisperx diarization
+wxB4cD5eF6	Porque whisperx em vez de --tinydiarize do whisper.cpp?	tinydiarize é EN-only e só detecta transições (sem labels). pyannote.audio dá diarização real com labels em qualquer língua, à custa de stack Python separado	whisperx
+wxC7dE8fG9	Onde fica o venv do whisperx?	~/.local/share/whisperx-venv/ — isolado do venv Core ML porque os pins de torch divergem; criado por setup/whisperx.sh	whisperx
+wxD0eF1gH2	Que pré-requisitos manuais tem o whisperx?	(1) Conta huggingface.co + Access Token read; (2) aceitar T&C de pyannote/speaker-diarization-community-1 e pyannote/segmentation-3.0; (3) token em op://Private/HuggingFace/token	whisperx
+wxE3fG4hI5	Que env var configura a referência ao HF token no transcribe-diarize?	WHISPERX_HF_TOKEN_OP_REF (default op://Private/HuggingFace/token); o script faz `op read` lazy	whisperx 1password
+wxF6gH7iJ8	Onde whisperx descarrega os modelos?	~/.cache/huggingface/ — large-v3 em formato CTranslate2 (~3 GB) + pyannote (~500 MB), ao 1º uso. Cache persistente para invocações seguintes	whisperx
+wxG9hI0jK1	Como dar hint ao pyannote sobre número de oradores?	WHISPERX_MIN_SPEAKERS=2 WHISPERX_MAX_SPEAKERS=2 transcribe-diarize file.m4a — melhora accuracy quando se sabe a estrutura à partida	whisperx
+wxH2iJ3kL4	Porque guardar o HF token no 1Password e não em .env ou via huggingface-cli login?	huggingface-cli login escreve plaintext em ~/.cache/huggingface/token — viola "secrets nunca em ficheiros". op read é instantâneo com biometric unlock 1Password	whisperx 1password
+wxI5jK6lM7	Velocidade do transcribe-diarize no M2 Max?	~0.5–1× tempo real (mais lento que transcribe puro porque o pyannote diarization adiciona overhead). Reunião de 60 min ≈ 1–2h de processamento	whisperx
+wxJ8kL9mN0	Diferença entre transcribe e transcribe-diarize?	transcribe: whisper.cpp puro, 1 orador, ~5× tempo real. transcribe-diarize: whisperx + pyannote, com [SPEAKER_NN], ~0.5–1× tempo real, requer HF token. Outputs idênticos (txt + srt em ~/Desktop)	whisperx transcribe
+wxK1lM2nO3	Que linguagem o transcribe-diarize usa por defeito?	pt (não auto como o transcribe) — pyannote degrada quando whisperx detecta língua errada em audios curtos. Override: WHISPER_LANG=auto transcribe-diarize file	whisperx
+wxL4mN5oP6	transcribe-diarize falha com "outputs não criados" — causas?	(1) T&C dos modelos pyannote não aceites (HTTP 403); (2) HF token sem read scope; (3) modelo CT2 ainda a descarregar e rede caiu	whisperx
+wxM3nO4pQ5	whisperx falha com 403 GatedRepoError em pyannote/speaker-diarization-community-1 — porquê?	whisperx mudou recentemente o modelo de diarização default do `3.1` para o `community-1`. Aceitar T&C apenas do `3.1` não basta — visitar https://huggingface.co/pyannote/speaker-diarization-community-1 e clicar "Agree and access repository"	whisperx
+wxN6oP7qR8	Porque o transcribe-diarize só gerava .txt e não .srt?	whisperx CLI aceita apenas UM valor em --output_format (argparse com choices=...; último ganha). Passar `--output_format srt --output_format txt` perdia o srt. Fix: --output_format all + apagar os formatos extra (vtt/json/tsv/aud)	whisperx

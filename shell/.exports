@@ -19,6 +19,10 @@ export PYTHONDONTWRITEBYTECODE=1
 export NVM_DIR="$HOME/.nvm"
 
 # FZF + fd (se disponíveis)
+# WhisperX (diarização) — referência 1Password para o HF token; o
+# transcribe-diarize.sh faz `op read` lazy. Override via env por sessão.
+export WHISPERX_HF_TOKEN_OP_REF="op://Private/HuggingFace/token"
+
 if command -v fd >/dev/null 2>&1; then
     export FZF_DEFAULT_COMMAND="fd --type f --hidden --exclude .git --exclude node_modules --exclude .cache --exclude .cargo --exclude .Trash --exclude .aivm"
     export FZF_CTRL_T_COMMAND="$FZF_DEFAULT_COMMAND"
