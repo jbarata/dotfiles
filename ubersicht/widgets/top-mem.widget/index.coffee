@@ -4,7 +4,7 @@ refreshFrequency: 9000
 
 style: """
   bottom: 80px
-  right: 150px
+  right: 90px
   color: rgba(255,255,255,0.35)
   font-family: Helvetica Neue
 
@@ -55,7 +55,6 @@ style: """
 
   @media (max-width: 1999px)
     bottom: 36px
-    right: 110px
     td
       font-size: 14px
       width: 80px

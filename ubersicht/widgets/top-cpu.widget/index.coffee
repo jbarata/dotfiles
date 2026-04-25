@@ -4,7 +4,7 @@ refreshFrequency: 9000
 
 style: """
   bottom: 80px
-  right: 17px
+  right: 1px
   color: rgba(255,255,255,0.35)
   font-family: Helvetica Neue
 
