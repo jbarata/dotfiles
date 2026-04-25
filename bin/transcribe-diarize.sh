@@ -127,6 +127,11 @@ for INPUT in "$@"; do
     # whisperx aceita o input directamente (sem passar pelo nosso ffmpeg
     # — chama-o internamente). Output é escrito no --output_dir com o
     # mesmo basename do input.
+    # whisperx CLI aceita apenas UM valor em --output_format (último ganha
+    # se passares múltiplos). `all` gera todos: txt, srt, vtt, json, tsv,
+    # aud. Apagamos os que não queremos a seguir para manter consistência
+    # com transcribe.sh (só txt + srt em ~/Desktop).
+    #
     # Nota: ${SPEAKER_FLAGS[@]+"${SPEAKER_FLAGS[@]}"} é o idiomático
     # bash 3.2-safe para expandir um array potencialmente vazio sob
     # `set -u`. Em bash ≥4.4 bastaria "${SPEAKER_FLAGS[@]}", mas o
@@ -139,18 +144,24 @@ for INPUT in "$@"; do
         --diarize \
         --hf_token "$HF_TOKEN" \
         --output_dir "$OUT_DIR" \
-        --output_format srt \
-        --output_format txt \
+        --output_format all \
         ${SPEAKER_FLAGS[@]+"${SPEAKER_FLAGS[@]}"}
 
-    # Post-flight: verificar que os outputs realmente existem (whisperx
-    # falha silenciosamente se faltar um T&C aceite — já visto na prática).
+    # Limpeza dos formatos extra (vtt/json/tsv/aud).
+    for ext in vtt json tsv aud; do
+        rm -f "$OUT_PREFIX.$ext"
+    done
+
+    # Post-flight: verificar que os outputs realmente existem.
     if [[ ! -f "$OUT_PREFIX.txt" || ! -f "$OUT_PREFIX.srt" ]]; then
         echo "  ✗ outputs não criados em $OUT_DIR/" >&2
-        echo "    Causas comuns:" >&2
-        echo "      - T&C do pyannote/speaker-diarization-3.1 ou segmentation-3.0 não aceites" >&2
+        echo "    Ficheiros presentes para este input:" >&2
+        ls -1 "$OUT_PREFIX".* 2>/dev/null | sed 's/^/      /' >&2 || echo "      (nenhum)" >&2
+        echo "    Causas possíveis:" >&2
+        echo "      - T&C de pyannote/speaker-diarization-community-1 ou pyannote/segmentation-3.0 não aceites" >&2
         echo "      - HF token sem scope 'read'" >&2
         echo "      - Modelo CT2 ainda a descarregar e ligação caiu" >&2
+        echo "      - whisperx mudou flags de output entre versões" >&2
         exit 1
     fi
     echo "  ✓ $OUT_PREFIX.txt"
