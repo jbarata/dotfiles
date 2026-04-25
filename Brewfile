@@ -11,6 +11,8 @@ brew "gcalcli"               # Google Calendar CLI (usado pelo focus.widget)
 brew "fzf"                   # Fuzzy finder (Ctrl+R, Ctrl+T)
 brew "fd"                    # find alternativo (usado pelo fzf)
 brew "koekeishiya/formulae/skhd" # Hotkey daemon (shortcuts → URLs/apps)
+brew "cmake"                 # Build system (whisper.cpp, etc.)
+brew "sdl2"                  # Audio capture lib (whisper-stream)
 
 # Zsh plugins
 brew "zsh-autosuggestions"

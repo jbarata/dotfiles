@@ -307,6 +307,21 @@ if [[ -f "$DOTFILES/setup/cob-tools.sh" ]]; then
     fi
 fi
 
+# --- 9e. Whisper.cpp (ditado por voz, streaming) ---
+if [[ -f "$DOTFILES/setup/whisper.sh" ]]; then
+    echo "==> A instalar whisper.cpp..."
+    if $DRY_RUN; then
+        echo "  [dry-run] git clone whisper.cpp → \$HOME/.local/src/"
+        echo "  [dry-run] cmake build (SDL2 + Core ML em arm64)"
+        echo "  [dry-run] download modelo ggml-small.bin (~466 MB)"
+        if [[ "$ARCH" == "arm64" ]]; then
+            echo "  [dry-run] gerar Core ML encoder em venv (5–10 min, ~2 GB deps)"
+        fi
+    else
+        bash "$DOTFILES/setup/whisper.sh"
+    fi
+fi
+
 # --- 10. macOS defaults (opcional) ---
 if [[ -f "$DOTFILES/setup/macos-defaults.sh" ]]; then
     echo "==> A aplicar preferências macOS..."

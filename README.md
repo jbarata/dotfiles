@@ -77,6 +77,7 @@ Ctrl+Alt+Cmd+B          # Safari (abre ou activa a janela)
 Shift+Ctrl+Alt+Cmd+B    # Google Chrome (abre ou activa a janela)
 Ctrl+Alt+Cmd+T          # Calendário (open_calendar.scpt do focus.widget)
 Shift+Ctrl+Alt+Cmd+N    # Safari → Notes (guarda a página actual em versão reader)
+Ctrl+Alt+Cmd+F          # Dictate: toggle whisper-stream → paste no app activo
 
 # Leader "cob" (Ctrl+Alt+Cmd+D seguido de...):
 D → P                   # Plan (Dogfooding)
@@ -154,6 +155,31 @@ Pré-requisitos (uma vez):
 Feedback visual via `skhd-hud.widget` (polling `/tmp/skhd-mode` a 100ms).
 Logs de debug em `/tmp/safari-to-note.log` (inclui `v=<sha>` por execução).
 
+### Whisper / Ditado por voz
+
+`Ctrl+Alt+Cmd+F` (ou alias `dictate`) é um toggle. 1ª pressão arranca o
+`whisper-stream` em background a capturar do microfone default; 2ª pressão
+pára, transcreve e cola no app activo (preserva o clipboard anterior).
+
+```bash
+Ctrl+Alt+Cmd+F      # toggle: arrancar / parar+colar
+dictate             # mesmo toggle a partir do terminal
+```
+
+Feedback visual no `skhd-hud.widget`:
+- `● REC (small/pt) — ⌃⌥⌘F para parar` enquanto grava
+- `⏹ a transcrever…` durante a paragem
+- `✓ colado` no fim (ou `∅ sem áudio` / `∅ sem texto` se vazio)
+
+Modelo default: `small` (multilingue, ~466 MB) — funciona em PT e EN com
+qualidade decente e tempo real no M2/M3 com Core ML. Override por sessão:
+
+```bash
+WHISPER_MODEL=medium WHISPER_LANG=auto dictate
+```
+
+Logs em `/tmp/dictate.log`.
+
 ### VS Code — Multi-cursor
 
 ```bash
@@ -222,8 +248,9 @@ O bootstrap:
 8. Migra remote git para SSH
 9. Instala extensões VS Code
 10. Symlinka widgets Übersicht (geridos no repo, em `ubersicht/widgets/`)
-11. Aplica macOS defaults
-12. Cria `~/.cache` para fzf
+11. Compila `whisper.cpp` + descarrega modelo + gera Core ML (Apple Silicon)
+12. Aplica macOS defaults
+13. Cria `~/.cache` para fzf
 
 O bootstrap é **idempotente** — pode correr várias vezes.
 
@@ -334,6 +361,22 @@ Comentários `# ...` são ignorados pelo Anki, usar para organizar secções.
 
 Importar: Anki → File → Import → seleccionar ficheiro.
 
+### Trocar modelo Whisper
+
+O default é `small` (descarregado pelo bootstrap). Para usar outro:
+
+```bash
+WHISPER_MODEL=medium bash ~/.dotfiles/setup/whisper.sh
+```
+
+O script é idempotente: descarrega o `.bin` se faltar e gera o
+`.mlmodelc` (Apple Silicon) no venv `~/.local/share/whisper-coreml-venv/`.
+Os modelos ficam em `~/.local/share/whisper-models/`.
+
+Depois exporta `WHISPER_MODEL` no `shell/.exports` ou nas env vars do
+launchd se quiseres mudar o default permanente; senão usa override por
+sessão (`WHISPER_MODEL=medium dictate`).
+
 ### Debug SSH agent (Fork e outras apps GUI)
 
 Se o Fork (ou outra app GUI) der `Permission denied (publickey)` apesar de o terminal funcionar:
@@ -427,7 +470,8 @@ brew bundle cleanup        # remover pacotes não no Brewfile (cuidado!)
 ├── bin/                            # Scripts helper (chamados pelo skhd)
 │   ├── open-working-info.sh        # Cmd+Alt+W: abrir + preset Rectangle
 │   ├── desktop-tidy.sh             # Ctrl+Alt+Cmd+W: arrumação interactiva
-│   └── safari-to-note.sh           # Shift+Ctrl+Alt+Cmd+N: Safari → Notes (texto + placeholders)
+│   ├── safari-to-note.sh           # Shift+Ctrl+Alt+Cmd+N: Safari → Notes (texto + placeholders)
+│   └── dictate.sh                  # Ctrl+Alt+Cmd+F: toggle whisper-stream + paste
 │
 └── setup/                          # Scripts de instalação
     ├── symlinks.sh                 # Stow + link_config
@@ -437,6 +481,7 @@ brew bundle cleanup        # remover pacotes não no Brewfile (cuidado!)
     ├── ubersicht.sh                # Symlink pasta de widgets Übersicht
     ├── skhd.sh                     # Arranca/reinicia serviço skhd
     ├── ssh-auth-sock.sh            # Instala LaunchAgent SSH_AUTH_SOCK (1Password)
+    ├── whisper.sh                  # Build whisper.cpp + modelo + Core ML (Apple Silicon)
     └── macos-defaults.sh           # defaults write
 ```
 
@@ -611,6 +656,25 @@ Histórico das decisões tomadas e seu racional, para contexto futuro.
 | `v=<sha>` no log por invocação | Evita diagnosticar uma versão desactualizada quando o utilizador esquece `dl` (aconteceu durante o desenvolvimento) |
 | Nota criada no folder default (sem especificar account/folder) | Evita depender de locale (`"Notes"` vs `"Notas"`); o Notes coloca na localização natural do utilizador |
 | Requer "Allow JavaScript from Apple Events" em Safari | Restrição nativa do macOS desde Mojave — one-time setup |
+
+### Whisper / Ditado por voz — 2026-04-25
+
+| Decisão | Racional |
+|---|---|
+| `whisper.cpp` compilado em `~/.local/src/whisper.cpp` (não a fórmula `brew "whisper-cpp"`) | A fórmula não inclui `whisper-stream` (binário SDL2) nem activa Core ML. Compilar é o único caminho para ditado **streaming** real e para o speed-up do encoder no M2/M3 |
+| `cmake -DWHISPER_SDL2=ON -DWHISPER_COREML=1` | SDL2 = captura de áudio nativa do `whisper-stream`; Core ML = encoder a correr na ANE (~3× mais rápido em `small`/`medium`) |
+| Core ML só em `arm64` (auto-detect via `uname -m`) | No iMac Intel não há Neural Engine — gerar o `.mlmodelc` seria desperdício de tempo e disco |
+| Geração do `.mlmodelc` num venv isolado em `~/.local/share/whisper-coreml-venv/` | `coremltools` + `torch` + `ane_transformers` pesam ~2 GB e fixam versões — não devem poluir o Python do sistema. Venv mantém o setup reproducível e descartável |
+| Modelo default `small` (multilingue, ~466 MB) | Sweet spot para PT (EN-only `.en` cobre mal o caso `LANG=pt_PT`); roda tempo real no M2 com Core ML |
+| Modelos centralizados em `~/.local/share/whisper-models/` | XDG-friendly; o `.mlmodelc` tem de viver ao lado do `.bin` para o whisper.cpp o detectar automaticamente |
+| `bin/dictate.sh` toggle (em vez de push-to-talk) | Push-to-talk requer escutar key-up, que o skhd não suporta; toggle resolve com PID file e é igualmente confortável para ditado de 5–60s |
+| `whisper-stream --step 0 --length 5000 --keep 200` | Modo VAD-like: só processa em silêncios, evitando que o stream emita transcrições parciais duplicadas que precisariam de dedup no shell. `--keep 200` ms de overlap evita cortes a meio de palavra |
+| Paste via `pbcopy` + `osascript keystroke "v" cmd` em vez de `cliclick t:` | Funciona sem deps extra (cliclick não está no Brewfile); o save/restore do clipboard com `pbpaste` → backup → paste → `pbcopy` mitiga o efeito secundário de tocar no pasteboard |
+| Restaurar clipboard 400 ms após paste (background) | Tempo suficiente para a app activa consumir o Cmd+V antes de o conteúdo voltar ao anterior; assíncrono não atrasa o feedback do HUD |
+| Hotkey `ctrl + alt + cmd - f` (não leader) | Toggle só faz sentido como tecla única; `f` = "fala", livre e mnemónico em PT |
+| HUD reaproveitando `/tmp/skhd-mode` (em vez de `display notification`) | Latência ~100 ms vs segundos; canal já existe e o widget já está a fazer poll. Estados `● REC` / `⏹ transcrevendo` / `✓ colado` são auto-explicativos |
+| `nohup` + redirecção de stdout para `/tmp/dictate.out` | O whisper-stream emite tokens linha-a-linha; ler do ficheiro no momento do STOP é mais simples que pipes ou named pipes e sobrevive a uma shell que feche |
+| Filtro de output via `sed -E '/^###/d; s/^\[[^]]*\][[:space:]]*//'` | O whisper-stream emite headers `### Transcription N START/END` e prefixos `[t1 --> t2]` por segmento — só queremos o texto puro |
 
 ### Übersicht widgets — 2026-04-18
 

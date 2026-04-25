@@ -285,3 +285,27 @@ skBB9xT8cK	safari-to-note.sh: que pré-requisito manual Safari tem?	Develop → 
 skCC9dR4vL	safari-to-note.sh: como é que a tag #site vai parar à nota?	Escrita como texto (<p>#site</p>) no body HTML; Notes.app parseia hashtags em texto livre ao gravar	skhd
 skDD2fT8mK	safari-to-note.sh: porque `v=<sha>` nos logs?	Para confirmar que versão do script correu em cada invocação — evita diagnosticar bugs numa versão antiga quando o utilizador esqueceu de fazer dotfiles pull	skhd
 
+
+# =========================================================
+# Whisper / Ditado por voz
+# =========================================================
+whA1eDcT5p	skhd: Ctrl+Alt+Cmd+F — o que faz?	Toggle de ditado: 1ª pressão arranca whisper-stream em background; 2ª pressão pára, transcreve e cola no app activo	whisper dictate skhd
+whB7nFkR3w	dictate.sh: que binário usa para captura + transcrição contínua?	whisper-stream (do whisper.cpp, compilado com WHISPER_SDL2=ON)	whisper dictate
+whC4vJsM2x	Porque compilar whisper.cpp em vez de usar `brew "whisper-cpp"`?	A fórmula brew não inclui whisper-stream (binário SDL2) nem activa Core ML — sem streaming nem aceleração ANE	whisper
+whD9rXqT6k	Que flags cmake são usadas no setup/whisper.sh?	-DWHISPER_SDL2=ON (sempre) + -DWHISPER_COREML=1 (só em arm64)	whisper
+whE2bYcW8h	Onde fica o repo whisper.cpp clonado?	~/.local/src/whisper.cpp/ (mesmo padrão que cob-md-to-pdf)	whisper
+whF6sPnB1q	Onde ficam os modelos ggml descarregados?	~/.local/share/whisper-models/ggml-<modelo>.bin (e .mlmodelc ao lado em arm64)	whisper
+whG3kHzL5j	Modelo default do dictate?	small (multilingue, ~466 MB) — funciona em PT/EN com tempo real no M2/M3 com Core ML	whisper
+whH8mNgQ4d	Porque small e não base.en ou medium?	base.en cobre mal PT (LANG=pt_PT); medium pesa 1.5 GB e só fica fluido com Core ML — small é o sweet spot para PT em tempo real	whisper
+whI5cVdS9p	Como mudar de modelo por sessão?	WHISPER_MODEL=medium dictate (override da env var; o setup/whisper.sh usa o mesmo nome para descarregar/converter)	whisper dictate
+whJ1xRfA7t	Como instalar/converter um modelo novo?	WHISPER_MODEL=medium bash ~/.dotfiles/setup/whisper.sh — descarrega o .bin e gera o .mlmodelc no venv	whisper
+whK4wDtY2v	Que flags do whisper-stream o dictate.sh usa e porquê?	--step 0 --length 5000 --keep 200 → modo VAD-like (só processa em silêncios, sem partials duplicados); 200 ms de overlap evita cortes a meio de palavra	whisper dictate
+whL7uOfP6n	Onde fica o PID do whisper-stream em execução?	/tmp/dictate.pid (toggle: existe = parar; não existe = arrancar)	whisper dictate
+whM2hLkB3z	Onde vai parar o stdout do whisper-stream?	/tmp/dictate.out (filtrado no STOP: remove linhas ### Transcription e prefixos [t1 --> t2])	whisper dictate
+whN9aZsE8c	Como é que o dictate.sh cola o texto na app activa?	pbcopy + osascript "tell System Events to keystroke v using command down"; restaura o clipboard anterior 400 ms depois (background)	whisper dictate
+whO5gMwR1y	Que permissões macOS o dictate.sh requer?	Microfone (1ª execução pede; aprovar ao parent process do skhd) + Acessibilidade para o skhd (já necessária)	whisper dictate
+whP3jCqN0u	Onde está o venv com torch + coremltools para gerar Core ML?	~/.local/share/whisper-coreml-venv/ (isolado para não poluir o Python do sistema; ~2 GB)	whisper
+whQ6vKpD4i	Porque um venv isolado para a conversão Core ML?	coremltools + torch + ane_transformers fixam versões e pesam ~2 GB; venv mantém-se reproducível e descartável sem afectar outros projectos Python	whisper
+whR8tEbX2o	Que speedup dá o Core ML encoder face a Metal puro no M2/M3?	~3× em modelos small/medium (encoder corre na ANE em vez de GPU); irrelevante em modelos tiny/base	whisper
+whS1lFhV7e	Que feedback visual o dictate.sh dá?	skhd-hud.widget mostra "● REC", "⏹ a transcrever…", "✓ colado" (ou "∅ sem áudio" / "∅ sem texto") via /tmp/skhd-mode	whisper dictate
+whT4dNiU9b	Porque toggle e não push-to-talk?	skhd não suporta key-up events; toggle resolve com PID file e é igualmente confortável para ditado de 5–60s	whisper dictate
