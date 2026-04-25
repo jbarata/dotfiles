@@ -17,6 +17,10 @@
 #   WHISPER_COREML   default: 1 em arm64, 0 em x86_64
 set -euo pipefail
 
+# Padrão dos outros setup scripts: permite correr este ficheiro directamente
+# (sem o bootstrap a passar a variável) e respeita override do user.
+DOTFILES="${DOTFILES:-$HOME/.dotfiles}"
+
 SRC_DIR="$HOME/.local/src"
 WHISPER_DIR="$SRC_DIR/whisper.cpp"
 WHISPER_REPO="https://github.com/ggml-org/whisper.cpp.git"
@@ -83,18 +87,22 @@ for bin in whisper-cli whisper-stream; do
 done
 
 # --- 4. Download do(s) modelo(s) ggml -----------------------------------
-# Tamanho mínimo esperado (em MB) para detectar downloads truncados. Os
-# números reais são ~10% maiores; usamos 90% como threshold seguro. O
-# `download-ggml-model.sh` upstream verifica só presença ("skip if exists"),
-# o que mantém ficheiros parciais de Ctrl+C/falhas de rede e propaga o
+# Tamanho MÍNIMO esperado (em MB) para detectar downloads truncados.
+# Calibrado a ~90% do tamanho real publicado em huggingface; um ficheiro
+# significativamente abaixo disso só pode ser parcial. Empiricamente
+# `large-v3` tem 2951 MB, não os 3000+ que se julgaria — 2700 dá ~8% de
+# margem sem falsos positivos.
+#
+# O `download-ggml-model.sh` upstream verifica só presença ("skip if
+# exists"), o que mantém ficheiros parciais de Ctrl+C/rede e propaga o
 # problema sem aviso até o whisper-cli explodir com "expected N, got M".
 expected_size_mb() {
     case "$1" in
-        tiny|tiny.en)               echo 70 ;;
-        base|base.en)               echo 140 ;;
-        small|small.en)             echo 460 ;;
-        medium|medium.en)           echo 1500 ;;
-        large-v1|large-v2|large-v3) echo 3000 ;;
+        tiny|tiny.en)               echo 65 ;;
+        base|base.en)               echo 125 ;;
+        small|small.en)             echo 420 ;;
+        medium|medium.en)           echo 1400 ;;
+        large-v1|large-v2|large-v3) echo 2700 ;;
         *)                          echo 0 ;;
     esac
 }
