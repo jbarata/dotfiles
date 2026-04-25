@@ -13,7 +13,8 @@
 #   ~/.local/share/whisper-coreml-venv/       — venv isolado para conversão Core ML
 #
 # Variáveis (override via env):
-#   WHISPER_MODEL    default: small (multilingue, PT+EN)
+#   WHISPER_MODEL    default: medium (multilingue, PT+EN; melhor accuracy
+#                    em PT que small à custa de ~1 GB extra de modelo)
 #   WHISPER_COREML   default: 1 em arm64, 0 em x86_64
 set -euo pipefail
 
@@ -28,7 +29,7 @@ BIN_DIR="$HOME/.local/bin"
 MODELS_DIR="$HOME/.local/share/whisper-models"
 COREML_VENV="$HOME/.local/share/whisper-coreml-venv"
 
-WHISPER_MODEL="${WHISPER_MODEL:-small}"
+WHISPER_MODEL="${WHISPER_MODEL:-medium}"
 ARCH=$(uname -m)
 if [[ "$ARCH" == "arm64" ]]; then
     WHISPER_COREML="${WHISPER_COREML:-1}"

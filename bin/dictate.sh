@@ -37,7 +37,7 @@ set -euo pipefail
 export LANG=en_US.UTF-8
 export LC_ALL=en_US.UTF-8
 
-MODEL="${WHISPER_MODEL:-small}"
+MODEL="${WHISPER_MODEL:-medium}"
 LANG_CODE="${WHISPER_LANG:-pt}"
 THREADS="${WHISPER_THREADS:-6}"
 

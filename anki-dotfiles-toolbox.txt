@@ -295,9 +295,9 @@ whC4vJsM2x	Porque compilar whisper.cpp em vez de usar `brew "whisper-cpp"`?	A f�
 whD9rXqT6k	Que flags cmake são usadas no setup/whisper.sh?	-DWHISPER_SDL2=ON (sempre) + -DWHISPER_COREML=1 (só em arm64)	whisper
 whE2bYcW8h	Onde fica o repo whisper.cpp clonado?	~/.local/src/whisper.cpp/ (mesmo padrão que cob-md-to-pdf)	whisper
 whF6sPnB1q	Onde ficam os modelos ggml descarregados?	~/.local/share/whisper-models/ggml-<modelo>.bin (e .mlmodelc ao lado em arm64)	whisper
-whG3kHzL5j	Modelo default do dictate?	small (multilingue, ~466 MB) — funciona em PT/EN com tempo real no M2/M3 com Core ML	whisper
-whH8mNgQ4d	Porque small e não base.en ou medium?	base.en cobre mal PT (LANG=pt_PT); medium pesa 1.5 GB e só fica fluido com Core ML — small é o sweet spot para PT em tempo real	whisper
-whI5cVdS9p	Como mudar de modelo por sessão?	WHISPER_MODEL=medium dictate (override da env var; o setup/whisper.sh usa o mesmo nome para descarregar/converter)	whisper dictate
+whG3kHzL5j	Modelo default do dictate?	medium (multilingue, ~1.5 GB) — accuracy notável em PT, ainda fluido no M2 Max em Metal puro com latência maior nas pausas	whisper
+whH8mNgQ4d	Porque medium e não small ou base.en?	base.en cobre mal PT (LANG=pt_PT); small reconhecia mal fala em PT no microfone integrado (visto: "não tem a salvaver com pedem nada"); medium melhora drasticamente nomes próprios e pontuação à custa de ~3× mais lento — ainda fluido no M2 Max	whisper
+whI5cVdS9p	Como mudar de modelo por sessão?	WHISPER_MODEL=small dictate (override da env var; o setup/whisper.sh usa o mesmo nome para descarregar/converter)	whisper dictate
 whJ1xRfA7t	Como instalar/converter um modelo novo?	WHISPER_MODEL=medium bash ~/.dotfiles/setup/whisper.sh — descarrega o .bin e gera o .mlmodelc no venv	whisper
 whK4wDtY2v	Que flags do whisper-stream o dictate.sh usa e porquê?	--step 0 --length 5000 --keep 200 → modo VAD-like (só processa em silêncios, sem partials duplicados); 200 ms de overlap evita cortes a meio de palavra	whisper dictate
 whL7uOfP6n	Onde fica o PID do whisper-stream em execução?	/tmp/dictate.pid (toggle: existe = parar; não existe = arrancar)	whisper dictate
@@ -316,13 +316,13 @@ whT4dNiU9b	Porque toggle e não push-to-talk?	skhd não suporta key-up events; t
 trA1bC2dE3	Como transcrever um áudio do iPhone para texto?	transcribe ~/Downloads/memo.m4a — gera memo.txt + memo.srt ao lado, com large-v3 a correr offline	whisper transcribe
 trB4cD5eF6	transcribe sem args — o que faz?	Imprime usage e sai. O Dictafone do macOS guarda em CloudKit opaco (sem path estável para listar) — caminho é arrastar a gravação da app para o Ghostty (cola o path .qta) e Enter	whisper transcribe
 trC7dE8fG9	Como passar uma gravação do Dictafone macOS para o transcribe?	Arrastar do Dictafone para a janela do Ghostty: o macOS materializa um .qta temporário em ~/Library/Containers/com.apple.VoiceMemos/Data/tmp/ e cola o path no terminal	whisper transcribe
-trD0eF1gH2	Que modelo o transcribe usa por defeito?	large-v3 (~3 GB) — qualidade alta, ~5× tempo real no M2 Max; small fica para o streaming via dictate	whisper transcribe
+trD0eF1gH2	Que modelo o transcribe usa por defeito?	large-v3 (~3 GB) — qualidade alta, ~5× tempo real no M2 Max; medium fica para o streaming via dictate	whisper transcribe
 trE3fG4hI5	Que outputs o transcribe gera?	.txt (texto plano) + .srt (com timestamps) ao lado do ficheiro original — whisper-cli -otxt -osrt -of <prefix>	whisper transcribe
 trF6gH7iJ8	Porque o transcribe precisa de ffmpeg?	whisper.cpp só aceita 16 kHz mono PCM WAV; o ffmpeg converte qualquer formato de entrada (m4a/mp3/mp4/opus...) com `-ar 16000 -ac 1 -c:a pcm_s16le`	whisper transcribe
 trG9hI0jK1	WHISPER_LANG=auto vs pt — quando usar cada?	auto: para gravações multi-língua ou com origem incerta (transcribe usa por defeito). pt: fixar quando se sabe a língua poupa o overhead de detecção (dictate usa por defeito)	whisper
 trH2iJ3kL4	transcribe falha com "modelo large-v3 em falta" — como resolver?	bash ~/.dotfiles/setup/whisper.sh — descarrega o ggml-large-v3.bin (~3 GB) para ~/.local/share/whisper-models/	whisper
 trI5jK6lM7	Como transcrever vários ficheiros de uma vez?	transcribe *.m4a (loop interno) ou xargs: find . -name '*.m4a' | xargs ~/.dotfiles/bin/transcribe.sh	whisper transcribe
-trJ8kL9mN0	Diferença chave entre dictate e transcribe?	dictate: streaming live com small + Core ML (toggle Ctrl+Alt+Cmd+F, paste em app activo). transcribe: batch offline com large-v3 sobre ficheiros, output .txt + .srt	whisper
+trJ8kL9mN0	Diferença chave entre dictate e transcribe?	dictate: streaming live com medium (toggle Ctrl+Alt+Cmd+F, paste em app activo). transcribe: batch offline com large-v3 sobre ficheiros, output .txt + .srt	whisper
 whU9aB2cD3	setup/whisper.sh: como detecta downloads truncados?	Função expected_size_mb com mínimos por modelo (90% do tamanho real: tiny 65, base 125, small 420, medium 1400, large-v* 2700 MB); valida em 3 pontos (target, source pré-existente, download fresco)	whisper
 whV3eF6gH9	Porque o transcribe falhou com "expected 1259, got 1043"?	O ggml-large-v3.bin estava truncado de uma run anterior interrompida — o download-ggml-model.sh upstream skip-if-exists não valida tamanho. Solução: rm do .bin parcial (target + source) + bash setup/whisper.sh com a validação de tamanho	whisper
 trK1lM2nO3	transcribe: onde aterram os outputs por defeito?	Sempre em ~/Desktop/ (independente da localização do input). Comportamento previsível e visível; arquiva-se manualmente depois. Override: WHISPER_OUT_DIR=<dir>	whisper transcribe

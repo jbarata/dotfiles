@@ -167,15 +167,18 @@ dictate             # mesmo toggle a partir do terminal
 ```
 
 Feedback visual no `skhd-hud.widget`:
-- `● REC (small/pt) — ⌃⌥⌘F para parar` enquanto grava
+- `● REC (medium/pt) — ⌃⌥⌘F para parar` enquanto grava
 - `⏹ a transcrever…` durante a paragem
 - `✓ colado` no fim (ou `∅ sem áudio` / `∅ sem texto` se vazio)
 
-Modelo default: `small` (multilingue, ~466 MB) — funciona em PT e EN com
-qualidade decente e tempo real no M2/M3 com Core ML. Override por sessão:
+Modelo default: `medium` (multilingue, ~1.5 GB) — accuracy notável em PT
+em microfone integrado, ainda fluido no M2 Max em Metal puro (latência
+maior nas pausas vs `small` mas resultado mais usável). Override por
+sessão:
 
 ```bash
-WHISPER_MODEL=medium WHISPER_LANG=auto dictate
+WHISPER_MODEL=small WHISPER_LANG=auto dictate    # mais rápido, menos preciso
+WHISPER_MODEL=large-v3 dictate                    # melhor qualidade, sem real-time
 ```
 
 Logs em `/tmp/dictate.log`.
@@ -394,10 +397,11 @@ Importar: Anki → File → Import → seleccionar ficheiro.
 
 ### Trocar modelo Whisper
 
-O default é `small` (descarregado pelo bootstrap). Para usar outro:
+O default do dictate é `medium` (descarregado pelo bootstrap). Para usar
+outro:
 
 ```bash
-WHISPER_MODEL=medium bash ~/.dotfiles/setup/whisper.sh
+WHISPER_MODEL=large-v3 bash ~/.dotfiles/setup/whisper.sh
 ```
 
 O script é idempotente: descarrega o `.bin` se faltar e gera o
@@ -406,7 +410,10 @@ Os modelos ficam em `~/.local/share/whisper-models/`.
 
 Depois exporta `WHISPER_MODEL` no `shell/.exports` ou nas env vars do
 launchd se quiseres mudar o default permanente; senão usa override por
-sessão (`WHISPER_MODEL=medium dictate`).
+sessão (`WHISPER_MODEL=small dictate`). Nota que `shell/.exports` só é
+sourced em shells interactivas — não chega ao script lançado pelo skhd,
+portanto para mudar o que o hotkey usa edita o default no próprio
+`bin/dictate.sh`.
 
 ### Debug SSH agent (Fork e outras apps GUI)
 
@@ -698,7 +705,7 @@ Histórico das decisões tomadas e seu racional, para contexto futuro.
 | Core ML só em `arm64` (auto-detect via `uname -m`) | No iMac Intel não há Neural Engine — gerar o `.mlmodelc` seria desperdício de tempo e disco |
 | Geração do `.mlmodelc` num venv isolado em `~/.local/share/whisper-coreml-venv/` | `coremltools` + `torch` + `ane_transformers` pesam ~2 GB e fixam versões — não devem poluir o Python do sistema. Venv mantém o setup reproducível e descartável |
 | Pin de `python@3.11` no Brewfile, `setup/whisper.sh` usa `python3.11` explicitamente | macOS recente trazia já `python3.14` como `python3`. Esse Python parte na criação do venv (ensurepip) e mesmo que passasse, `torch`/`coremltools` não têm wheels para cp313/cp314, e `ane_transformers` prende `torch 2.x` (Python ≤3.12). 3.11 é a versão com cobertura completa dos três pacotes |
-| Geração Core ML como "best effort" (warn em vez de exit) | `set -e` no bootstrap matava todo o setup se o venv falhasse, deixando passos finais (macos-defaults, cache fzf) por correr. whisper-stream funciona perfeitamente em Metal puro com modelo `small`; Core ML é optimização, não pré-requisito |
+| Geração Core ML como "best effort" (warn em vez de exit) | `set -e` no bootstrap matava todo o setup se o venv falhasse, deixando passos finais (macos-defaults, cache fzf) por correr. whisper-stream funciona perfeitamente em Metal puro com modelo `medium` no M2 Max; Core ML é optimização, não pré-requisito |
 | Recriação automática do venv se o Python interno divergir | Se um run anterior criou o venv com outro Python (ex.: 3.14), reusar resulta em `pip install` partido. Detectar via `[[ ! -x $venv/bin/$expected_python ]]` e `rm -rf` é mais simples que migração in-place |
 | Build com `-DWHISPER_COREML_ALLOW_FALLBACK=1` | Sem este flag, qualquer falha a carregar o `.mlmodelc` aborta o whisper context inteiro (mensagem `failed to initialize whisper context`) — mesmo com Metal disponível. Acontece quando o `coremltools` gera um `.mlmodelc` incompatível com o `coremlc` do Xcode (visto em macOS Sequoia + M2). Com fallback, perde-se só o speed-up; whisper-stream continua a funcionar |
 | Pre-flight `xcrun --find coremlc` antes de instalar o venv | `coremlc` (compilador `.mlpackage` → `.mlmodelc`) só vem com o **Xcode completo**, não com as Command Line Tools (que o bootstrap já valida). Sem este check, o script instalava 2 GB de `torch+coremltools` e corria ~5 min de conversão PyTorch→MIL para falhar no último passo `xcrun coremlc compile`. Verificar à cabeça poupa tempo e disco; a mensagem orienta o user para `Xcode App Store + xcode-select -s` se quiser activar Core ML depois |
@@ -706,14 +713,14 @@ Histórico das decisões tomadas e seu racional, para contexto futuro.
 | `DOTFILES="${DOTFILES:-$HOME/.dotfiles}"` no topo do `setup/whisper.sh` | `set -u` faz o script crashar com `DOTFILES: unbound variable` se for invocado directamente (e não via `bootstrap.sh`, que define a var). O default permite o user correr `bash setup/whisper.sh` autonomamente — mais ainda quando uma mensagem de erro aponta para esse mesmo comando |
 | Health-check pós-arranque no `dictate.sh` (sleep 0.8 + `kill -0`) | Sem isto, se o whisper-stream morrer no init (modelo corrupto, permissão de microfone negada, .mlmodelc partido com build sem fallback) o PID fica órfão, a HUD diz "● REC" e cada nova pressão lança outro processo condenado. O sleep de 0.8s cobre a janela típica do erro de inicialização sem atrasar o uso normal |
 | `export LANG=en_US.UTF-8` no topo de `dictate.sh` e `transcribe.sh` | skhd herda um env minimalista do launchd — `LANG` fica unset. `pbcopy` sem `LANG=UTF-8` interpreta bytes UTF-8 como MacRoman ao guardar no clipboard, e cola `"N√£o"` em vez de `"Não"` em qualquer app. Os exports no `shell/.exports` só carregam em shells interactivas (.zshrc), portanto não chegam aos scripts spawned pelo skhd. Forçar a env no início garante encoding consistente independentemente do parent process |
-| Modelo offline `large-v3` separado do streaming `small` | Streaming precisa de tempo real → `small` é o tecto sustentável no M2; transcrição offline não tem essa restrição → `large-v3` dá qualidade muito superior em PT (especialmente nomes próprios, pontuação). Os dois coexistem em `~/.local/share/whisper-models/` |
+| Modelo offline `large-v3` separado do streaming `medium` | Streaming precisa de tempo real → `medium` é o tecto sustentável no M2 Max em Metal puro; transcrição offline não tem essa restrição → `large-v3` dá qualidade muito superior em PT (especialmente nomes próprios, pontuação). Os dois coexistem em `~/.local/share/whisper-models/` |
 | `transcribe.sh` faz resample via `ffmpeg` em vez de exigir wav | iPhone Voice Memos grava em `.m4a` (AAC); muitas outras fontes em `.mp3`, `.opus`, `.mp4`. whisper.cpp só aceita 16 kHz mono PCM — `ffmpeg -ar 16000 -ac 1 -c:a pcm_s16le` cobre tudo numa linha. Tmp wav é descartado depois |
 | Output `.txt` + `.srt` por defeito (não opcional) | `.txt` para uso normal; `.srt` (com timestamps) permite procurar "onde é que eu disse X" e abrir directamente no QuickTime/VLC com legendas — o custo extra é zero (whisper-cli aceita `-otxt -osrt` na mesma run) |
 | `transcribe` exige sempre path explícito (sem fzf-magic) | Tentei `fzf` sobre uma pasta canónica de Voice Memos mas o Dictafone do macOS guarda em CloudKit opaco — não há ficheiro estável para listar. Materialização para `.qta` só acontece durante o drag, num path tmp efémero. Em vez de inventar uma "inbox" sintética e treinar o utilizador a mexê-la, o caminho honesto é arrastar do Dictafone para o Ghostty (terminal cola o path) → Enter |
 | Output sempre em `~/Desktop/` por defeito (não em `dirname($INPUT)`) | Auto-detect "se a pasta é gravável fica lá, senão fallback" parecia esperto, mas era inconsistente — outputs em `~/Downloads/` para uns ficheiros, em `~/Desktop/` para outros (Dictafone). Default fixo torna o comportamento previsível: o user sabe sempre onde procurar o `.txt`. Visível no Desktop facilita "ler agora, arrumar depois". `WHISPER_OUT_DIR` permite pin para utilizadores com pipeline diferente (`~/Documents/Transcriptions/`) |
 | Post-flight existence check de `.txt`/`.srt` | Sem isto, o falhanço silencioso do `whisper-cli` (em sandbox ou disco cheio) deixa o script a imprimir "✓ x.txt / ✓ x.srt" para ficheiros que não existem, e o user só descobre o problema mais tarde. `[[ ! -f $OUT_PREFIX.txt || ! -f $OUT_PREFIX.srt ]]` no fim é a única garantia — exit code do whisper-cli não é confiável aqui |
 | `WHISPER_LANG=auto` por defeito no `transcribe.sh` (vs `pt` no `dictate.sh`) | Streaming é uso interactivo, quase sempre PT — fixar evita o overhead de detecção. Batch processa material variado (memos PT, calls EN, mix) — `auto` é mais robusto sem perda perceptível |
-| Modelo default `small` (multilingue, ~466 MB) | Sweet spot para PT (EN-only `.en` cobre mal o caso `LANG=pt_PT`); roda tempo real no M2 com Core ML |
+| Modelo default `medium` (multilingue, ~1.5 GB) | `small` reconhecia mal a fala em PT em microfone integrado (visto na prática: "não tem a salvaver com pedem nada"). `medium` melhora drasticamente nomes próprios e pontuação à custa de ~3× mais lento — ainda fluido no M2 Max em Metal puro. EN-only `.en` cobre mal o caso `LANG=pt_PT`. `small` continua disponível via `WHISPER_MODEL=small` |
 | Modelos centralizados em `~/.local/share/whisper-models/` | XDG-friendly; o `.mlmodelc` tem de viver ao lado do `.bin` para o whisper.cpp o detectar automaticamente |
 | `bin/dictate.sh` toggle (em vez de push-to-talk) | Push-to-talk requer escutar key-up, que o skhd não suporta; toggle resolve com PID file e é igualmente confortável para ditado de 5–60s |
 | `whisper-stream --step 0 --length 5000 --keep 200` | Modo VAD-like: só processa em silêncios, evitando que o stream emita transcrições parciais duplicadas que precisariam de dedup no shell. `--keep 200` ms de overlap evita cortes a meio de palavra |

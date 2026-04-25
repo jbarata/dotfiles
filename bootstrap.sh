@@ -313,7 +313,7 @@ if [[ -f "$DOTFILES/setup/whisper.sh" ]]; then
     if $DRY_RUN; then
         echo "  [dry-run] git clone whisper.cpp → \$HOME/.local/src/"
         echo "  [dry-run] cmake build (SDL2 + Core ML em arm64)"
-        echo "  [dry-run] download modelo ggml-small.bin (~466 MB)"
+        echo "  [dry-run] download modelo ggml-medium.bin (~1.5 GB, streaming dictate)"
         echo "  [dry-run] download modelo ggml-large-v3.bin (~3 GB, batch transcribe)"
         if [[ "$ARCH" == "arm64" ]]; then
             echo "  [dry-run] gerar Core ML encoder em venv (5–10 min, ~2 GB deps)"
