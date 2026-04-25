@@ -82,16 +82,31 @@ for bin in whisper-cli whisper-stream; do
     echo "  Link: $dst → $src"
 done
 
-# --- 4. Download do modelo ggml -----------------------------------------
-MODEL_BIN="$MODELS_DIR/ggml-${WHISPER_MODEL}.bin"
-if [[ -f "$MODEL_BIN" ]]; then
-    echo "  Modelo $WHISPER_MODEL já presente: $MODEL_BIN"
-else
-    echo "  A descarregar modelo ggml-${WHISPER_MODEL}..."
+# --- 4. Download do(s) modelo(s) ggml -----------------------------------
+# Helper: descarrega um modelo se ainda não existir em $MODELS_DIR.
+download_model() {
+    local model="$1"
+    local target="$MODELS_DIR/ggml-${model}.bin"
+    if [[ -f "$target" ]]; then
+        echo "  Modelo $model já presente: $target"
+        return 0
+    fi
+    echo "  A descarregar modelo ggml-${model}..."
     # O script do upstream descarrega para ./models/ no cwd; corremos lá e
     # movemos para o local centralizado.
-    (cd "$WHISPER_DIR" && bash models/download-ggml-model.sh "$WHISPER_MODEL")
-    mv "$WHISPER_DIR/models/ggml-${WHISPER_MODEL}.bin" "$MODEL_BIN"
+    (cd "$WHISPER_DIR" && bash models/download-ggml-model.sh "$model")
+    mv "$WHISPER_DIR/models/ggml-${model}.bin" "$target"
+}
+
+# Modelo primário (streaming via dictate.sh) — pequeno, tempo-real
+download_model "$WHISPER_MODEL"
+MODEL_BIN="$MODELS_DIR/ggml-${WHISPER_MODEL}.bin"
+
+# Modelo offline (batch via transcribe.sh) — grande, qualidade alta. Só
+# descarrega se for diferente do primário; user pode forçar via env.
+WHISPER_OFFLINE_MODEL="${WHISPER_OFFLINE_MODEL:-large-v3}"
+if [[ "$WHISPER_OFFLINE_MODEL" != "$WHISPER_MODEL" ]]; then
+    download_model "$WHISPER_OFFLINE_MODEL"
 fi
 
 # --- 5. Core ML encoder (só arm64) --------------------------------------

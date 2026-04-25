@@ -309,3 +309,17 @@ whQ6vKpD4i	Porque um venv isolado para a conversão Core ML?	coremltools + torch
 whR8tEbX2o	Que speedup dá o Core ML encoder face a Metal puro no M2/M3?	~3× em modelos small/medium (encoder corre na ANE em vez de GPU); irrelevante em modelos tiny/base	whisper
 whS1lFhV7e	Que feedback visual o dictate.sh dá?	skhd-hud.widget mostra "● REC", "⏹ a transcrever…", "✓ colado" (ou "∅ sem áudio" / "∅ sem texto") via /tmp/skhd-mode	whisper dictate
 whT4dNiU9b	Porque toggle e não push-to-talk?	skhd não suporta key-up events; toggle resolve com PID file e é igualmente confortável para ditado de 5–60s	whisper dictate
+
+# =========================================================
+# Whisper / Transcribe (offline)
+# =========================================================
+trA1bC2dE3	Como transcrever um áudio do iPhone para texto?	transcribe ~/Downloads/memo.m4a — gera memo.txt + memo.srt ao lado, com large-v3 a correr offline	whisper transcribe
+trB4cD5eF6	transcribe sem args — o que faz?	Abre fzf sobre ~/Library/Group Containers/group.com.apple.VoiceMemos.shared/Recordings ordenado por mtime; permite escolher um Voice Memo sincronizado via iCloud	whisper transcribe
+trC7dE8fG9	Onde ficam as gravações Voice Memos com iCloud activado?	~/Library/Group Containers/group.com.apple.VoiceMemos.shared/Recordings/ (cada gravação é um .m4a)	whisper transcribe
+trD0eF1gH2	Que modelo o transcribe usa por defeito?	large-v3 (~3 GB) — qualidade alta, ~5× tempo real no M2 Max; small fica para o streaming via dictate	whisper transcribe
+trE3fG4hI5	Que outputs o transcribe gera?	.txt (texto plano) + .srt (com timestamps) ao lado do ficheiro original — whisper-cli -otxt -osrt -of <prefix>	whisper transcribe
+trF6gH7iJ8	Porque o transcribe precisa de ffmpeg?	whisper.cpp só aceita 16 kHz mono PCM WAV; o ffmpeg converte qualquer formato de entrada (m4a/mp3/mp4/opus...) com `-ar 16000 -ac 1 -c:a pcm_s16le`	whisper transcribe
+trG9hI0jK1	WHISPER_LANG=auto vs pt — quando usar cada?	auto: para gravações multi-língua ou com origem incerta (transcribe usa por defeito). pt: fixar quando se sabe a língua poupa o overhead de detecção (dictate usa por defeito)	whisper
+trH2iJ3kL4	transcribe falha com "modelo large-v3 em falta" — como resolver?	bash ~/.dotfiles/setup/whisper.sh — descarrega o ggml-large-v3.bin (~3 GB) para ~/.local/share/whisper-models/	whisper
+trI5jK6lM7	Como transcrever vários ficheiros de uma vez?	transcribe *.m4a (loop interno) ou xargs: find . -name '*.m4a' | xargs ~/.dotfiles/bin/transcribe.sh	whisper transcribe
+trJ8kL9mN0	Diferença chave entre dictate e transcribe?	dictate: streaming live com small + Core ML (toggle Ctrl+Alt+Cmd+F, paste em app activo). transcribe: batch offline com large-v3 sobre ficheiros, output .txt + .srt	whisper

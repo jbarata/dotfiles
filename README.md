@@ -180,6 +180,33 @@ WHISPER_MODEL=medium WHISPER_LANG=auto dictate
 
 Logs em `/tmp/dictate.log`.
 
+### Whisper / Transcribe — Áudio gravado (iPhone, etc.)
+
+`transcribe` aceita qualquer formato suportado pelo `ffmpeg` (m4a do
+iPhone, mp3, mp4, wav, opus...) e usa o modelo `large-v3` para qualidade
+máxima — não tempo real, mas só corre quando se chama.
+
+```bash
+transcribe ~/Downloads/memo.m4a            # ficheiro concreto
+transcribe *.m4a                            # múltiplos
+transcribe                                  # sem args: fzf sobre Voice Memos iCloud
+```
+
+Output ao lado do ficheiro original:
+```
+memo.m4a  →  memo.txt   (texto plano)
+          →  memo.srt   (com timestamps; útil para procurar momentos)
+```
+
+Voice Memos do iPhone com iCloud activado sincronizam para
+`~/Library/Group Containers/group.com.apple.VoiceMemos.shared/Recordings/`
+— `transcribe` sem args abre fzf nessa pasta ordenado por mais recente.
+
+Override por sessão:
+```bash
+WHISPER_OFFLINE_MODEL=medium WHISPER_LANG=pt transcribe ficheiro.m4a
+```
+
 ### VS Code — Multi-cursor
 
 ```bash
@@ -471,7 +498,8 @@ brew bundle cleanup        # remover pacotes não no Brewfile (cuidado!)
 │   ├── open-working-info.sh        # Cmd+Alt+W: abrir + preset Rectangle
 │   ├── desktop-tidy.sh             # Ctrl+Alt+Cmd+W: arrumação interactiva
 │   ├── safari-to-note.sh           # Shift+Ctrl+Alt+Cmd+N: Safari → Notes (texto + placeholders)
-│   └── dictate.sh                  # Ctrl+Alt+Cmd+F: toggle whisper-stream + paste
+│   ├── dictate.sh                  # Ctrl+Alt+Cmd+F: toggle whisper-stream + paste
+│   └── transcribe.sh               # CLI: m4a/mp3/... → .txt + .srt via whisper-cli + ffmpeg
 │
 └── setup/                          # Scripts de instalação
     ├── symlinks.sh                 # Stow + link_config
@@ -670,6 +698,11 @@ Histórico das decisões tomadas e seu racional, para contexto futuro.
 | Recriação automática do venv se o Python interno divergir | Se um run anterior criou o venv com outro Python (ex.: 3.14), reusar resulta em `pip install` partido. Detectar via `[[ ! -x $venv/bin/$expected_python ]]` e `rm -rf` é mais simples que migração in-place |
 | Build com `-DWHISPER_COREML_ALLOW_FALLBACK=1` | Sem este flag, qualquer falha a carregar o `.mlmodelc` aborta o whisper context inteiro (mensagem `failed to initialize whisper context`) — mesmo com Metal disponível. Acontece quando o `coremltools` gera um `.mlmodelc` incompatível com o `coremlc` do Xcode (visto em macOS Sequoia + M2). Com fallback, perde-se só o speed-up; whisper-stream continua a funcionar |
 | Health-check pós-arranque no `dictate.sh` (sleep 0.8 + `kill -0`) | Sem isto, se o whisper-stream morrer no init (modelo corrupto, permissão de microfone negada, .mlmodelc partido com build sem fallback) o PID fica órfão, a HUD diz "● REC" e cada nova pressão lança outro processo condenado. O sleep de 0.8s cobre a janela típica do erro de inicialização sem atrasar o uso normal |
+| Modelo offline `large-v3` separado do streaming `small` | Streaming precisa de tempo real → `small` é o tecto sustentável no M2; transcrição offline não tem essa restrição → `large-v3` dá qualidade muito superior em PT (especialmente nomes próprios, pontuação). Os dois coexistem em `~/.local/share/whisper-models/` |
+| `transcribe.sh` faz resample via `ffmpeg` em vez de exigir wav | iPhone Voice Memos grava em `.m4a` (AAC); muitas outras fontes em `.mp3`, `.opus`, `.mp4`. whisper.cpp só aceita 16 kHz mono PCM — `ffmpeg -ar 16000 -ac 1 -c:a pcm_s16le` cobre tudo numa linha. Tmp wav é descartado depois |
+| Output `.txt` + `.srt` por defeito (não opcional) | `.txt` para uso normal; `.srt` (com timestamps) permite procurar "onde é que eu disse X" e abrir directamente no QuickTime/VLC com legendas — o custo extra é zero (whisper-cli aceita `-otxt -osrt` na mesma run) |
+| Sem args: `fzf` sobre `~/Library/Group Containers/group.com.apple.VoiceMemos.shared/Recordings/` | Voice Memos com iCloud sincroniza directo para essa pasta; `find` ordenado por mtime + fzf é mais rápido que abrir o Finder, copiar para Downloads e fazer `transcribe`. Reaproveita o `fzf` que já está no Brewfile |
+| `WHISPER_LANG=auto` por defeito no `transcribe.sh` (vs `pt` no `dictate.sh`) | Streaming é uso interactivo, quase sempre PT — fixar evita o overhead de detecção. Batch processa material variado (memos PT, calls EN, mix) — `auto` é mais robusto sem perda perceptível |
 | Modelo default `small` (multilingue, ~466 MB) | Sweet spot para PT (EN-only `.en` cobre mal o caso `LANG=pt_PT`); roda tempo real no M2 com Core ML |
 | Modelos centralizados em `~/.local/share/whisper-models/` | XDG-friendly; o `.mlmodelc` tem de viver ao lado do `.bin` para o whisper.cpp o detectar automaticamente |
 | `bin/dictate.sh` toggle (em vez de push-to-talk) | Push-to-talk requer escutar key-up, que o skhd não suporta; toggle resolve com PID file e é igualmente confortável para ditado de 5–60s |
