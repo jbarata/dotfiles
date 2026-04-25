@@ -13,8 +13,10 @@
 # Pré-requisitos manuais (uma vez):
 #   1. Conta huggingface.co + Access Token (read scope)
 #   2. Aceitar T&C em:
-#        https://huggingface.co/pyannote/speaker-diarization-3.1
+#        https://huggingface.co/pyannote/speaker-diarization-community-1
 #        https://huggingface.co/pyannote/segmentation-3.0
+#      (Versões antigas de whisperx usavam speaker-diarization-3.1; o
+#       default actual é o community-1, mais permissivo e activo.)
 #   3. Guardar token no 1Password em op://Private/HuggingFace/token
 #      (ou ajustar WHISPERX_HF_TOKEN_OP_REF no shell/.exports)
 set -euo pipefail
@@ -82,7 +84,7 @@ echo ""
 echo "  Pré-requisitos manuais (se ainda não fizeste):"
 echo "    1. huggingface.co → criar conta + Access Token (Settings → Access Tokens)"
 echo "    2. Aceitar T&C em:"
-echo "         https://huggingface.co/pyannote/speaker-diarization-3.1"
+echo "         https://huggingface.co/pyannote/speaker-diarization-community-1"
 echo "         https://huggingface.co/pyannote/segmentation-3.0"
 echo "    3. 1Password → vault Private → criar item 'HuggingFace' com campo 'token'"
 echo ""

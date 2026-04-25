@@ -90,7 +90,7 @@ if ! HF_TOKEN=$(op read "$HF_TOKEN_REF" 2>/dev/null); then
     echo "  Setup manual:" >&2
     echo "    1. huggingface.co → criar conta + Access Token (read scope)" >&2
     echo "    2. Aceitar T&C em:" >&2
-    echo "         https://huggingface.co/pyannote/speaker-diarization-3.1" >&2
+    echo "         https://huggingface.co/pyannote/speaker-diarization-community-1" >&2
     echo "         https://huggingface.co/pyannote/segmentation-3.0" >&2
     echo "    3. 1Password → vault Private → item 'HuggingFace' → campo 'token'" >&2
     echo "" >&2

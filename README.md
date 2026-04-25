@@ -449,9 +449,11 @@ Uma vez por máquina:
 1. **Conta HuggingFace gratuita:** [huggingface.co/join](https://huggingface.co/join)
 2. **Access Token** com `read` scope: [huggingface.co/settings/tokens](https://huggingface.co/settings/tokens)
    → "New token" → Type: Read → Copy
-3. **Aceitar T&C** dos modelos pyannote (clicar "Agree" em ambos):
-   - [pyannote/speaker-diarization-3.1](https://huggingface.co/pyannote/speaker-diarization-3.1)
-   - [pyannote/segmentation-3.0](https://huggingface.co/pyannote/segmentation-3.0)
+3. **Aceitar T&C** dos modelos pyannote (clicar "Agree and access repository" em ambos):
+   - [pyannote/speaker-diarization-community-1](https://huggingface.co/pyannote/speaker-diarization-community-1) (modelo de diarização — default actual do whisperx)
+   - [pyannote/segmentation-3.0](https://huggingface.co/pyannote/segmentation-3.0) (VAD interno)
+
+   Nota: versões antigas de whisperx usavam `pyannote/speaker-diarization-3.1`. Se já tens esse aceite, fica como bonus mas não é necessário; o `community-1` é o que precisas hoje.
 4. **Guardar no 1Password:**
    - Vault: `Private`
    - Title: `HuggingFace`
@@ -802,6 +804,7 @@ Histórico das decisões tomadas e seu racional, para contexto futuro.
 | `${SPEAKER_FLAGS[@]+"${SPEAKER_FLAGS[@]}"}` em vez de `"${SPEAKER_FLAGS[@]}"` | `/bin/bash` no macOS é 3.2 e com `set -u` trata array vazio como variável unbound (`SPEAKER_FLAGS[@]: unbound variable`). O idiomático `${arr[@]+"${arr[@]}"}` expande só se o array tiver pelo menos um elemento — bash ≥4.4 não precisa, mas o repo prioriza compatibilidade com o bash do sistema |
 | `--compute_type int8` por defeito (vs `float32`) | faster-whisper em CPU corre ~2× mais rápido em INT8 quantizado, com perda de qualidade imperceptível em PT para diarização (verificado empiricamente em batch). CTranslate2 não tem MPS no Apple Silicon, portanto a alternativa "GPU" não existe — o speedup tem de vir de quantização. `WHISPERX_COMPUTE_TYPE` permite override (`float16`, `float32`) para casos sensíveis |
 | `PYTHONWARNINGS=ignore::UserWarning` exportado por defeito | `pyannote.audio` importa `torchcodec` para decode acelerado, que falha a carregar as dylibs `libavutil.X.dylib` do ffmpeg do brew (rpath mismatch) e cai em soundfile/librosa silenciosamente. Funciona à mesma mas o warning aparece a cada invocação a poluir output útil. Suprimir todos os UserWarning é mais simples que filtrar por módulo e raramente esconde algo accionável em uso CLI; `PYTHONWARNINGS=default` reverte para debug |
+| Modelo de diarização default `pyannote/speaker-diarization-community-1` (não `speaker-diarization-3.1`) | whisperx mudou recentemente o default de diarização do `3.1` para o `community-1` — modelo novo, licença mais permissiva e activo no upstream. Aceitar T&C do `3.1` (instinto óbvio dada a versão na documentação antiga) não basta; o pipeline pede o `community-1` em runtime e dá `403 GatedRepoError`. Doc + mensagem de erro do script foram alinhadas com o default actual para evitar este round-trip |
 
 ### Übersicht widgets — 2026-04-18
 
