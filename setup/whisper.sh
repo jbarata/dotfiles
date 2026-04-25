@@ -148,6 +148,23 @@ generate_coreml_model() {
         return 0
     fi
 
+    # Pre-flight: `coremlc` é o compilador Apple que converte .mlpackage →
+    # .mlmodelc. Vive dentro do bundle do Xcode completo
+    # (Xcode.app/Contents/Developer/...), não das Command Line Tools. Sem
+    # Xcode, mesmo que toda a conversão PyTorch → MIL passe (e demora ~5 min
+    # + 2 GB de venv com torch+coremltools), o último passo `xcrun coremlc
+    # compile` falha. Evitamos toda essa volta verificando à cabeça.
+    if ! xcrun --find coremlc >/dev/null 2>&1; then
+        echo "  AVISO: coremlc não encontrado — Core ML requer Xcode completo (CLT não basta)."
+        echo "         Para activar Core ML mais tarde:"
+        echo "           1. Instalar Xcode da App Store (~12 GB)"
+        echo "           2. sudo xcode-select -s /Applications/Xcode.app/Contents/Developer"
+        echo "           3. bash $DOTFILES/setup/whisper.sh  (retoma só a parte Core ML)"
+        echo "         Build com WHISPER_COREML_ALLOW_FALLBACK=1: whisper-stream"
+        echo "         corre em Metal puro à mesma — \`small\` no M2 já é tempo real."
+        return 0
+    fi
+
     echo "  A gerar Core ML encoder para $WHISPER_MODEL com $coreml_python (5–10 min, ~2 GB no venv)..."
 
     # Se houver um venv pré-existente criado com outra versão (ex.: tentativa
