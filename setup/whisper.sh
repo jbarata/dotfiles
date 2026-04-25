@@ -48,8 +48,14 @@ fi
 # --- 2. Build com cmake (SDL2 ON para o stream; Core ML em arm64) --------
 CMAKE_FLAGS=(-DWHISPER_SDL2=ON -DCMAKE_BUILD_TYPE=Release)
 if [[ "$WHISPER_COREML" == "1" ]]; then
-    CMAKE_FLAGS+=(-DWHISPER_COREML=1)
-    echo "  Build: SDL2 + Core ML (arm64)"
+    # ALLOW_FALLBACK: sem este flag, falhar a carregar .mlmodelc aborta o
+    # whisper context inteiro (mesmo com Metal disponível). Com ele, perde
+    # apenas a aceleração Core ML e segue em Metal — diferença ~3× no
+    # encoder em modelos small/medium, irrelevante para uso interactivo.
+    # Indispensável quando o .mlmodelc gerado pelo coremltools acaba
+    # incompatível (versões coremlc/Sequoia) ou parcial.
+    CMAKE_FLAGS+=(-DWHISPER_COREML=1 -DWHISPER_COREML_ALLOW_FALLBACK=1)
+    echo "  Build: SDL2 + Core ML (arm64, fallback p/ Metal se .mlmodelc falhar)"
 else
     echo "  Build: SDL2 (x86_64 — Core ML não disponível)"
 fi

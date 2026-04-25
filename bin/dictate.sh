@@ -128,3 +128,16 @@ nohup "$WHISPER_STREAM" \
 echo $! > "$PID_FILE"
 hud "dictate|● REC ($MODEL/$LANG_CODE) — ⌃⌥⌘F para parar"
 log "START pid=$(cat "$PID_FILE")"
+
+# Health-check: se o whisper-stream morrer logo no init (modelo corrupto,
+# Core ML partido, permissão de microfone negada) o PID fica órfão e a
+# próxima pressão re-arranca outro condenado. Damos 0.8s para a janela
+# típica de erro de inicialização e abortamos com feedback claro.
+sleep 0.8
+if ! kill -0 "$(cat "$PID_FILE" 2>/dev/null)" 2>/dev/null; then
+    rm -f "$PID_FILE"
+    hud "dictate|⚠ whisper-stream falhou — ver /tmp/dictate.log"
+    ( sleep 3; hud "" ) &
+    log "START: processo morreu no init (ver linhas acima)"
+    exit 1
+fi
