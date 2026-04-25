@@ -23,6 +23,9 @@
 #   WHISPER_OUT_DIR             default: ~/Desktop
 #   WHISPERX_MIN_SPEAKERS       opcional, hint para o pyannote
 #   WHISPERX_MAX_SPEAKERS       opcional, hint para o pyannote
+#   WHISPERX_COMPUTE_TYPE       default: int8 (~2× face a float32 em CPU,
+#                               quality drop imperceptível em PT). Outras:
+#                               int8_float16, float16, float32
 #   HF_HUB_OFFLINE              opcional (=1): força modo offline (falha
 #                               imediatamente se faltar algum modelo na
 #                               cache). Útil para áudios sensíveis depois
@@ -40,8 +43,16 @@ export LC_ALL=en_US.UTF-8
 # Desligar é gratuito.
 export HF_HUB_DISABLE_TELEMETRY=1
 
+# Suprimir UserWarnings — pyannote.audio importa torchcodec que falha a
+# carregar dylibs do ffmpeg do brew (rpath mismatch); cai em soundfile e
+# funciona, mas o warning aparece a cada invocação. Outros UserWarnings
+# do PyTorch/torchaudio também tendem a poluir output útil. Override
+# por sessão se precisares de ver: PYTHONWARNINGS=default transcribe-diarize.
+export PYTHONWARNINGS="${PYTHONWARNINGS:-ignore::UserWarning}"
+
 MODEL="${WHISPER_OFFLINE_MODEL:-large-v3}"
 LANG_CODE="${WHISPER_LANG:-pt}"
+COMPUTE_TYPE="${WHISPERX_COMPUTE_TYPE:-int8}"
 OUT_DIR="${WHISPER_OUT_DIR:-$HOME/Desktop}"
 HF_TOKEN_REF="${WHISPERX_HF_TOKEN_OP_REF:-op://Private/HuggingFace/token}"
 
@@ -110,7 +121,7 @@ for INPUT in "$@"; do
     OUT_PREFIX="$OUT_DIR/$BASE"
 
     echo "→ $INPUT"
-    echo "  whisperx ($MODEL/$LANG_CODE) + diarização pyannote → $OUT_DIR/"
+    echo "  whisperx ($MODEL/$LANG_CODE/$COMPUTE_TYPE) + diarização pyannote → $OUT_DIR/"
     echo "  (1ª invocação descarrega modelos: large-v3 CT2 ~3 GB + pyannote ~500 MB)"
 
     # whisperx aceita o input directamente (sem passar pelo nosso ffmpeg
@@ -124,6 +135,7 @@ for INPUT in "$@"; do
         "$INPUT" \
         --model "$MODEL" \
         --language "$LANG_CODE" \
+        --compute_type "$COMPUTE_TYPE" \
         --diarize \
         --hf_token "$HF_TOKEN" \
         --output_dir "$OUT_DIR" \
