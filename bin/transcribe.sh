@@ -22,15 +22,15 @@
 #                          para gravações multi-língua)
 #   WHISPER_THREADS        default: 8 (M2 Max tem 8 cores P; CPU fallback
 #                          quando Metal/Core ML não dão conta)
-#   WHISPER_OUT_DIR        default: directório do input se for gravável,
-#                          senão ~/Desktop. Override fixa o destino para
-#                          todos os outputs (ex.: ~/Documents/Transcriptions)
+#   WHISPER_OUT_DIR        default: ~/Desktop (visível, fácil de mover
+#                          para arquivo depois). Override fixa o destino
+#                          (ex.: ~/Documents/Transcriptions)
 set -euo pipefail
 
 MODEL="${WHISPER_OFFLINE_MODEL:-large-v3}"
 LANG_CODE="${WHISPER_LANG:-auto}"
 THREADS="${WHISPER_THREADS:-8}"
-OUT_DIR_OVERRIDE="${WHISPER_OUT_DIR:-}"
+OUT_DIR="${WHISPER_OUT_DIR:-$HOME/Desktop}"
 
 MODEL_BIN="$HOME/.local/share/whisper-models/ggml-${MODEL}.bin"
 WHISPER_CLI="$HOME/.local/bin/whisper-cli"
@@ -48,6 +48,8 @@ if [[ $# -eq 0 ]]; then
     exit 1
 fi
 
+mkdir -p "$OUT_DIR"
+
 # --- Loop de transcrição ---------------------------------------------------
 for INPUT in "$@"; do
     if [[ ! -f "$INPUT" ]]; then
@@ -56,27 +58,6 @@ for INPUT in "$@"; do
     fi
 
     BASE=$(basename "${INPUT%.*}")
-
-    # Decidir directório de output:
-    #   1. WHISPER_OUT_DIR explícito (sem questões)
-    #   2. dirname do input se for gravável (caso típico: ~/Downloads/)
-    #   3. ~/Desktop como fallback (caso típico: ficheiros sandboxed do
-    #      Dictafone macOS, em ~/Library/Containers/.../tmp/, que são
-    #      legíveis mas não graváveis pelo shell por TCC).
-    if [[ -n "$OUT_DIR_OVERRIDE" ]]; then
-        OUT_DIR="$OUT_DIR_OVERRIDE"
-        mkdir -p "$OUT_DIR"
-    else
-        OUT_DIR=$(dirname "$INPUT")
-        WRITETEST="$OUT_DIR/.transcribe-writetest-$$"
-        if touch "$WRITETEST" 2>/dev/null; then
-            rm -f "$WRITETEST"
-        else
-            OUT_DIR="$HOME/Desktop"
-            echo "  ⓘ $(dirname "$INPUT") não é gravável (sandbox?); output → $OUT_DIR/" >&2
-        fi
-    fi
-
     OUT_PREFIX="$OUT_DIR/$BASE"
     TMP_WAV=$(mktemp -t transcribe).wav
 
@@ -108,7 +89,7 @@ for INPUT in "$@"; do
     if [[ ! -f "$OUT_PREFIX.txt" || ! -f "$OUT_PREFIX.srt" ]]; then
         echo "  ✗ outputs não criados em $OUT_DIR/" >&2
         echo "    (whisper-cli pode ter falhado o open(); ver mensagens acima)" >&2
-        echo "    Tenta fixar o destino: WHISPER_OUT_DIR=~/Desktop transcribe \"$INPUT\"" >&2
+        echo "    $OUT_DIR é gravável? Override: WHISPER_OUT_DIR=<dir> transcribe ..." >&2
         exit 1
     fi
     echo "  ✓ $OUT_PREFIX.txt"
