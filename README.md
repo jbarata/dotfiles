@@ -204,9 +204,15 @@ directamente para a janela do Ghostty — o terminal cola o path do `.qta`
 materializado temporariamente — e prime Enter. O `ffmpeg` lida com a
 extensão `.qta` (é M4A) sem alterações.
 
+Como a pasta sandbox onde o `.qta` aterra não é gravável pelo shell, o
+`transcribe` faz pre-flight `touch` ao directório do input e, se falhar,
+redirecciona automaticamente os outputs para `~/Desktop/`. Mensagem `ⓘ`
+no stderr avisa quando isso acontece.
+
 Override por sessão:
 ```bash
 WHISPER_OFFLINE_MODEL=medium WHISPER_LANG=pt transcribe ficheiro.m4a
+WHISPER_OUT_DIR=~/Documents/Transcriptions transcribe ficheiro.m4a
 ```
 
 ### VS Code — Multi-cursor
@@ -707,6 +713,8 @@ Histórico das decisões tomadas e seu racional, para contexto futuro.
 | `transcribe.sh` faz resample via `ffmpeg` em vez de exigir wav | iPhone Voice Memos grava em `.m4a` (AAC); muitas outras fontes em `.mp3`, `.opus`, `.mp4`. whisper.cpp só aceita 16 kHz mono PCM — `ffmpeg -ar 16000 -ac 1 -c:a pcm_s16le` cobre tudo numa linha. Tmp wav é descartado depois |
 | Output `.txt` + `.srt` por defeito (não opcional) | `.txt` para uso normal; `.srt` (com timestamps) permite procurar "onde é que eu disse X" e abrir directamente no QuickTime/VLC com legendas — o custo extra é zero (whisper-cli aceita `-otxt -osrt` na mesma run) |
 | `transcribe` exige sempre path explícito (sem fzf-magic) | Tentei `fzf` sobre uma pasta canónica de Voice Memos mas o Dictafone do macOS guarda em CloudKit opaco — não há ficheiro estável para listar. Materialização para `.qta` só acontece durante o drag, num path tmp efémero. Em vez de inventar uma "inbox" sintética e treinar o utilizador a mexê-la, o caminho honesto é arrastar do Dictafone para o Ghostty (terminal cola o path) → Enter |
+| Pre-flight `touch` + fallback `~/Desktop` para outputs | A pasta `tmp/` do container Voice Memos é legível pelo shell (`r--`) mas TCC bloqueia escrita por processos externos. O `whisper-cli` falha o `open()` para escrita mas devolve 0 — silenciosamente. Testar gravação com `touch` antes de invocar o whisper-cli e cair em `~/Desktop` quando falha cobre o caso típico (drag-from-Dictafone). `WHISPER_OUT_DIR` permite fixar destino para utilizadores que prefiram organização (`~/Documents/Transcriptions/`) |
+| Post-flight existence check de `.txt`/`.srt` | Sem isto, o falhanço silencioso do `whisper-cli` (em sandbox ou disco cheio) deixa o script a imprimir "✓ x.txt / ✓ x.srt" para ficheiros que não existem, e o user só descobre o problema mais tarde. `[[ ! -f $OUT_PREFIX.txt || ! -f $OUT_PREFIX.srt ]]` no fim é a única garantia — exit code do whisper-cli não é confiável aqui |
 | `WHISPER_LANG=auto` por defeito no `transcribe.sh` (vs `pt` no `dictate.sh`) | Streaming é uso interactivo, quase sempre PT — fixar evita o overhead de detecção. Batch processa material variado (memos PT, calls EN, mix) — `auto` é mais robusto sem perda perceptível |
 | Modelo default `small` (multilingue, ~466 MB) | Sweet spot para PT (EN-only `.en` cobre mal o caso `LANG=pt_PT`); roda tempo real no M2 com Core ML |
 | Modelos centralizados em `~/.local/share/whisper-models/` | XDG-friendly; o `.mlmodelc` tem de viver ao lado do `.bin` para o whisper.cpp o detectar automaticamente |
