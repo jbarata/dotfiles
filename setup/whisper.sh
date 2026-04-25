@@ -83,19 +83,74 @@ for bin in whisper-cli whisper-stream; do
 done
 
 # --- 4. Download do(s) modelo(s) ggml -----------------------------------
+# Tamanho mínimo esperado (em MB) para detectar downloads truncados. Os
+# números reais são ~10% maiores; usamos 90% como threshold seguro. O
+# `download-ggml-model.sh` upstream verifica só presença ("skip if exists"),
+# o que mantém ficheiros parciais de Ctrl+C/falhas de rede e propaga o
+# problema sem aviso até o whisper-cli explodir com "expected N, got M".
+expected_size_mb() {
+    case "$1" in
+        tiny|tiny.en)               echo 70 ;;
+        base|base.en)               echo 140 ;;
+        small|small.en)             echo 460 ;;
+        medium|medium.en)           echo 1500 ;;
+        large-v1|large-v2|large-v3) echo 3000 ;;
+        *)                          echo 0 ;;
+    esac
+}
+
 # Helper: descarrega um modelo se ainda não existir em $MODELS_DIR.
+# Se já existir mas estiver truncado, apaga e re-descarrega.
 download_model() {
     local model="$1"
     local target="$MODELS_DIR/ggml-${model}.bin"
+    local source="$WHISPER_DIR/models/ggml-${model}.bin"
+    local min_mb size_mb
+    min_mb=$(expected_size_mb "$model")
+
+    # Valida o target existente — pode estar truncado de uma run anterior.
     if [[ -f "$target" ]]; then
-        echo "  Modelo $model já presente: $target"
-        return 0
+        size_mb=$(( $(stat -f%z "$target") / 1048576 ))
+        if [[ "$min_mb" -gt 0 && "$size_mb" -lt "$min_mb" ]]; then
+            echo "  AVISO: modelo $model truncado ($size_mb MB < esperado ~$min_mb MB) — a re-descarregar"
+            rm -f "$target"
+        else
+            echo "  Modelo $model já presente: $target ($size_mb MB)"
+            return 0
+        fi
     fi
+
+    # Garante que o source também não tem lixo de uma run interrompida —
+    # caso contrário o upstream diz "already exists" e perpetua o problema.
+    if [[ -f "$source" ]]; then
+        size_mb=$(( $(stat -f%z "$source") / 1048576 ))
+        if [[ "$min_mb" -gt 0 && "$size_mb" -lt "$min_mb" ]]; then
+            echo "  AVISO: source $source truncado ($size_mb MB) — a apagar antes do download"
+            rm -f "$source"
+        fi
+    fi
+
     echo "  A descarregar modelo ggml-${model}..."
     # O script do upstream descarrega para ./models/ no cwd; corremos lá e
-    # movemos para o local centralizado.
+    # movemos para o local centralizado depois de validar o tamanho.
     (cd "$WHISPER_DIR" && bash models/download-ggml-model.sh "$model")
-    mv "$WHISPER_DIR/models/ggml-${model}.bin" "$target"
+
+    if [[ ! -f "$source" ]]; then
+        echo "  ERRO: download de $model não produziu ficheiro em $source" >&2
+        return 1
+    fi
+
+    size_mb=$(( $(stat -f%z "$source") / 1048576 ))
+    if [[ "$min_mb" -gt 0 && "$size_mb" -lt "$min_mb" ]]; then
+        echo "  ERRO: modelo $model descarregado truncado ($size_mb MB < ~$min_mb MB)" >&2
+        echo "        Apaguei o ficheiro parcial. Verifica a rede e corre de novo:" >&2
+        echo "          bash $DOTFILES/setup/whisper.sh" >&2
+        rm -f "$source"
+        return 1
+    fi
+
+    mv "$source" "$target"
+    echo "  Modelo $model: $target ($size_mb MB)"
 }
 
 # Modelo primário (streaming via dictate.sh) — pequeno, tempo-real
