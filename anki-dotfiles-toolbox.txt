@@ -330,3 +330,19 @@ trL4mN5oP6	Porque é que o whisper-cli falha silenciosamente em sandbox?	open() 
 trM7nO8pQ9	Como fixar destino dos outputs do transcribe?	WHISPER_OUT_DIR=~/Documents/Transcriptions transcribe ficheiro.m4a — o script faz mkdir -p e usa esse path	whisper transcribe
 trN0pQ1rS2	Porque o dictate cola "N√£o" em vez de "Não"?	skhd herda env minimalista do launchd (sem LANG); pbcopy sem LANG=UTF-8 interpreta bytes UTF-8 como MacRoman ao guardar no clipboard. Fix: export LANG=en_US.UTF-8 no topo do dictate.sh	whisper dictate
 trO3qR4sT5	Porque os exports no shell/.exports não chegam ao dictate.sh?	São sourced pelo .zshrc (apenas shells interactivas) — scripts invocados pelo skhd, launchd ou cron não os herdam. Para esses, definir env no próprio script	whisper dictate skhd
+
+# =========================================================
+# WhisperX / Diarização
+# =========================================================
+wxA1bC2dE3	transcribe-diarize — o que faz?	Como transcribe mas com [SPEAKER_00], [SPEAKER_01]... via whisperx (faster-whisper + pyannote.audio + alinhamento word-level); útil para reuniões e diálogos	whisperx diarization
+wxB4cD5eF6	Porque whisperx em vez de --tinydiarize do whisper.cpp?	tinydiarize é EN-only e só detecta transições (sem labels). pyannote.audio dá diarização real com labels em qualquer língua, à custa de stack Python separado	whisperx
+wxC7dE8fG9	Onde fica o venv do whisperx?	~/.local/share/whisperx-venv/ — isolado do venv Core ML porque os pins de torch divergem; criado por setup/whisperx.sh	whisperx
+wxD0eF1gH2	Que pré-requisitos manuais tem o whisperx?	(1) Conta huggingface.co + Access Token read; (2) aceitar T&C de pyannote/speaker-diarization-3.1 e pyannote/segmentation-3.0; (3) token em op://Private/HuggingFace/token	whisperx
+wxE3fG4hI5	Que env var configura a referência ao HF token no transcribe-diarize?	WHISPERX_HF_TOKEN_OP_REF (default op://Private/HuggingFace/token); o script faz `op read` lazy	whisperx 1password
+wxF6gH7iJ8	Onde whisperx descarrega os modelos?	~/.cache/huggingface/ — large-v3 em formato CTranslate2 (~3 GB) + pyannote (~500 MB), ao 1º uso. Cache persistente para invocações seguintes	whisperx
+wxG9hI0jK1	Como dar hint ao pyannote sobre número de oradores?	WHISPERX_MIN_SPEAKERS=2 WHISPERX_MAX_SPEAKERS=2 transcribe-diarize file.m4a — melhora accuracy quando se sabe a estrutura à partida	whisperx
+wxH2iJ3kL4	Porque guardar o HF token no 1Password e não em .env ou via huggingface-cli login?	huggingface-cli login escreve plaintext em ~/.cache/huggingface/token — viola "secrets nunca em ficheiros". op read é instantâneo com biometric unlock 1Password	whisperx 1password
+wxI5jK6lM7	Velocidade do transcribe-diarize no M2 Max?	~0.5–1× tempo real (mais lento que transcribe puro porque o pyannote diarization adiciona overhead). Reunião de 60 min ≈ 1–2h de processamento	whisperx
+wxJ8kL9mN0	Diferença entre transcribe e transcribe-diarize?	transcribe: whisper.cpp puro, 1 orador, ~5× tempo real. transcribe-diarize: whisperx + pyannote, com [SPEAKER_NN], ~0.5–1× tempo real, requer HF token. Outputs idênticos (txt + srt em ~/Desktop)	whisperx transcribe
+wxK1lM2nO3	Que linguagem o transcribe-diarize usa por defeito?	pt (não auto como o transcribe) — pyannote degrada quando whisperx detecta língua errada em audios curtos. Override: WHISPER_LANG=auto transcribe-diarize file	whisperx
+wxL4mN5oP6	transcribe-diarize falha com "outputs não criados" — causas?	(1) T&C dos modelos pyannote não aceites (HTTP 403); (2) HF token sem read scope; (3) modelo CT2 ainda a descarregar e rede caiu	whisperx

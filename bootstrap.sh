@@ -323,6 +323,18 @@ if [[ -f "$DOTFILES/setup/whisper.sh" ]]; then
     fi
 fi
 
+# --- 9f. WhisperX (transcrição + diarização para reuniões/diálogos) ---
+if [[ -f "$DOTFILES/setup/whisperx.sh" ]]; then
+    echo "==> A instalar whisperx (diarização)..."
+    if $DRY_RUN; then
+        echo "  [dry-run] criar venv ~/.local/share/whisperx-venv (~2 GB de torch + deps)"
+        echo "  [dry-run] modelos pyannote + large-v3 CT2 (~3.5 GB) descarregam ao 1º uso"
+        echo "  [dry-run] requer HF token manual em op://Private/HuggingFace/token"
+    else
+        bash "$DOTFILES/setup/whisperx.sh"
+    fi
+fi
+
 # --- 10. macOS defaults (opcional) ---
 if [[ -f "$DOTFILES/setup/macos-defaults.sh" ]]; then
     echo "==> A aplicar preferências macOS..."

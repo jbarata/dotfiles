@@ -214,6 +214,32 @@ WHISPER_OFFLINE_MODEL=medium WHISPER_LANG=pt transcribe ficheiro.m4a
 WHISPER_OUT_DIR=~/Documents/Transcriptions transcribe ficheiro.m4a
 ```
 
+### Whisper / Transcribe-diarize — Reuniões e diálogos
+
+`transcribe-diarize` faz transcrição **e identifica oradores**
+(`[SPEAKER_00]`, `[SPEAKER_01]`, ...) via [whisperx](https://github.com/m-bain/whisperX)
+(faster-whisper + pyannote.audio + alinhamento word-level).
+
+```bash
+transcribe-diarize ~/Desktop/reuniao.m4a    # ficheiro concreto
+transcribe-diarize *.m4a                     # múltiplos
+```
+
+Output em `~/Desktop/` (igual ao `transcribe`):
+```
+reuniao.txt   # texto plano com prefixos [SPEAKER_NN]
+reuniao.srt   # legendas com timestamps + speakers
+```
+
+Velocidade: ~0.5–1× tempo real no M2 Max (mais lento que `transcribe`
+porque adiciona o passo de diarização do pyannote). Uma reunião de 60
+min processa-se em ~1–2 horas.
+
+Hint para o pyannote se souberes o número de oradores (melhora accuracy):
+```bash
+WHISPERX_MIN_SPEAKERS=2 WHISPERX_MAX_SPEAKERS=2 transcribe-diarize entrevista.m4a
+```
+
 ### VS Code — Multi-cursor
 
 ```bash
@@ -283,8 +309,9 @@ O bootstrap:
 9. Instala extensões VS Code
 10. Symlinka widgets Übersicht (geridos no repo, em `ubersicht/widgets/`)
 11. Compila `whisper.cpp` + descarrega modelo + gera Core ML (Apple Silicon)
-12. Aplica macOS defaults
-13. Cria `~/.cache` para fzf
+12. Cria venv whisperx (diarização — modelos descarregam ao 1º uso)
+13. Aplica macOS defaults
+14. Cria `~/.cache` para fzf
 
 O bootstrap é **idempotente** — pode correr várias vezes.
 
@@ -415,6 +442,31 @@ sourced em shells interactivas — não chega ao script lançado pelo skhd,
 portanto para mudar o que o hotkey usa edita o default no próprio
 `bin/dictate.sh`.
 
+### Setup manual WhisperX (HuggingFace + 1Password)
+
+Uma vez por máquina:
+
+1. **Conta HuggingFace gratuita:** [huggingface.co/join](https://huggingface.co/join)
+2. **Access Token** com `read` scope: [huggingface.co/settings/tokens](https://huggingface.co/settings/tokens)
+   → "New token" → Type: Read → Copy
+3. **Aceitar T&C** dos modelos pyannote (clicar "Agree" em ambos):
+   - [pyannote/speaker-diarization-3.1](https://huggingface.co/pyannote/speaker-diarization-3.1)
+   - [pyannote/segmentation-3.0](https://huggingface.co/pyannote/segmentation-3.0)
+4. **Guardar no 1Password:**
+   - Vault: `Private`
+   - Title: `HuggingFace`
+   - Field name: `token` (tipo: password)
+   - Value: o token copiado
+5. **Verificar:**
+   ```bash
+   op read "op://Private/HuggingFace/token"   # deve devolver o token
+   transcribe-diarize ~/Desktop/teste.m4a     # corre o pipeline completo
+   ```
+
+A 1ª invocação do `transcribe-diarize` descarrega ~3.5 GB para
+`~/.cache/huggingface/`: modelo `large-v3` em formato CTranslate2 (~3 GB)
++ modelos pyannote (~500 MB). Ficam cached para invocações seguintes.
+
 ### Debug SSH agent (Fork e outras apps GUI)
 
 Se o Fork (ou outra app GUI) der `Permission denied (publickey)` apesar de o terminal funcionar:
@@ -510,7 +562,8 @@ brew bundle cleanup        # remover pacotes não no Brewfile (cuidado!)
 │   ├── desktop-tidy.sh             # Ctrl+Alt+Cmd+W: arrumação interactiva
 │   ├── safari-to-note.sh           # Shift+Ctrl+Alt+Cmd+N: Safari → Notes (texto + placeholders)
 │   ├── dictate.sh                  # Ctrl+Alt+Cmd+F: toggle whisper-stream + paste
-│   └── transcribe.sh               # CLI: m4a/mp3/... → .txt + .srt via whisper-cli + ffmpeg
+│   ├── transcribe.sh               # CLI: m4a/mp3/... → .txt + .srt via whisper-cli + ffmpeg
+│   └── transcribe-diarize.sh       # CLI: como transcribe + diarização (whisperx + pyannote)
 │
 └── setup/                          # Scripts de instalação
     ├── symlinks.sh                 # Stow + link_config
@@ -521,6 +574,7 @@ brew bundle cleanup        # remover pacotes não no Brewfile (cuidado!)
     ├── skhd.sh                     # Arranca/reinicia serviço skhd
     ├── ssh-auth-sock.sh            # Instala LaunchAgent SSH_AUTH_SOCK (1Password)
     ├── whisper.sh                  # Build whisper.cpp + modelo + Core ML (Apple Silicon)
+    ├── whisperx.sh                 # Venv whisperx (diarização) — pyannote + faster-whisper
     └── macos-defaults.sh           # defaults write
 ```
 
@@ -730,6 +784,20 @@ Histórico das decisões tomadas e seu racional, para contexto futuro.
 | HUD reaproveitando `/tmp/skhd-mode` (em vez de `display notification`) | Latência ~100 ms vs segundos; canal já existe e o widget já está a fazer poll. Estados `● REC` / `⏹ transcrevendo` / `✓ colado` são auto-explicativos |
 | `nohup` + redirecção de stdout para `/tmp/dictate.out` | O whisper-stream emite tokens linha-a-linha; ler do ficheiro no momento do STOP é mais simples que pipes ou named pipes e sobrevive a uma shell que feche |
 | Filtro de output via `sed -E '/^###/d; s/^\[[^]]*\][[:space:]]*//'` | O whisper-stream emite headers `### Transcription N START/END` e prefixos `[t1 --> t2]` por segmento — só queremos o texto puro |
+
+### Whisper / WhisperX (diarização) — 2026-04-25
+
+| Decisão | Racional |
+|---|---|
+| Stack separado para diarização (`whisperx`) em vez de tentar adaptar o `whisper.cpp` | whisper.cpp tem `--tinydiarize` mas só EN-only e detecta apenas transições, sem labels. Para PT com `[SPEAKER_NN]` real, o caminho realista é `pyannote.audio` que vive no ecossistema Python. whisperx encapsula faster-whisper (ASR) + pyannote (diarização) + alinhamento — preserva a invariante de "uma ferramenta, um output esperado" |
+| Coexistir com `whisper.cpp` (não substituir) | `transcribe` simples (1 orador, blog post a transcrever) é 5× mais rápido em whisper.cpp do que em whisperx. Manter as duas ferramentas dá ao utilizador a escolha conforme o caso. Disco extra (~5 GB) é o custo da independência |
+| Venv isolado em `~/.local/share/whisperx-venv/` (não reuso do `whisper-coreml-venv`) | Os requisitos de versões divergem (whisperx prende torch numa janela diferente da que `coremltools` exige). Misturar levaria a downgrades cruzados a cada `pip install`. Venvs separados isolam — disco é barato vs debugging de conflitos |
+| HF token via 1Password (`op read` lazy) em vez de ficheiro `.env` ou `huggingface-cli login` | Padrão já estabelecido no repo (`sops`, `op://` no SSH config, etc.). `huggingface-cli login` escreve em `~/.cache/huggingface/token` em plaintext — viola o princípio de "secrets nunca em ficheiros". `op read` é instantâneo com biometric unlock activo |
+| `WHISPERX_HF_TOKEN_OP_REF` configurável (default `op://Private/HuggingFace/token`) | Permite a outros utilizadores do dotfiles apontar para o seu vault sem editar o script. Default razoável para o caso "começo do zero, ainda não tenho o item" — mensagem de erro orienta exactamente o que criar |
+| Modelos descarregam lazy ao 1º uso (não no `setup/whisperx.sh`) | Total ~3.5 GB e dependem de URLs HF que podem mudar; o whisperx tem a sua lógica de cache + retry. Forçar download no setup duplicaria responsabilidade e poderia falhar antes de o user ter o token configurado. Lazy é mais simples e idempotente |
+| Output em `~/Desktop/` por defeito (mesma decisão do `transcribe`) | Consistência entre as duas ferramentas; reduz carga cognitiva ("onde está o `.txt`?") |
+| Pos-flight existence check com mensagem de erro listando causas comuns | whisperx pode falhar silenciosamente quando T&C de um dos modelos pyannote não foi aceite (HTTP 403 do HF, capturado e logado mas com exit 0). Sem o check, o user vê "✓" sem ficheiros. Listar T&C/scope/network como hipóteses poupa um round-trip de debug |
+| `WHISPER_LANG=pt` (não `auto`) por defeito no `transcribe-diarize` | A diarização do pyannote degrada quando whisperx escolhe a língua errada — em audios curtos com pausas, `auto` por vezes detecta EN. Em PT regular, fixar `pt` é mais robusto |
 
 ### Übersicht widgets — 2026-04-18
 
