@@ -23,6 +23,10 @@
 #   WHISPER_OUT_DIR             default: ~/Desktop
 #   WHISPERX_MIN_SPEAKERS       opcional, hint para o pyannote
 #   WHISPERX_MAX_SPEAKERS       opcional, hint para o pyannote
+#   HF_HUB_OFFLINE              opcional (=1): força modo offline (falha
+#                               imediatamente se faltar algum modelo na
+#                               cache). Útil para áudios sensíveis depois
+#                               do 1º download.
 set -euo pipefail
 
 # Forçar locale UTF-8 (mesma razão que dictate.sh / transcribe.sh: env
@@ -30,6 +34,11 @@ set -euo pipefail
 # usam acentos).
 export LANG=en_US.UTF-8
 export LC_ALL=en_US.UTF-8
+
+# Defesa em profundidade: huggingface_hub envia telemetria anónima por
+# defeito (versão da lib + nome do modelo carregado, nunca o input áudio).
+# Desligar é gratuito.
+export HF_HUB_DISABLE_TELEMETRY=1
 
 MODEL="${WHISPER_OFFLINE_MODEL:-large-v3}"
 LANG_CODE="${WHISPER_LANG:-pt}"
@@ -107,6 +116,10 @@ for INPUT in "$@"; do
     # whisperx aceita o input directamente (sem passar pelo nosso ffmpeg
     # — chama-o internamente). Output é escrito no --output_dir com o
     # mesmo basename do input.
+    # Nota: ${SPEAKER_FLAGS[@]+"${SPEAKER_FLAGS[@]}"} é o idiomático
+    # bash 3.2-safe para expandir um array potencialmente vazio sob
+    # `set -u`. Em bash ≥4.4 bastaria "${SPEAKER_FLAGS[@]}", mas o
+    # /bin/bash do macOS é 3.2 e trata array vazio como unbound.
     "$WHISPERX_BIN" \
         "$INPUT" \
         --model "$MODEL" \
@@ -116,7 +129,7 @@ for INPUT in "$@"; do
         --output_dir "$OUT_DIR" \
         --output_format srt \
         --output_format txt \
-        "${SPEAKER_FLAGS[@]}"
+        ${SPEAKER_FLAGS[@]+"${SPEAKER_FLAGS[@]}"}
 
     # Post-flight: verificar que os outputs realmente existem (whisperx
     # falha silenciosamente se faltar um T&C aceite — já visto na prática).

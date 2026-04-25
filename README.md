@@ -798,6 +798,8 @@ Histórico das decisões tomadas e seu racional, para contexto futuro.
 | Output em `~/Desktop/` por defeito (mesma decisão do `transcribe`) | Consistência entre as duas ferramentas; reduz carga cognitiva ("onde está o `.txt`?") |
 | Pos-flight existence check com mensagem de erro listando causas comuns | whisperx pode falhar silenciosamente quando T&C de um dos modelos pyannote não foi aceite (HTTP 403 do HF, capturado e logado mas com exit 0). Sem o check, o user vê "✓" sem ficheiros. Listar T&C/scope/network como hipóteses poupa um round-trip de debug |
 | `WHISPER_LANG=pt` (não `auto`) por defeito no `transcribe-diarize` | A diarização do pyannote degrada quando whisperx escolhe a língua errada — em audios curtos com pausas, `auto` por vezes detecta EN. Em PT regular, fixar `pt` é mais robusto |
+| `HF_HUB_DISABLE_TELEMETRY=1` exportado dentro do script | `huggingface_hub` envia telemetria anónima (versão lib + nome do modelo, **nunca o input áudio**). Áudio é processado 100% local mesmo sem este flag, mas defesa-em-profundidade é gratuita — uma linha. `HF_HUB_OFFLINE=1` continua opt-in para quem queira garantir zero rede após o 1º download |
+| `${SPEAKER_FLAGS[@]+"${SPEAKER_FLAGS[@]}"}` em vez de `"${SPEAKER_FLAGS[@]}"` | `/bin/bash` no macOS é 3.2 e com `set -u` trata array vazio como variável unbound (`SPEAKER_FLAGS[@]: unbound variable`). O idiomático `${arr[@]+"${arr[@]}"}` expande só se o array tiver pelo menos um elemento — bash ≥4.4 não precisa, mas o repo prioriza compatibilidade com o bash do sistema |
 
 ### Übersicht widgets — 2026-04-18
 
