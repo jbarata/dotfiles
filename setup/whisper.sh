@@ -90,42 +90,101 @@ fi
 
 # --- 5. Core ML encoder (só arm64) --------------------------------------
 # Acelera o encoder ~3× em modelos small/medium. Geração precisa de
-# Python + torch + coremltools + ane_transformers + openai-whisper.
-# Mantemos tudo num venv isolado para não tocar no Python do sistema.
-if [[ "$WHISPER_COREML" == "1" ]]; then
-    MLMODELC_DIR="$MODELS_DIR/ggml-${WHISPER_MODEL}-encoder.mlmodelc"
-    if [[ -d "$MLMODELC_DIR" ]]; then
-        echo "  Core ML encoder já gerado: $MLMODELC_DIR"
-    else
-        echo "  A gerar Core ML encoder para $WHISPER_MODEL (5–10 min, ~2 GB de deps no venv)..."
+# Python 3.11 + torch + coremltools + ane_transformers + openai-whisper.
+#
+# Pin de Python 3.11: ane_transformers prende torch 2.x; torch e coremltools
+# não têm wheels para cp313/cp314. O Python do sistema (3.14 em macOS Sequoia
+# recente) parte na criação do venv ou no `pip install torch`. Brew formula
+# `python@3.11` instala /opt/homebrew/bin/python3.11 sem mexer no `python3`
+# do sistema.
+#
+# Best effort: se algo falhar, avisamos e seguimos. whisper-stream funciona
+# em Metal puro à mesma — só perde ~3× no encoder em modelos grandes.
+generate_coreml_model() {
+    local mlmodelc_dir="$MODELS_DIR/ggml-${WHISPER_MODEL}-encoder.mlmodelc"
 
-        if [[ ! -d "$COREML_VENV" ]]; then
-            python3 -m venv "$COREML_VENV"
+    if [[ -d "$mlmodelc_dir" ]]; then
+        echo "  Core ML encoder já gerado: $mlmodelc_dir"
+        return 0
+    fi
+
+    # Python 3.11 é o sweet spot. 3.12 funciona com coremltools recente mas
+    # ane_transformers ainda não publicou wheels limpas para 3.12; ficamos
+    # no 3.11 que cobre os dois caminhos.
+    local coreml_python=""
+    for candidate in python3.11 python3.12; do
+        if command -v "$candidate" >/dev/null 2>&1; then
+            coreml_python="$candidate"
+            break
         fi
-        # shellcheck disable=SC1091
-        source "$COREML_VENV/bin/activate"
-        pip install --quiet --upgrade pip
-        # ane_transformers fixa torch==2.1.0; openai-whisper e coremltools
-        # são compatíveis com essa versão.
-        pip install --quiet ane_transformers openai-whisper coremltools
+    done
 
-        # O script upstream gera ./models/coreml-encoder-<model>.mlpackage
-        # e compila para .mlmodelc no mesmo path.
-        (
-            cd "$WHISPER_DIR"
-            bash ./models/generate-coreml-model.sh "$WHISPER_MODEL"
-        )
-        deactivate
+    if [[ -z "$coreml_python" ]]; then
+        echo "  AVISO: nenhum Python 3.11/3.12 encontrado."
+        echo "         Instala com: brew install python@3.11"
+        echo "         Depois corre de novo: bash $DOTFILES/setup/whisper.sh"
+        echo "         (whisper-stream funciona em Metal puro entretanto)"
+        return 0
+    fi
 
-        GENERATED_MLMODELC="$WHISPER_DIR/models/ggml-${WHISPER_MODEL}-encoder.mlmodelc"
-        if [[ -d "$GENERATED_MLMODELC" ]]; then
-            mv "$GENERATED_MLMODELC" "$MLMODELC_DIR"
-            echo "  Core ML encoder: $MLMODELC_DIR"
-        else
-            echo "  AVISO: .mlmodelc não foi gerado em $GENERATED_MLMODELC."
-            echo "         O whisper-stream segue com Metal puro (sem Core ML)."
+    echo "  A gerar Core ML encoder para $WHISPER_MODEL com $coreml_python (5–10 min, ~2 GB no venv)..."
+
+    # Se houver um venv pré-existente criado com outra versão (ex.: tentativa
+    # falhada com python3.14 no macOS Sequoia), apaga e recria. Detectamos
+    # pela ausência do binário esperado em $COREML_VENV/bin/.
+    if [[ -d "$COREML_VENV" && ! -x "$COREML_VENV/bin/$coreml_python" ]]; then
+        echo "  Venv existente foi criado com outro Python — a recriar..."
+        rm -rf "$COREML_VENV"
+    fi
+
+    if [[ ! -d "$COREML_VENV" ]]; then
+        if ! "$coreml_python" -m venv "$COREML_VENV"; then
+            echo "  AVISO: falha a criar venv com $coreml_python — a saltar Core ML."
+            rm -rf "$COREML_VENV"
+            return 0
         fi
     fi
+
+    # shellcheck disable=SC1091
+    source "$COREML_VENV/bin/activate"
+
+    # `set -e` só corta na shell actual; aqui controlamos manualmente para
+    # poder fazer `deactivate` antes de retornar em caso de erro.
+    if ! pip install --quiet --upgrade pip; then
+        echo "  AVISO: pip upgrade falhou — a saltar Core ML."
+        deactivate
+        return 0
+    fi
+
+    if ! pip install --quiet ane_transformers openai-whisper coremltools; then
+        echo "  AVISO: pip install (ane_transformers/openai-whisper/coremltools) falhou."
+        echo "         O whisper-stream segue com Metal puro."
+        deactivate
+        return 0
+    fi
+
+    # O script upstream gera ./models/coreml-encoder-<model>.mlpackage
+    # e compila para .mlmodelc no mesmo path.
+    if ! ( cd "$WHISPER_DIR" && bash ./models/generate-coreml-model.sh "$WHISPER_MODEL" ); then
+        echo "  AVISO: generate-coreml-model.sh falhou."
+        deactivate
+        return 0
+    fi
+
+    deactivate
+
+    local generated="$WHISPER_DIR/models/ggml-${WHISPER_MODEL}-encoder.mlmodelc"
+    if [[ -d "$generated" ]]; then
+        mv "$generated" "$mlmodelc_dir"
+        echo "  Core ML encoder: $mlmodelc_dir"
+    else
+        echo "  AVISO: .mlmodelc não foi gerado em $generated."
+        echo "         O whisper-stream segue com Metal puro."
+    fi
+}
+
+if [[ "$WHISPER_COREML" == "1" ]]; then
+    generate_coreml_model
 fi
 
 echo ""

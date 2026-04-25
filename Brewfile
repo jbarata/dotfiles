@@ -13,6 +13,9 @@ brew "fd"                    # find alternativo (usado pelo fzf)
 brew "koekeishiya/formulae/skhd" # Hotkey daemon (shortcuts → URLs/apps)
 brew "cmake"                 # Build system (whisper.cpp, etc.)
 brew "sdl2"                  # Audio capture lib (whisper-stream)
+brew "python@3.11"           # Pinned para o venv de conversão Core ML (whisper.cpp):
+                             # ane_transformers prende torch 2.x → Python ≤3.12.
+                             # 3.11 maximiza compatibilidade com torch+coremltools.
 
 # Zsh plugins
 brew "zsh-autosuggestions"
