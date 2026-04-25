@@ -27,6 +27,13 @@
 #                          (ex.: ~/Documents/Transcriptions)
 set -euo pipefail
 
+# Forçar locale UTF-8 — paths Unicode (ex.: "Gravação nova.qta" do
+# Dictafone) e o output do whisper-cli precisam de locale consistente.
+# Mesma lógica que dictate.sh: env de skhd/launchd não tem LANG, e mesmo
+# em shell interactiva o fix garante consistência.
+export LANG=en_US.UTF-8
+export LC_ALL=en_US.UTF-8
+
 MODEL="${WHISPER_OFFLINE_MODEL:-large-v3}"
 LANG_CODE="${WHISPER_LANG:-auto}"
 THREADS="${WHISPER_THREADS:-8}"

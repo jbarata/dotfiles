@@ -28,6 +28,15 @@
 #   WHISPER_THREADS  — default 6
 set -euo pipefail
 
+# Forçar locale UTF-8 — o skhd herda um env minimalista do launchd e LANG
+# fica unset. Sem isto, `pbcopy` interpreta os bytes UTF-8 do whisper-stream
+# como MacRoman ao guardá-los no clipboard, e cola "N√£o" em vez de "Não"
+# em qualquer app. Os exports no shell/.exports só carregam em shells
+# interactivas (.zshrc), portanto não chegam aqui.
+# en_US (não pt_PT) por garantia: vem sempre instalado em macOS.
+export LANG=en_US.UTF-8
+export LC_ALL=en_US.UTF-8
+
 MODEL="${WHISPER_MODEL:-small}"
 LANG_CODE="${WHISPER_LANG:-pt}"
 THREADS="${WHISPER_THREADS:-6}"
