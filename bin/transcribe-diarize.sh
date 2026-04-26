@@ -50,6 +50,22 @@ export HF_HUB_DISABLE_TELEMETRY=1
 # por sessão se precisares de ver: PYTHONWARNINGS=default transcribe-diarize.
 export PYTHONWARNINGS="${PYTHONWARNINGS:-ignore::UserWarning}"
 
+# Em macOS Intel (x86_64), torch 2.2 + MKL + libomp dão deadlock no
+# teardown do processo: a transcrição completa, o output é escrito, mas
+# o processo Python fica em estado `sleeping` (CPU 0%, ctrl+c ignorado)
+# porque a libiomp5 do MKL e a libomp do torch não conseguem sincronizar
+# o shutdown dos thread pools. Workaround: forçar uma única OpenMP
+# runtime (KMP_DUPLICATE_LIB_OK) e evitar threading agressivo. Custo:
+# inferência single-thread (~real-time em tiny/base, várias×real-time
+# em large-v3). Apple Silicon não tem este problema — não setamos lá.
+WHISPERX_EXTRA_FLAGS=()
+if [[ "$(uname -m)" == "x86_64" ]]; then
+    export OMP_NUM_THREADS=1
+    export MKL_NUM_THREADS=1
+    export KMP_DUPLICATE_LIB_OK=TRUE
+    WHISPERX_EXTRA_FLAGS+=(--threads 1)
+fi
+
 MODEL="${WHISPER_OFFLINE_MODEL:-large-v3}"
 LANG_CODE="${WHISPER_LANG:-pt}"
 COMPUTE_TYPE="${WHISPERX_COMPUTE_TYPE:-int8}"
@@ -145,6 +161,7 @@ for INPUT in "$@"; do
         --hf_token "$HF_TOKEN" \
         --output_dir "$OUT_DIR" \
         --output_format all \
+        ${WHISPERX_EXTRA_FLAGS[@]+"${WHISPERX_EXTRA_FLAGS[@]}"} \
         ${SPEAKER_FLAGS[@]+"${SPEAKER_FLAGS[@]}"}
 
     # Limpeza dos formatos extra (vtt/json/tsv/aud).

@@ -64,9 +64,26 @@ pip install --quiet --upgrade pip
 
 echo "  pip install whisperx (~2 GB de torch + ctranslate2 + pyannote, demora alguns minutos)..."
 # whisperx puxa torch, faster-whisper, pyannote.audio, ctranslate2 como
-# transitivas — não pinamos nenhuma para deixar o resolver do whisperx
-# escolher combinações testadas.
-pip install --quiet whisperx
+# transitivas. No Apple Silicon o resolver escolhe combinações OK
+# (torch ≥2.4 + numpy 2.x + transformers recente). No Intel macOS o
+# último wheel oficial de torch é 2.2.x — daí precisarmos de pins:
+#   - numpy<2: torch 2.2 foi compilado contra NumPy 1.x (ABI break)
+#   - transformers<4.45: versões mais recentes exigem torch ≥2.4 e
+#     desligam-se silenciosamente quando encontram 2.2
+#   - matplotlib: pyannote.audio importa-o em tasks/segmentation/
+#     mixins.py mas declara-o só como extra [viz]
+ARCH=$(uname -m)
+if [[ "$ARCH" == "x86_64" ]]; then
+    echo "  (Intel macOS detectado — pinning torch 2.2.x stack)"
+    pip install --quiet \
+        "torch==2.2.2" \
+        "numpy<2" \
+        "transformers<4.45" \
+        matplotlib \
+        whisperx
+else
+    pip install --quiet whisperx
+fi
 
 deactivate
 
