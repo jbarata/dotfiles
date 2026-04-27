@@ -245,7 +245,6 @@ YZea7VdZ9i	Como correr o bootstrap em modo teste?	~/.dotfiles/bootstrap.sh --dry
 sk0zR7nQp1	Onde está o ficheiro de config do skhd?	~/.config/skhd/skhdrc (symlink para skhd/.config/skhd/skhdrc do repo)	skhd
 sk1aXpL9Tm	Como aplicar alterações ao skhdrc sem reboot?	skhd --restart-service	skhd
 sk2vYm3BcN	Que modificador é a convenção nos dotfiles para skhd?	ctrl + alt + cmd (hyper único); dashboards e pessoais via modos leader (d e p)	skhd
-sk3hJ8fGdQ	Sintaxe skhd para abrir um URL ao premir Ctrl+Alt+Cmd+N?	ctrl + alt + cmd - n : open "https://example.com"	skhd
 sk4oPzR2sK	Que permissão macOS tem o skhd de ter para funcionar?	Acessibilidade (Definições → Privacidade e Segurança)	skhd
 sk5wV6kA3e	Porque skhd em vez de Atalhos Mac + /tmp/uber-listener?	Config em texto versionável; sem polling; sincroniza por git	skhd
 sk6rL4cN9b	skhd: abrir Zoom (sala pessoal)	Ctrl+Alt+Cmd+Z	skhd shortcuts
