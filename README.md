@@ -420,21 +420,20 @@ curl -o ghostty/.config/ghostty/themes/<nome> <url>
 
 ### Atualizar Anki deck
 
-Tudo o que diz respeito aos decks vive em `anki/`:
-- `anki/dotfiles-toolbox.txt` — deck principal, `#html:false` (texto puro)
-- `anki/rectangle.txt` — Rectangle window manager, `#html:true` (suporta
-  `<img>` para anexar a cheat sheet aos cartões)
-- `anki/media/` — imagens referenciadas pelos decks `html:true`
+Tudo o que diz respeito ao deck vive em `anki/`:
+- `anki/cards.txt` — deck completo, `#html:true` (TSV importável; suporta
+  `<img>` para anexar imagens). `#deck:Dotfiles Toolbox`.
+- `anki/media/` — imagens referenciadas via `<img src="...">`.
 
-Ambos os ficheiros usam `#deck:Dotfiles Toolbox`. Formato TSV:
-`guid\tFront\tBack\ttags-separadas-por-espaço`. Comentários `# ...` são
-ignorados pelo Anki — usar para organizar secções.
+Formato TSV: `guid\tFront\tBack\ttags-separadas-por-espaço`. Comentários
+`# ...` são ignorados pelo Anki — usar para organizar secções. Como o
+ficheiro está em `html:true`, qualquer `<` ou `>` em texto literal nos
+campos tem de ficar escapado como `&lt;` / `&gt;`.
 
-Para `anki/rectangle.txt` é preciso primeiro copiar as imagens
-referenciadas para a pasta `collection.media` do Anki — ver
-`anki/media/README.md`.
+Antes do import é preciso copiar as imagens de `anki/media/` para a
+pasta `collection.media` do Anki — ver `anki/media/README.md`.
 
-Importar: Anki → File → Import → seleccionar cada ficheiro.
+Importar: Anki → File → Import → seleccionar `anki/cards.txt`.
 
 ### Trocar modelo Whisper
 
@@ -527,9 +526,8 @@ brew bundle cleanup        # remover pacotes não no Brewfile (cuidado!)
 ├── Brewfile                        # Pacotes Homebrew partilhados
 ├── Brewfile.imac                   # Específico iMac
 ├── Brewfile.macbook                # Específico MacBook
-├── anki/                           # Decks Anki + media
-│   ├── dotfiles-toolbox.txt        # Deck principal (html:false, texto puro)
-│   ├── rectangle.txt               # Cards Rectangle (html:true, com <img>)
+├── anki/                           # Deck Anki + media
+│   ├── cards.txt                   # Deck completo (html:true, TSV)
 │   └── media/
 │       └── rectangle-cheatsheet.png  # cheat sheet anexa aos 6 cards re*
 │

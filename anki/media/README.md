@@ -1,7 +1,7 @@
-# anki/media — Imagens/áudio referenciados pelos decks Anki
+# anki/media — Imagens/áudio referenciados pelo deck Anki
 
-Ficheiros aqui são referenciados em `../rectangle.txt` (e futuros decks
-com `#html:true`) via `<img src="filename">`.
+Ficheiros aqui são referenciados em `../cards.txt` via
+`<img src="filename">` (o deck está em `#html:true`).
 
 ## Workflow de import
 
@@ -18,4 +18,4 @@ cp ~/.dotfiles/anki/media/*.png "$ANKI_MEDIA/"
 ## Ficheiros esperados
 
 - `rectangle-cheatsheet.png` — cheat sheet visual do Rectangle anexada
-  aos 6 cartões `re*` do `../rectangle.txt`.
+  aos 6 cartões `re*` em `../cards.txt`.
