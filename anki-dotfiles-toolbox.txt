@@ -348,12 +348,4 @@ wxL4mN5oP6	transcribe-diarize falha com "outputs não criados" — causas?	(1) T
 wxM3nO4pQ5	whisperx falha com 403 GatedRepoError em pyannote/speaker-diarization-community-1 — porquê?	whisperx mudou recentemente o modelo de diarização default do `3.1` para o `community-1`. Aceitar T&C apenas do `3.1` não basta — visitar https://huggingface.co/pyannote/speaker-diarization-community-1 e clicar "Agree and access repository"	whisperx
 wxN6oP7qR8	Porque o transcribe-diarize só gerava .txt e não .srt?	whisperx CLI aceita apenas UM valor em --output_format (argparse com choices=...; último ganha). Passar `--output_format srt --output_format txt` perdia o srt. Fix: --output_format all + apagar os formatos extra (vtt/json/tsv/aud)	whisperx
 
-# =========================================================
-# Rectangle — Window Manager
-# =========================================================
-re01Center	Rectangle: como centrar a janela no ecrã?	Ctrl+Alt+C	rectangle shortcuts
-re02SizeAc	Rectangle: shortcuts para ajustar tamanho da janela	Maximize: Ctrl+Alt+Enter; Restore: Ctrl+Alt+Backspace; Maximize Height: Ctrl+Alt+Shift+Up; Make Smaller: Ctrl+Alt+Minus; Make Larger: Ctrl+Alt+Plus	rectangle shortcuts
-re03Displa	Rectangle: shortcuts para mover entre displays	Próximo: Ctrl+Alt+Cmd+Right; Anterior: Ctrl+Alt+Cmd+Left	rectangle shortcuts
-re04Halfs0	Rectangle: shortcuts de metades (Halfs)	Ctrl+Alt+seta — Esq/Dir/Cima/Baixo	rectangle shortcuts
-re05Thirds	Rectangle: shortcuts de terços (Thirds)	1/3 esq/centro/dir: Ctrl+Alt+D/F/G; 2/3 esq/dir: Ctrl+Alt+E/T	rectangle shortcuts
-re06Quarte	Rectangle: shortcuts de quartos (Quarters)	Cantos TL/TR/BL/BR: Ctrl+Alt+U/I/J/K; faixas verticais 1–4: Ctrl+Alt+Shift+1/2/3/4	rectangle shortcuts
+# Rectangle — cartões em anki-rectangle.txt (html:true para suportar <img> da cheat sheet)

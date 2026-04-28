@@ -420,21 +420,19 @@ curl -o ghostty/.config/ghostty/themes/<nome> <url>
 
 ### Atualizar Anki deck
 
-Ficheiro: `anki-dotfiles-toolbox.txt`
-Formato: TSV com cabeçalho:
-```
-#separator:tab
-#html:false
-#deck:Dotfiles Toolbox
-#tags column:3
-#Front	Back	Tags
-```
+Ficheiros (ambos com `#deck:Dotfiles Toolbox`):
+- `anki-dotfiles-toolbox.txt` — deck principal, `#html:false` (texto puro)
+- `anki-rectangle.txt` — Rectangle window manager, `#html:true` (suporta
+  `<img>` para anexar a cheat sheet aos cartões)
 
-Cada card é uma linha: `pergunta\tresposta\ttags-separadas-por-espaço`
+Formato TSV: `guid\tFront\tBack\ttags-separadas-por-espaço`. Comentários
+`# ...` são ignorados pelo Anki — usar para organizar secções.
 
-Comentários `# ...` são ignorados pelo Anki, usar para organizar secções.
+Para `anki-rectangle.txt` é preciso primeiro copiar as imagens
+referenciadas para a pasta `collection.media` do Anki — ver
+`anki-media/README.md`.
 
-Importar: Anki → File → Import → seleccionar ficheiro.
+Importar: Anki → File → Import → seleccionar cada ficheiro.
 
 ### Trocar modelo Whisper
 
@@ -527,7 +525,10 @@ brew bundle cleanup        # remover pacotes não no Brewfile (cuidado!)
 ├── Brewfile                        # Pacotes Homebrew partilhados
 ├── Brewfile.imac                   # Específico iMac
 ├── Brewfile.macbook                # Específico MacBook
-├── anki-dotfiles-toolbox.txt       # Cards Anki (importável)
+├── anki-dotfiles-toolbox.txt       # Cards Anki (texto puro, html:false)
+├── anki-rectangle.txt              # Cards Anki Rectangle (html:true, com <img>)
+├── anki-media/                     # Imagens referenciadas pelos decks Anki
+│   └── rectangle-cheatsheet.png    # cheat sheet anexa aos 6 cards re*
 │
 ├── shell/                          # → stow → ~/
 │   ├── .zshrc                      # Config principal Zsh
@@ -552,6 +553,9 @@ brew bundle cleanup        # remover pacotes não no Brewfile (cuidado!)
 │
 ├── skhd/                           # → link_config → ~/.config/skhd/
 │   └── .config/skhd/skhdrc         # Atalhos globais (Ctrl+Alt+Cmd+... + modos cob/personal)
+│
+├── rectangle/                      # Config Rectangle versionada
+│   └── RectangleConfig.json        # Export da UI; importado pelo bootstrap
 │
 ├── vscode/                         # → link_config → ~/Library/.../Code/User/
 │   ├── settings.json               # Settings completas
