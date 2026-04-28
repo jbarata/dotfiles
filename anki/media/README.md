@@ -6,14 +6,17 @@ Ficheiros aqui são referenciados em `../cards.txt` via
 ## Workflow de import
 
 O Anki TSV não importa media — só texto. As imagens têm de estar na
-pasta `collection.media/` do perfil Anki **antes** do import:
+pasta `collection.media/` do perfil Anki **antes** do import. Usar o
+helper script (chamado pelo bootstrap; idempotente via `rsync --update`):
 
 ```bash
-ANKI_MEDIA="$HOME/Library/Application Support/Anki2/User 1/collection.media"
-cp ~/.dotfiles/anki/media/*.png "$ANKI_MEDIA/"
+bash ~/.dotfiles/setup/anki-media.sh
+# ou para um perfil diferente do "User 1":
+ANKI_PROFILE="João" bash ~/.dotfiles/setup/anki-media.sh
 ```
 
-(ajustar o nome do perfil conforme aplicável; "User 1" é o default).
+O script copia `*.png/jpg/jpeg/gif/svg/webp/mp3/m4a/wav` (exclui o README
+e ocultos) para `~/Library/Application Support/Anki2/<profile>/collection.media/`.
 
 ## Ficheiros esperados
 

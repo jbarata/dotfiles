@@ -296,6 +296,16 @@ if [[ -f "$DOTFILES/setup/rectangle.sh" ]]; then
     fi
 fi
 
+# --- 9b3. Copiar media do Anki para o perfil ---
+if [[ -f "$DOTFILES/setup/anki-media.sh" ]]; then
+    echo "==> A copiar media do Anki..."
+    if $DRY_RUN; then
+        echo "  [dry-run] rsync anki/media/* → ~/Library/.../Anki2/User 1/collection.media/"
+    else
+        bash "$DOTFILES/setup/anki-media.sh"
+    fi
+fi
+
 # --- 9c. SSH_AUTH_SOCK para apps GUI (Fork, etc.) → 1Password ---
 if [[ -f "$DOTFILES/setup/ssh-auth-sock.sh" ]]; then
     echo "==> A configurar SSH_AUTH_SOCK (1Password) para apps GUI..."

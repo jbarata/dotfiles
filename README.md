@@ -431,7 +431,8 @@ ficheiro está em `html:true`, qualquer `<` ou `>` em texto literal nos
 campos tem de ficar escapado como `&lt;` / `&gt;`.
 
 Antes do import é preciso copiar as imagens de `anki/media/` para a
-pasta `collection.media` do Anki — ver `anki/media/README.md`.
+pasta `collection.media` do Anki. O bootstrap já faz isso via
+`setup/anki-media.sh`; manualmente: `bash ~/.dotfiles/setup/anki-media.sh`.
 
 Importar: Anki → File → Import → seleccionar `anki/cards.txt`.
 
