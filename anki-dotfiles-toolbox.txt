@@ -347,3 +347,33 @@ wxK1lM2nO3	Que linguagem o transcribe-diarize usa por defeito?	pt (não auto com
 wxL4mN5oP6	transcribe-diarize falha com "outputs não criados" — causas?	(1) T&C dos modelos pyannote não aceites (HTTP 403); (2) HF token sem read scope; (3) modelo CT2 ainda a descarregar e rede caiu	whisperx
 wxM3nO4pQ5	whisperx falha com 403 GatedRepoError em pyannote/speaker-diarization-community-1 — porquê?	whisperx mudou recentemente o modelo de diarização default do `3.1` para o `community-1`. Aceitar T&C apenas do `3.1` não basta — visitar https://huggingface.co/pyannote/speaker-diarization-community-1 e clicar "Agree and access repository"	whisperx
 wxN6oP7qR8	Porque o transcribe-diarize só gerava .txt e não .srt?	whisperx CLI aceita apenas UM valor em --output_format (argparse com choices=...; último ganha). Passar `--output_format srt --output_format txt` perdia o srt. Fix: --output_format all + apagar os formatos extra (vtt/json/tsv/aud)	whisperx
+
+# =========================================================
+# Rectangle — Window Manager
+# =========================================================
+re00BaseMod	Rectangle: que modificador base usa para a maioria das acções?	Ctrl+Alt (Option); só Display adiciona Cmd → Ctrl+Alt+Cmd+setas	rectangle
+re01CtrAct	Rectangle: centrar a janela no ecrã	Ctrl+Alt+C	rectangle shortcuts
+re02MaxAct	Rectangle: maximizar a janela	Ctrl+Alt+Enter	rectangle shortcuts
+re03ResAct	Rectangle: restaurar tamanho/posição original	Ctrl+Alt+Backspace	rectangle shortcuts
+re04MhAct	Rectangle: maximizar altura (manter largura)	Ctrl+Alt+Shift+Up	rectangle shortcuts
+re05SmlAct	Rectangle: tornar a janela mais pequena	Ctrl+Alt+Minus (-)	rectangle shortcuts
+re06LrgAct	Rectangle: tornar a janela maior	Ctrl+Alt+Plus (+)	rectangle shortcuts
+re07NxDsp	Rectangle: mover janela para o próximo display	Ctrl+Alt+Cmd+Right	rectangle shortcuts
+re08PvDsp	Rectangle: mover janela para o display anterior	Ctrl+Alt+Cmd+Left	rectangle shortcuts
+re09LftHf	Rectangle: metade esquerda	Ctrl+Alt+Left	rectangle shortcuts
+re10RgtHf	Rectangle: metade direita	Ctrl+Alt+Right	rectangle shortcuts
+re11TopHf	Rectangle: metade superior	Ctrl+Alt+Up	rectangle shortcuts
+re12BotHf	Rectangle: metade inferior	Ctrl+Alt+Down	rectangle shortcuts
+re13Th1st	Rectangle: primeiro terço (esquerda)	Ctrl+Alt+D	rectangle shortcuts
+re14ThCtr	Rectangle: terço central	Ctrl+Alt+F	rectangle shortcuts
+re15ThLst	Rectangle: último terço (direita)	Ctrl+Alt+G	rectangle shortcuts
+re16Th2Ft	Rectangle: primeiros dois terços	Ctrl+Alt+E	rectangle shortcuts
+re17Th2Lt	Rectangle: últimos dois terços	Ctrl+Alt+T	rectangle shortcuts
+re18CnrTL	Rectangle: canto superior esquerdo	Ctrl+Alt+U	rectangle shortcuts
+re19CnrTR	Rectangle: canto superior direito	Ctrl+Alt+I	rectangle shortcuts
+re20CnrBL	Rectangle: canto inferior esquerdo	Ctrl+Alt+J	rectangle shortcuts
+re21CnrBR	Rectangle: canto inferior direito	Ctrl+Alt+K	rectangle shortcuts
+re22Qt1st	Rectangle: 1ª faixa vertical (1/4 esquerdo, altura total)	Ctrl+Alt+Shift+1	rectangle shortcuts
+re23Qt2nd	Rectangle: 2ª faixa vertical (1/4 centro-esquerdo)	Ctrl+Alt+Shift+2	rectangle shortcuts
+re24Qt3rd	Rectangle: 3ª faixa vertical (1/4 centro-direito)	Ctrl+Alt+Shift+3	rectangle shortcuts
+re25QtLst	Rectangle: última faixa vertical (1/4 direita)	Ctrl+Alt+Shift+4	rectangle shortcuts
