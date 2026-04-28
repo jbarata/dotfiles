@@ -61,6 +61,20 @@ Cmd+Shift+I         # renomear tab
 Cmd+Shift+,         # reload da configuração
 ```
 
+### Rectangle — Window manager
+
+Instalado via Brewfile (`cask "rectangle"`). Os defaults cobrem
+Halfs/Thirds/Cantos/Center/Maximize/Display tal como na cheat sheet
+(`Ctrl+Alt` como base; `Ctrl+Alt+Cmd+seta` para mover entre displays).
+
+Para versionar overrides locais: Rectangle → Settings → Import/Export →
+Export to file → guardar em `rectangle/RectangleConfig.json`. O
+`setup/rectangle.sh` (chamado pelo bootstrap) converte o JSON para plist
+e aplica via `defaults import com.knollsoft.Rectangle`.
+
+Permissão "Acessibilidade" tem de ser dada manualmente na primeira
+execução (Definições → Privacidade e Segurança).
+
 ### skhd — Atalhos globais (abrir apps/URLs)
 
 Editar `skhd/.config/skhd/skhdrc` e correr `skhd --restart-service`.
