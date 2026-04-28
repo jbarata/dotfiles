@@ -211,7 +211,6 @@ getDate: () ->
   weekday = @locale[@settings.lang].weekdays[date.getDay()]
   day = @zeroFill(date.getDate())
   month = @locale[@settings.lang].months[date.getMonth()]
-  month="Fevereiro"
   year = date.getFullYear()
 
   return {
