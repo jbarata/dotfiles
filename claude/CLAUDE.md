@@ -50,7 +50,7 @@ no mesmo commit:
    apropriada (Apps / Leader cob / Leader personal / Leader clients /
    Leader review / Ajuda).
 
-3. **`anki-dotfiles-toolbox.txt`** — quando a mudança introduz conhecimento
+3. **`anki/cards.txt`** — quando a mudança introduz conhecimento
    não-trivial que vale a pena memorizar (atalhos, comandos, decisões
    arquitecturais, gotchas). Formato TSV: `guid\tFront\tBack\tTags`.
    Gerar GUID único (ex.: `skXX1aB2cD`) seguindo a convenção da secção.
@@ -66,7 +66,7 @@ Checklist mental antes de commitar funcionalidade nova:
 - [ ] README.md: uso + estrutura + decisões
 - [ ] skhd-help.widget (se atalho)
 - [ ] skhdrc convenções (se atalho)
-- [ ] anki-dotfiles-toolbox.txt (se há knowledge útil)
+- [ ] anki/cards.txt (se há knowledge útil)
 - [ ] Tudo no mesmo commit (não commits separados de "docs follow-up")
 
 Razão: o README é a memória persistente entre sessões do Claude Code; o

@@ -286,6 +286,26 @@ if [[ -f "$DOTFILES/setup/skhd.sh" ]]; then
     fi
 fi
 
+# --- 9b2. Importar config Rectangle (window manager) ---
+if [[ -f "$DOTFILES/setup/rectangle.sh" ]]; then
+    echo "==> A configurar Rectangle..."
+    if $DRY_RUN; then
+        echo "  [dry-run] defaults import com.knollsoft.Rectangle (se rectangle/RectangleConfig.json existir)"
+    else
+        bash "$DOTFILES/setup/rectangle.sh"
+    fi
+fi
+
+# --- 9b3. Copiar media do Anki para o perfil ---
+if [[ -f "$DOTFILES/setup/anki-media.sh" ]]; then
+    echo "==> A copiar media do Anki..."
+    if $DRY_RUN; then
+        echo "  [dry-run] rsync anki/media/* → ~/Library/.../Anki2/User 1/collection.media/"
+    else
+        bash "$DOTFILES/setup/anki-media.sh"
+    fi
+fi
+
 # --- 9c. SSH_AUTH_SOCK para apps GUI (Fork, etc.) → 1Password ---
 if [[ -f "$DOTFILES/setup/ssh-auth-sock.sh" ]]; then
     echo "==> A configurar SSH_AUTH_SOCK (1Password) para apps GUI..."

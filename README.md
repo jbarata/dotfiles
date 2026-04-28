@@ -61,6 +61,20 @@ Cmd+Shift+I         # renomear tab
 Cmd+Shift+,         # reload da configuração
 ```
 
+### Rectangle — Window manager
+
+Instalado via Brewfile (`cask "rectangle"`). Os defaults cobrem
+Halfs/Thirds/Cantos/Center/Maximize/Display tal como na cheat sheet
+(`Ctrl+Alt` como base; `Ctrl+Alt+Cmd+seta` para mover entre displays).
+
+Para versionar overrides locais: Rectangle → Settings → Import/Export →
+Export to file → guardar em `rectangle/RectangleConfig.json`. O
+`setup/rectangle.sh` (chamado pelo bootstrap) converte o JSON para plist
+e aplica via `defaults import com.knollsoft.Rectangle`.
+
+Permissão "Acessibilidade" tem de ser dada manualmente na primeira
+execução (Definições → Privacidade e Segurança).
+
 ### skhd — Atalhos globais (abrir apps/URLs)
 
 Editar `skhd/.config/skhd/skhdrc` e correr `skhd --restart-service`.
@@ -406,21 +420,21 @@ curl -o ghostty/.config/ghostty/themes/<nome> <url>
 
 ### Atualizar Anki deck
 
-Ficheiro: `anki-dotfiles-toolbox.txt`
-Formato: TSV com cabeçalho:
-```
-#separator:tab
-#html:false
-#deck:Dotfiles Toolbox
-#tags column:3
-#Front	Back	Tags
-```
+Tudo o que diz respeito ao deck vive em `anki/`:
+- `anki/cards.txt` — deck completo, `#html:true` (TSV importável; suporta
+  `<img>` para anexar imagens). `#deck:Dotfiles Toolbox`.
+- `anki/media/` — imagens referenciadas via `<img src="...">`.
 
-Cada card é uma linha: `pergunta\tresposta\ttags-separadas-por-espaço`
+Formato TSV: `guid\tFront\tBack\ttags-separadas-por-espaço`. Comentários
+`# ...` são ignorados pelo Anki — usar para organizar secções. Como o
+ficheiro está em `html:true`, qualquer `<` ou `>` em texto literal nos
+campos tem de ficar escapado como `&lt;` / `&gt;`.
 
-Comentários `# ...` são ignorados pelo Anki, usar para organizar secções.
+Antes do import é preciso copiar as imagens de `anki/media/` para a
+pasta `collection.media` do Anki. O bootstrap já faz isso via
+`setup/anki-media.sh`; manualmente: `bash ~/.dotfiles/setup/anki-media.sh`.
 
-Importar: Anki → File → Import → seleccionar ficheiro.
+Importar: Anki → File → Import → seleccionar `anki/cards.txt`.
 
 ### Trocar modelo Whisper
 
@@ -513,7 +527,10 @@ brew bundle cleanup        # remover pacotes não no Brewfile (cuidado!)
 ├── Brewfile                        # Pacotes Homebrew partilhados
 ├── Brewfile.imac                   # Específico iMac
 ├── Brewfile.macbook                # Específico MacBook
-├── anki-dotfiles-toolbox.txt       # Cards Anki (importável)
+├── anki/                           # Deck Anki + media
+│   ├── cards.txt                   # Deck completo (html:true, TSV)
+│   └── media/
+│       └── rectangle-cheatsheet.png  # cheat sheet anexa aos 6 cards re*
 │
 ├── shell/                          # → stow → ~/
 │   ├── .zshrc                      # Config principal Zsh
@@ -538,6 +555,9 @@ brew bundle cleanup        # remover pacotes não no Brewfile (cuidado!)
 │
 ├── skhd/                           # → link_config → ~/.config/skhd/
 │   └── .config/skhd/skhdrc         # Atalhos globais (Ctrl+Alt+Cmd+... + modos cob/personal)
+│
+├── rectangle/                      # Config Rectangle versionada
+│   └── RectangleConfig.json        # Export da UI; importado pelo bootstrap
 │
 ├── vscode/                         # → link_config → ~/Library/.../Code/User/
 │   ├── settings.json               # Settings completas

@@ -33,3 +33,4 @@ cask "iterm2"
 cask "visual-studio-code"
 cask "ubersicht"
 cask "claude"
+cask "rectangle"             # Window manager (atalhos de Halfs/Thirds/Quarters)
