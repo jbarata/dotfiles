@@ -9,7 +9,7 @@
 # Rectangle — Window Manager
 # =========================================================
 # html:true permite <img> com a cheat sheet anexada a cada cartão.
-# Pré-requisito do import: copiar anki-media/rectangle-cheatsheet.png para
+# Pré-requisito do import: copiar anki/media/rectangle-cheatsheet.png para
 # ~/Library/Application Support/Anki2/<profile>/collection.media/
 # (caso contrário o <img> falha em silêncio e o cartão fica só com texto)
 

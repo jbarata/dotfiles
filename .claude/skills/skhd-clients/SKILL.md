@@ -1,6 +1,6 @@
 ---
 name: skhd-clients
-description: Adicionar, remover ou modificar clientes no modo leader "clients" do skhd. Mantém `skhd/.config/skhd/skhdrc`, a cheatsheet em `README.md` e os cards em `anki-dotfiles-toolbox.txt` em sincronia; no fim faz commit, push e abre um PR. Use quando o utilizador disser "adicionar cliente", "alterar cliente", "remover cliente", "novo URL de Mello/Winestone/Lidl/...", ou correr `/skhd-clients` explicitamente.
+description: Adicionar, remover ou modificar clientes no modo leader "clients" do skhd. Mantém `skhd/.config/skhd/skhdrc`, a cheatsheet em `README.md` e os cards em `anki/dotfiles-toolbox.txt` em sincronia; no fim faz commit, push e abre um PR. Use quando o utilizador disser "adicionar cliente", "alterar cliente", "remover cliente", "novo URL de Mello/Winestone/Lidl/...", ou correr `/skhd-clients` explicitamente.
 allowed-tools: Read, Edit, Grep, Glob, Bash, AskUserQuestion, mcp__github__create_pull_request
 ---
 
@@ -19,7 +19,7 @@ etc.).
   - Linhas `:: <sub> @ : echo "clients › <sub>|…" > /tmp/skhd-mode` — cheatsheet de cada sub-modo.
   - Bloco `# --- Modo clients …` contém `clients < <k> …` e, por baixo, os grupos `<sub> < <k> …` + `<sub> < escape ; default`.
 - **`README.md`** — bloco `# Leader "clients"` com linhas `K → …`.
-- **`anki-dotfiles-toolbox.txt`** — cards `sk*` com tag `skhd shortcuts` que referenciam cada cliente.
+- **`anki/dotfiles-toolbox.txt`** — cards `sk*` com tag `skhd shortcuts` que referenciam cada cliente.
 
 ## Fluxo obrigatório
 
@@ -100,7 +100,7 @@ etc.).
      `K → <LETRA> → <LETRA>` (sub-modo), uma por URL final, com
      comentário `# <Cliente> <Variante>`.
 
-   **`anki-dotfiles-toolbox.txt`**:
+   **`anki/dotfiles-toolbox.txt`**:
    - Cards existentes: editar a resposta em-local (preservar GUID).
    - Clientes removidos: apagar a linha do card.
    - Clientes adicionados: acrescentar 1 card com GUID novo no padrão

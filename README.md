@@ -420,17 +420,19 @@ curl -o ghostty/.config/ghostty/themes/<nome> <url>
 
 ### Atualizar Anki deck
 
-Ficheiros (ambos com `#deck:Dotfiles Toolbox`):
-- `anki-dotfiles-toolbox.txt` — deck principal, `#html:false` (texto puro)
-- `anki-rectangle.txt` — Rectangle window manager, `#html:true` (suporta
+Tudo o que diz respeito aos decks vive em `anki/`:
+- `anki/dotfiles-toolbox.txt` — deck principal, `#html:false` (texto puro)
+- `anki/rectangle.txt` — Rectangle window manager, `#html:true` (suporta
   `<img>` para anexar a cheat sheet aos cartões)
+- `anki/media/` — imagens referenciadas pelos decks `html:true`
 
-Formato TSV: `guid\tFront\tBack\ttags-separadas-por-espaço`. Comentários
-`# ...` são ignorados pelo Anki — usar para organizar secções.
+Ambos os ficheiros usam `#deck:Dotfiles Toolbox`. Formato TSV:
+`guid\tFront\tBack\ttags-separadas-por-espaço`. Comentários `# ...` são
+ignorados pelo Anki — usar para organizar secções.
 
-Para `anki-rectangle.txt` é preciso primeiro copiar as imagens
+Para `anki/rectangle.txt` é preciso primeiro copiar as imagens
 referenciadas para a pasta `collection.media` do Anki — ver
-`anki-media/README.md`.
+`anki/media/README.md`.
 
 Importar: Anki → File → Import → seleccionar cada ficheiro.
 
@@ -525,10 +527,11 @@ brew bundle cleanup        # remover pacotes não no Brewfile (cuidado!)
 ├── Brewfile                        # Pacotes Homebrew partilhados
 ├── Brewfile.imac                   # Específico iMac
 ├── Brewfile.macbook                # Específico MacBook
-├── anki-dotfiles-toolbox.txt       # Cards Anki (texto puro, html:false)
-├── anki-rectangle.txt              # Cards Anki Rectangle (html:true, com <img>)
-├── anki-media/                     # Imagens referenciadas pelos decks Anki
-│   └── rectangle-cheatsheet.png    # cheat sheet anexa aos 6 cards re*
+├── anki/                           # Decks Anki + media
+│   ├── dotfiles-toolbox.txt        # Deck principal (html:false, texto puro)
+│   ├── rectangle.txt               # Cards Rectangle (html:true, com <img>)
+│   └── media/
+│       └── rectangle-cheatsheet.png  # cheat sheet anexa aos 6 cards re*
 │
 ├── shell/                          # → stow → ~/
 │   ├── .zshrc                      # Config principal Zsh
