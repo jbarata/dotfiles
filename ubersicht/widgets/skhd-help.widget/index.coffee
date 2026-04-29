@@ -77,6 +77,26 @@ render: -> """
             <div class="item"><kbd>Esc</kbd><span>Sai de qualquer leader (este painel fecha-se com ' )</span></div>
           </div>
         </div>
+        <div class="column">
+          <div class="section">
+            <div class="section-title">Rectangle <kbd>⌃⌥</kbd> · janelas</div>
+            <div class="item"><kbd>← / →</kbd><span>Half esq. / dir.</span></div>
+            <div class="item"><kbd>↑ / ↓</kbd><span>Half topo / base</span></div>
+            <div class="item"><kbd>U / I</kbd><span>Quarter topo · esq. / dir.</span></div>
+            <div class="item"><kbd>J / K</kbd><span>Quarter base · esq. / dir.</span></div>
+            <div class="item"><kbd>D / F / G</kbd><span>Thirds (1ª / centro / última)</span></div>
+            <div class="item"><kbd>E / T</kbd><span>Two-thirds (esq. / dir.)</span></div>
+            <div class="item"><kbd>C</kbd><span>Centrar</span></div>
+            <div class="item"><kbd>↩ / ⌫</kbd><span>Maximizar / Restore</span></div>
+            <div class="item"><kbd>⇧ ↑</kbd><span>Maximizar altura</span></div>
+            <div class="item"><kbd>= / -</kbd><span>Larger / Smaller</span></div>
+          </div>
+          <div class="section">
+            <div class="section-title">Rectangle <kbd>⌃⌥⌘</kbd> · extras</div>
+            <div class="item"><kbd>1 / 2 / 3 / 4</kbd><span>Fourths (vertical)</span></div>
+            <div class="item"><kbd>← / →</kbd><span>Display anterior / seguinte</span></div>
+          </div>
+        </div>
       </div>
     </div>
   </div>
