@@ -68,10 +68,10 @@ fi
 
 # --- 2. Instalar dependências via Brewfile ---
 echo "==> A instalar pacotes Homebrew..."
-run brew bundle --file="$DOTFILES/Brewfile" || true
-if [[ -f "$DOTFILES/Brewfile.$MACHINE" ]]; then
+run brew bundle --file="$DOTFILES/brew/Brewfile" || true
+if [[ -f "$DOTFILES/brew/Brewfile.$MACHINE" ]]; then
     echo "==> A instalar pacotes específicos ($MACHINE)..."
-    run brew bundle --file="$DOTFILES/Brewfile.$MACHINE" || true
+    run brew bundle --file="$DOTFILES/brew/Brewfile.$MACHINE" || true
 fi
 
 # --- 3. Instalar NVM ---
