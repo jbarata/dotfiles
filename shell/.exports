@@ -28,3 +28,19 @@ if command -v fd >/dev/null 2>&1; then
     export FZF_CTRL_T_COMMAND="$FZF_DEFAULT_COMMAND"
     export FZF_ALT_C_GENERATE="fd --type d --hidden --exclude .git --exclude node_modules --exclude .cache --exclude .cargo --exclude .Trash --exclude .aivm"
 fi
+
+
+# aivm exports - Ajuste aos paths reais:
+export AIVM_REPO=~/Work/OTHERS/ai_vm_generator
+export TEMPLATE_NAME=tpl-cob-server-repo
+
+export GH_USER=cob                                            # o teu username no GitHub
+export EXTRA_REPO_1=git@github.com:$GH_USER/policies.git   # repo teu, acessível
+export EXTRA_REPO_2=git@github.com:$GH_USER/learning.git   # outro, acessível
+
+export CLIENT_REPO_A=~/Work/server_training          # um teu repo git real
+export CLIENT_REPO_B=~/Work/server_learning          # outro teu repo git real
+
+export EXTRA_REPO_3=git@github.com:$GH_USER/test-repo-3.git   # 3º, usado só na Fase F
+
+export HOST_CLAUDE_MTIME_BEFORE=$(stat -f %m ~/.claude/settings.json 2>/dev/null || echo "n/a")
