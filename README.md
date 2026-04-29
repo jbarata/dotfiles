@@ -314,7 +314,7 @@ cd ~/.dotfiles
 
 O bootstrap:
 1. Instala Homebrew (se não existir)
-2. `brew bundle` (Brewfile + Brewfile.<machine>)
+2. `brew bundle` (brew/Brewfile + brew/Brewfile.<machine>)
 3. Instala NVM (se não existir)
 4. Detecta ficheiros existentes, mostra **diff vs repo**, pede confirmação
 5. Faz backup centralizado em `~/dotfiles-backup/pre-bootstrap-<timestamp>/`
@@ -353,13 +353,13 @@ bash setup/vscode-extensions.sh  # instalar extensões VS Code
 
 ```bash
 # CLI tool
-echo 'brew "nome"          # descrição' >> Brewfile
+echo 'brew "nome"          # descrição' >> brew/Brewfile
 
 # GUI app
-echo 'cask "nome"          # descrição' >> Brewfile
+echo 'cask "nome"          # descrição' >> brew/Brewfile
 
 # Específico de máquina
-echo 'brew "nome"' >> Brewfile.imac     # ou Brewfile.macbook
+echo 'brew "nome"' >> brew/Brewfile.imac     # ou brew/Brewfile.macbook
 ```
 
 ### Adicionar alias
@@ -513,8 +513,8 @@ Os ficheiros têm `__` no nome em vez de `/` (ex: `Library__Application Support_
 
 ```bash
 brew doctor
-brew bundle check          # verificar consistência com Brewfile
-brew bundle cleanup        # remover pacotes não no Brewfile (cuidado!)
+brew bundle check --file=brew/Brewfile     # verificar consistência com Brewfile
+brew bundle cleanup --file=brew/Brewfile   # remover pacotes não no Brewfile (cuidado!)
 ```
 
 ---
@@ -525,9 +525,10 @@ brew bundle cleanup        # remover pacotes não no Brewfile (cuidado!)
 .dotfiles/
 ├── README.md                       # Este ficheiro
 ├── bootstrap.sh                    # Setup script (--dry-run disponível)
-├── Brewfile                        # Pacotes Homebrew partilhados
-├── Brewfile.imac                   # Específico iMac
-├── Brewfile.macbook                # Específico MacBook
+├── brew/                           # Pacotes Homebrew
+│   ├── Brewfile                    # Partilhados
+│   ├── Brewfile.imac               # Específico iMac
+│   └── Brewfile.macbook            # Específico MacBook
 ├── anki/                           # Deck Anki + media
 │   ├── cards.txt                   # Deck completo (html:true, TSV)
 │   └── media/
