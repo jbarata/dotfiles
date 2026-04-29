@@ -29,6 +29,7 @@ render: -> """
             <div class="section-title">Apps (tecla única)</div>
             <div class="item"><kbd>⌃⌥⌘ Z</kbd><span>Zoom</span></div>
             <div class="item"><kbd>⌃⌥⌘ S</kbd><span>Slack</span></div>
+            <div class="item"><kbd>⌃⌥⌘ M</kbd><span>Mail</span></div>
             <div class="item"><kbd>⌃⌥⌘ C</kbd><span>Claude</span></div>
             <div class="item"><kbd>⇧⌃⌥⌘ C</kbd><span>ChatGPT</span></div>
             <div class="item"><kbd>⌃⌥⌘ V</kbd><span>VS Code</span></div>

@@ -83,6 +83,7 @@ Editar `skhd/.config/skhd/skhdrc` e correr `skhd --restart-service`.
 # Tecla única (herdado dos Atalhos Mac):
 Ctrl+Alt+Cmd+Z          # Zoom (sala pessoal)
 Ctrl+Alt+Cmd+S          # Slack
+Ctrl+Alt+Cmd+M          # Mail
 Ctrl+Alt+Cmd+C          # Claude (activate)
 Shift+Ctrl+Alt+Cmd+C    # ChatGPT
 Ctrl+Alt+Cmd+V          # VS Code
