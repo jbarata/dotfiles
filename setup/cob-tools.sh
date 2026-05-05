@@ -39,6 +39,7 @@ link_cob_repo() {
     local name="$1"
     local repo="$2"
     local dir="$3"
+    local with_build="${4:-}"
 
     if [[ -d "$dir/.git" ]]; then
         echo "  A actualizar $dir..."
@@ -51,8 +52,10 @@ link_cob_repo() {
     echo "  npm install em $name..."
     (cd "$dir" && npm install)
 
-    echo "  npm run build em $name..."
-    (cd "$dir" && npm run build)
+    if [[ "$with_build" == "build" ]]; then
+        echo "  npm run build em $name..."
+        (cd "$dir" && npm run build)
+    fi
 
     echo "  npm link em $name..."
     (cd "$dir" && npm link)
@@ -62,4 +65,31 @@ link_cob_repo() {
 link_cob_repo "cob-md-to-pdf" "$MD_TO_PDF_REPO" "$MD_TO_PDF_DIR"
 
 # --- cob-aia (clone + npm i + npm link) ---
-link_cob_repo "cob-aia" "$AIA_REPO" "$AIA_DIR"
+link_cob_repo "cob-aia" "$AIA_REPO" "$AIA_DIR" build
+
+# Markdown Preview Enhanced (MPE) lê ~/.local/state/crossnote/style.less e compila-o como Less. Em vez de
+# fazer symlink do style.less para um .css (que pode confundir o compilador),
+# escrevemos um style.less real que faz @import (inline) do editor-preview.css
+# mantido em cob-md-to-pdf — assim o preview do VSCode bate certo com o PDF
+# gerado pela CLI.
+CROSSNOTE_STYLE="$HOME/.local/state/crossnote/style.less"
+EDITOR_PREVIEW_CSS="$MD_TO_PDF_DIR/conf/editor-preview.css"
+
+if [[ ! -f "$EDITOR_PREVIEW_CSS" ]]; then
+    echo "  AVISO: $EDITOR_PREVIEW_CSS não existe; a saltar link do style.less."
+else
+    mkdir -p "$(dirname "$CROSSNOTE_STYLE")"
+    if [[ -L "$CROSSNOTE_STYLE" && "$(readlink "$CROSSNOTE_STYLE")" == "$EDITOR_PREVIEW_CSS" ]]; then
+        echo "  MPE style.less: symlink já correcto"
+    else
+        if [[ -e "$CROSSNOTE_STYLE" && ! -L "$CROSSNOTE_STYLE" ]]; then
+            backup="$CROSSNOTE_STYLE.bak.$(date +%Y%m%d-%H%M%S)"
+            mv "$CROSSNOTE_STYLE" "$backup"
+            echo "  Backup: $CROSSNOTE_STYLE → $backup"
+        elif [[ -L "$CROSSNOTE_STYLE" ]]; then
+            rm "$CROSSNOTE_STYLE"
+        fi
+        ln -s "$EDITOR_PREVIEW_CSS" "$CROSSNOTE_STYLE"
+        echo "  Link: $CROSSNOTE_STYLE → $EDITOR_PREVIEW_CSS"
+    fi
+fi
