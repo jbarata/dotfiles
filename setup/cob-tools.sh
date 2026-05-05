@@ -1,10 +1,12 @@
 #!/bin/bash
-# setup/cob-tools.sh — Instalar CLIs COB (cob-cli@beta + cob-md-to-pdf linkado)
+# setup/cob-tools.sh — Instalar CLIs COB (cob-cli@beta + cob-md-to-pdf + cob-aia linkados)
 set -euo pipefail
 
 SRC_DIR="$HOME/.local/src"
 MD_TO_PDF_DIR="$SRC_DIR/cob-md-to-pdf"
 MD_TO_PDF_REPO="git@github.com:cob/cob-md-to-pdf.git"
+AIA_DIR="$SRC_DIR/cob-aia"
+AIA_REPO="git@github.com:cob/cob-aia.git"
 
 # Garantir npm no PATH (via nvm default, como em .zshrc)
 if ! command -v npm >/dev/null 2>&1; then
@@ -30,19 +32,34 @@ echo "  npm: $(command -v npm)"
 echo "  A instalar cob-cli@beta globalmente..."
 npm install -g cob-cli@beta
 
-# --- cob-md-to-pdf (clone + npm i + npm link) ---
 mkdir -p "$SRC_DIR"
 
-if [[ -d "$MD_TO_PDF_DIR/.git" ]]; then
-    echo "  A actualizar $MD_TO_PDF_DIR..."
-    git -C "$MD_TO_PDF_DIR" pull --quiet --ff-only
-else
-    echo "  A clonar $MD_TO_PDF_REPO → $MD_TO_PDF_DIR..."
-    git clone --quiet "$MD_TO_PDF_REPO" "$MD_TO_PDF_DIR"
-fi
+# Clone (ou actualizar) + npm install + npm link de um repo COB
+link_cob_repo() {
+    local name="$1"
+    local repo="$2"
+    local dir="$3"
 
-echo "  npm install em cob-md-to-pdf..."
-(cd "$MD_TO_PDF_DIR" && npm install)
+    if [[ -d "$dir/.git" ]]; then
+        echo "  A actualizar $dir..."
+        git -C "$dir" pull --quiet --ff-only
+    else
+        echo "  A clonar $repo → $dir..."
+        git clone --quiet "$repo" "$dir"
+    fi
 
-echo "  npm link em cob-md-to-pdf..."
-(cd "$MD_TO_PDF_DIR" && npm link)
+    echo "  npm install em $name..."
+    (cd "$dir" && npm install)
+
+    echo "  npm run build em $name..."
+    (cd "$dir" && npm run build)
+
+    echo "  npm link em $name..."
+    (cd "$dir" && npm link)
+}
+
+# --- cob-md-to-pdf (clone + npm i + npm link) ---
+link_cob_repo "cob-md-to-pdf" "$MD_TO_PDF_REPO" "$MD_TO_PDF_DIR"
+
+# --- cob-aia (clone + npm i + npm link) ---
+link_cob_repo "cob-aia" "$AIA_REPO" "$AIA_DIR"
