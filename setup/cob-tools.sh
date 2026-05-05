@@ -51,6 +51,9 @@ link_cob_repo() {
     echo "  npm install em $name..."
     (cd "$dir" && npm install)
 
+    echo "  npm run build em $name..."
+    (cd "$dir" && npm run build)
+
     echo "  npm link em $name..."
     (cd "$dir" && npm link)
 }
