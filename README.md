@@ -84,6 +84,7 @@ Editar `skhd/.config/skhd/skhdrc` e correr `skhd --restart-service`.
 Ctrl+Alt+Cmd+Z          # Zoom (sala pessoal)
 Ctrl+Alt+Cmd+S          # Slack
 Ctrl+Alt+Cmd+M          # Mail
+Shift+Ctrl+Alt+Cmd+M    # Music
 Ctrl+Alt+Cmd+C          # Claude (activate)
 Shift+Ctrl+Alt+Cmd+C    # ChatGPT
 Ctrl+Alt+Cmd+V          # VS Code
