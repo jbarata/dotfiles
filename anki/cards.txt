@@ -250,6 +250,7 @@ sk5wV6kA3e	Porque skhd em vez de Atalhos Mac + /tmp/uber-listener?	Config em tex
 sk6rL4cN9b	skhd: abrir Zoom (sala pessoal)	Ctrl+Alt+Cmd+Z	skhd shortcuts
 sk7tEaW1jD	skhd: abrir Slack	Ctrl+Alt+Cmd+S	skhd shortcuts
 skMa3pL7nQ	skhd: abrir Mail (open -a "Mail")	Ctrl+Alt+Cmd+M	skhd shortcuts
+skMu4qN8oR	skhd: abrir Music (open -a "Music")	Shift+Ctrl+Alt+Cmd+M	skhd shortcuts
 sk8fI5mH2x	skhd: activar a app Claude (osascript)	Ctrl+Alt+Cmd+C	skhd shortcuts
 sk9bO6uP0y	skhd: abrir ChatGPT (chatgpt.com/pt-PT)	Shift+Ctrl+Alt+Cmd+C	skhd shortcuts
 skAcT3dF4z	skhd: abrir VS Code (vscode://)	Ctrl+Alt+Cmd+V	skhd shortcuts
