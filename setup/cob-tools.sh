@@ -67,6 +67,24 @@ link_cob_repo "cob-md-to-pdf" "$MD_TO_PDF_REPO" "$MD_TO_PDF_DIR"
 # --- cob-aia (clone + npm i + npm link) ---
 link_cob_repo "cob-aia" "$AIA_REPO" "$AIA_DIR" build
 
+# --- cob-aia zsh completion (autoloaded via fpath em ~/.zsh/completions) ---
+AIA_COMP_SRC="$AIA_DIR/completions/cob-aia.zsh"
+AIA_COMP_DST="$HOME/.zsh/completions/_cob-aia"
+if [[ -f "$AIA_COMP_SRC" ]]; then
+    mkdir -p "$(dirname "$AIA_COMP_DST")"
+    if [[ -L "$AIA_COMP_DST" && "$(readlink "$AIA_COMP_DST")" == "$AIA_COMP_SRC" ]]; then
+        echo "  cob-aia completion: symlink já correcto"
+    else
+        [[ -e "$AIA_COMP_DST" || -L "$AIA_COMP_DST" ]] && rm -f "$AIA_COMP_DST"
+        ln -s "$AIA_COMP_SRC" "$AIA_COMP_DST"
+        echo "  Link: $AIA_COMP_DST → $AIA_COMP_SRC"
+        # Invalidar cache do compinit para reconhecer o novo completer
+        rm -f "$HOME/.zcompdump"* 2>/dev/null || true
+    fi
+else
+    echo "  AVISO: $AIA_COMP_SRC não existe; a saltar completion do cob-aia."
+fi
+
 # Markdown Preview Enhanced (MPE) lê ~/.local/state/crossnote/style.less e compila-o como Less. Em vez de
 # fazer symlink do style.less para um .css (que pode confundir o compilador),
 # escrevemos um style.less real que faz @import (inline) do editor-preview.css
