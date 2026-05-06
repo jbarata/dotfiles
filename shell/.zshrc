@@ -74,6 +74,9 @@ setopt PROMPT_SUBST
 # =========================================================
 # 6. Completions (cacheado — grande speedup)
 # =========================================================
+# Completions de tools instaladas via setup/* (ex: cob-aia → _cob-aia)
+[[ -d "$HOME/.zsh/completions" ]] && fpath=("$HOME/.zsh/completions" $fpath)
+
 autoload -Uz compinit
 if [[ -n ~/.zcompdump(#qN.mh+24) ]]; then
     compinit
