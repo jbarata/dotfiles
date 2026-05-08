@@ -193,7 +193,10 @@ fi
 if command -v cob >/dev/null 2>&1; then
     eval "$(cob init -)"
 fi
-[[ -f "$HOME/.cob-cli/completion.sh" ]] && source "$HOME/.cob-cli/completion.sh"
+
+# begin cob-cli completion
+. <(cob-cli --completion)
+# end cob-cli completion
 
 # =========================================================
 # 12. Autosuggestions + Syntax highlighting
