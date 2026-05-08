@@ -316,11 +316,11 @@ if [[ -f "$DOTFILES/setup/ssh-auth-sock.sh" ]]; then
     fi
 fi
 
-# --- 9d. CLIs COB (cob-cli@beta + cob-md-to-pdf + cob-aia linkados) ---
+# --- 9d. CLIs COB (cob-cli + cob-md-to-pdf + cob-aia linkados) ---
 if [[ -f "$DOTFILES/setup/cob-tools.sh" ]]; then
     echo "==> A instalar CLIs COB..."
     if $DRY_RUN; then
-        echo "  [dry-run] npm install -g cob-cli@beta"
+        echo "  [dry-run] git clone cob-cli → \$HOME/.local/src/ && npm i && npm link (checkout beta se existir)"
         echo "  [dry-run] git clone cob-md-to-pdf → \$HOME/.local/src/ && npm i && npm link"
         echo "  [dry-run] git clone cob-aia → \$HOME/.local/src/ && npm i && npm link"
     else
