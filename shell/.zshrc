@@ -9,7 +9,7 @@ path=(
     $HOME/.local/bin
     $HOME/.bin
     $HOME/bin
-    $HOME/Work/cmd-line-importer
+    $HOME/.local/src/Utils/cob/bin
     $path
 )
 
@@ -190,10 +190,13 @@ fi
 # =========================================================
 # 11. COB (lazy init)
 # =========================================================
-if command -v cob >/dev/null 2>&1; then
-    eval "$(cob init -)"
-fi
-[[ -f "$HOME/.cob-cli/completion.sh" ]] && source "$HOME/.cob-cli/completion.sh"
+# Cache gerado por setup/cob-tools.sh (equivalente a `eval "$(cob init -)"`,
+# mas sem fork em cada shell). Regenera-se quando o setup corre.
+[[ -f "$HOME/.zsh/cob-init.zsh" ]] && source "$HOME/.zsh/cob-init.zsh"
+
+# begin cob-cli completion
+. <(cob-cli --completion)
+# end cob-cli completion
 
 # =========================================================
 # 12. Autosuggestions + Syntax highlighting
