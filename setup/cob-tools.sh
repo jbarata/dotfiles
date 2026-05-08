@@ -32,7 +32,9 @@ echo "  npm: $(command -v npm)"
 
 mkdir -p "$SRC_DIR"
 
-# Clone (ou actualizar) + checkout opcional de branch + npm install + npm link
+# Clone (ou actualizar) + checkout opcional da branch remota mais recente
+# (committerdate) cujo nome contenha "branch_pref" como substring + npm
+# install + npm link
 link_cob_repo() {
     local name="$1"
     local repo="$2"
@@ -49,13 +51,21 @@ link_cob_repo() {
     fi
 
     if [[ -n "$branch_pref" ]]; then
-        git -C "$dir" fetch --quiet origin
-        if git -C "$dir" show-ref --verify --quiet "refs/remotes/origin/$branch_pref"; then
-            echo "  Checkout de $branch_pref em $name..."
-            git -C "$dir" checkout --quiet "$branch_pref"
+        git -C "$dir" fetch --quiet --prune origin
+        local match
+        match="$(git -C "$dir" for-each-ref \
+            --format='%(refname:lstrip=3)' \
+            --sort=-committerdate \
+            refs/remotes/origin/ \
+            | grep -v '^HEAD$' \
+            | { grep -F -- "$branch_pref" || true; } \
+            | head -n1)"
+        if [[ -n "$match" ]]; then
+            echo "  Checkout de $match em $name (mais recente com '$branch_pref' no nome)..."
+            git -C "$dir" checkout --quiet "$match"
             git -C "$dir" pull --quiet --ff-only
         else
-            echo "  Branch $branch_pref não existe em $name; a manter branch atual."
+            echo "  Nenhuma branch com '$branch_pref' no nome em $name; a manter branch atual."
         fi
     fi
 
@@ -71,7 +81,7 @@ link_cob_repo() {
     (cd "$dir" && npm link)
 }
 
-# --- cob-cli (clone + checkout beta/master + npm link) ---
+# --- cob-cli (clone + checkout da branch *beta* mais recente + npm link) ---
 # Remover instalação global antiga de cob-cli (única vez). Se já estivermos
 # a usar `npm link`, $(npm root -g)/cob-cli é symlink — saltamos.
 NPM_ROOT_G="$(npm root -g)"
