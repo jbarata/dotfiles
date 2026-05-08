@@ -1,8 +1,10 @@
 #!/bin/bash
-# setup/cob-tools.sh — Instalar CLIs COB (cob-cli@beta + cob-md-to-pdf + cob-aia linkados)
+# setup/cob-tools.sh — Instalar CLIs COB (cob-cli + cob-md-to-pdf + cob-aia linkados)
 set -euo pipefail
 
 SRC_DIR="$HOME/.local/src"
+CLI_DIR="$SRC_DIR/cob-cli"
+CLI_REPO="git@github.com:cob/cob-cli.git"
 MD_TO_PDF_DIR="$SRC_DIR/cob-md-to-pdf"
 MD_TO_PDF_REPO="git@github.com:cob/cob-md-to-pdf.git"
 AIA_DIR="$SRC_DIR/cob-aia"
@@ -28,18 +30,15 @@ fi
 
 echo "  npm: $(command -v npm)"
 
-# --- cob-cli@beta (global) ---
-echo "  A instalar cob-cli@beta globalmente..."
-npm install -g cob-cli@beta
-
 mkdir -p "$SRC_DIR"
 
-# Clone (ou actualizar) + npm install + npm link de um repo COB
+# Clone (ou actualizar) + checkout opcional de branch + npm install + npm link
 link_cob_repo() {
     local name="$1"
     local repo="$2"
     local dir="$3"
     local with_build="${4:-}"
+    local branch_pref="${5:-}"
 
     if [[ -d "$dir/.git" ]]; then
         echo "  A actualizar $dir..."
@@ -47,6 +46,17 @@ link_cob_repo() {
     else
         echo "  A clonar $repo → $dir..."
         git clone --quiet "$repo" "$dir"
+    fi
+
+    if [[ -n "$branch_pref" ]]; then
+        git -C "$dir" fetch --quiet origin
+        if git -C "$dir" show-ref --verify --quiet "refs/remotes/origin/$branch_pref"; then
+            echo "  Checkout de $branch_pref em $name..."
+            git -C "$dir" checkout --quiet "$branch_pref"
+            git -C "$dir" pull --quiet --ff-only
+        else
+            echo "  Branch $branch_pref não existe em $name; a manter branch atual."
+        fi
     fi
 
     echo "  npm install em $name..."
@@ -60,6 +70,16 @@ link_cob_repo() {
     echo "  npm link em $name..."
     (cd "$dir" && npm link)
 }
+
+# --- cob-cli (clone + checkout beta/master + npm link) ---
+# Remover instalação global antiga de cob-cli (única vez). Se já estivermos
+# a usar `npm link`, $(npm root -g)/cob-cli é symlink — saltamos.
+NPM_ROOT_G="$(npm root -g)"
+if [[ -d "$NPM_ROOT_G/cob-cli" && ! -L "$NPM_ROOT_G/cob-cli" ]]; then
+    echo "  A remover instalação global anterior de cob-cli..."
+    npm uninstall -g cob-cli
+fi
+link_cob_repo "cob-cli" "$CLI_REPO" "$CLI_DIR" "" "beta"
 
 # --- cob-md-to-pdf (clone + npm i + npm link) ---
 link_cob_repo "cob-md-to-pdf" "$MD_TO_PDF_REPO" "$MD_TO_PDF_DIR"
