@@ -9,7 +9,7 @@ path=(
     $HOME/.local/bin
     $HOME/.bin
     $HOME/bin
-    $HOME/Work/cmd-line-importer
+    $HOME/.local/src/Utils/cob/bin
     $path
 )
 
