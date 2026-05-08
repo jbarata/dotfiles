@@ -185,6 +185,19 @@ fi
 COB_HEALTH_DIR="$UTILS_DIR/cob-health"
 if [[ -d "$COB_HEALTH_DIR" ]]; then
     if command -v go >/dev/null 2>&1; then
+        # cob-health é pré-módulos (Go ≥1.16 exige go.mod). Inicializamos um
+        # módulo local se faltar — fica untracked, e somamos os artefactos a
+        # .git/info/exclude para não poluírem o `git status` do Utils.
+        if [[ ! -f "$COB_HEALTH_DIR/go.mod" ]]; then
+            echo "  go mod init em cob-health (módulo em falta)..."
+            (cd "$COB_HEALTH_DIR" && go mod init cob-health >/dev/null)
+        fi
+        UTILS_EXCLUDE="$UTILS_DIR/.git/info/exclude"
+        if [[ -f "$UTILS_EXCLUDE" ]]; then
+            for pattern in "/cob-health/go.mod" "/cob-health/go.sum" "/cob-health/cob-health"; do
+                grep -qxF "$pattern" "$UTILS_EXCLUDE" || echo "$pattern" >> "$UTILS_EXCLUDE"
+            done
+        fi
         echo "  go build em cob-health..."
         (cd "$COB_HEALTH_DIR" && go build -o cob-health)
         ensure_symlink "$COB_HEALTH_DIR/cob-health" "$BIN_DIR/cob-health"
