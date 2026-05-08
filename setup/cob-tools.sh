@@ -163,8 +163,20 @@ clone_or_pull "$UTILS_REPO" "$UTILS_DIR"
 # `cob` (sub-based) — `bin/cob` fica em ~/.local/src/Utils/cob/bin via PATH no .zshrc.
 # Garantir que é executável (em alguns clones o bit pode não estar definido).
 COB_BIN="$UTILS_DIR/cob/bin/cob"
+COB_INIT_CACHE="$HOME/.zsh/cob-init.zsh"
 if [[ -f "$COB_BIN" ]]; then
     chmod +x "$COB_BIN" 2>/dev/null || true
+
+    # Cachear a saída de `cob init -` para o .zshrc fazer source sem fork por shell.
+    # Re-gerado sempre que este setup corre (i.e. após git pull do Utils).
+    mkdir -p "$(dirname "$COB_INIT_CACHE")"
+    if "$COB_BIN" init - > "$COB_INIT_CACHE.tmp" 2>/dev/null; then
+        mv "$COB_INIT_CACHE.tmp" "$COB_INIT_CACHE"
+        echo "  Cache: $COB_INIT_CACHE (cob init -)"
+    else
+        rm -f "$COB_INIT_CACHE.tmp"
+        echo "  AVISO: 'cob init -' falhou; cache $COB_INIT_CACHE não actualizado."
+    fi
 else
     echo "  AVISO: $COB_BIN não existe; verifica o repo Utils."
 fi

@@ -190,9 +190,9 @@ fi
 # =========================================================
 # 11. COB (lazy init)
 # =========================================================
-if command -v cob >/dev/null 2>&1; then
-    eval "$(cob init -)"
-fi
+# Cache gerado por setup/cob-tools.sh (equivalente a `eval "$(cob init -)"`,
+# mas sem fork em cada shell). Regenera-se quando o setup corre.
+[[ -f "$HOME/.zsh/cob-init.zsh" ]] && source "$HOME/.zsh/cob-init.zsh"
 
 # begin cob-cli completion
 . <(cob-cli --completion)
