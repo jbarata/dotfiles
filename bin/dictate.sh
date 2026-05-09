@@ -118,7 +118,14 @@ rm -f "$OUT_FILE" "$PID_FILE"
 log "START model=$MODEL lang=$LANG_CODE"
 
 # Flags do whisper-stream:
-#   --step 0          — modo "VAD" (só processa em silêncio, sem partial duplo)
+#   --step 3000       — commit periódico a cada 3s. Antes usávamos `--step 0`
+#                       (modo VAD: só comitar em silêncio detectado), mas
+#                       upstream do whisper.cpp partiu o trigger de VAD
+#                       (rebuild de 2026-05-09): apenas o flush final do
+#                       SIGTERM produzia 1 commit, perdendo tudo o que
+#                       ficava antes da última janela `--length`. Step
+#                       mode garante commits regulares — duplicados parciais
+#                       devido ao overlap são preferíveis a perder áudio.
 #   --length 5000     — janela máxima por chunk (ms)
 #   --keep 200        — overlap (ms) entre chunks para evitar cortes a meio
 #   -t $THREADS       — threads de inferência
@@ -129,7 +136,7 @@ nohup "$WHISPER_STREAM" \
     -m "$MODEL_BIN" \
     -t "$THREADS" \
     -l "$LANG_CODE" \
-    --step 0 \
+    --step 3000 \
     --length 5000 \
     --keep 200 \
     > "$OUT_FILE" 2>>"$LOG" &
