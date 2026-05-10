@@ -17,6 +17,12 @@ brew "ffmpeg"                # Conversão áudio/vídeo (transcribe.sh: m4a/mp3 
 brew "python@3.11"           # Pinned para o venv de conversão Core ML (whisper.cpp):
                              # ane_transformers prende torch 2.x → Python ≤3.12.
                              # 3.11 maximiza compatibilidade com torch+coremltools.
+brew "expat"                 # libexpat moderno (≥2.7) para patchar pyexpat das
+                             # bottles Python em macOS 26.0–26.2: o /usr/lib/
+                             # libexpat.1.dylib do Apple não tem _XML_SetAlloc-
+                             # TrackerActivationThreshold; setup/whisperx.sh
+                             # detecta e patcha o pyexpat.so para apontar para
+                             # este expat (Apple corrigiu em macOS 26.3+).
 brew "go"                    # Compilador Go (cob-health, em Utils/cob-health)
 
 # Zsh plugins

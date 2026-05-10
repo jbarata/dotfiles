@@ -74,8 +74,13 @@ if [[ -f "$PID_FILE" ]] && kill -0 "$(cat "$PID_FILE")" 2>/dev/null; then
     kill -KILL "$PID" 2>/dev/null || true
     rm -f "$PID_FILE"
 
-    # whisper-stream emite linhas como "[Start --> End]   texto" e linhas
-    # vazias / "### Transcription N START/END". Filtramos só o texto útil.
+    # whisper-stream emite linhas como "[Start --> End]   texto" intercaladas
+    # com escape codes ANSI (\x1b[2K para overwrite no terminal) e linhas
+    # vazias / "### Transcription N START/END". Filtramos:
+    #   1. Strip ANSI escapes (CSI: \x1b[...letra) — caso contrário "[2K"
+    #      vai parar ao clipboard
+    #   2. tr -d '\r' — overwrites do whisper-stream usam carriage returns
+    #   3. Remove linhas '###' e timestamps "[time --> time]"
     if [[ ! -s "$OUT_FILE" ]]; then
         hud "dictate|∅ sem áudio"
         ( sleep 1.5; hud "" ) &
@@ -84,7 +89,9 @@ if [[ -f "$PID_FILE" ]] && kill -0 "$(cat "$PID_FILE")" 2>/dev/null; then
     fi
 
     TEXT=$(
-        sed -E '/^###/d; /^$/d; s/^\[[^]]*\][[:space:]]*//' "$OUT_FILE" \
+        sed $'s/\x1b\\[[0-9;]*[a-zA-Z]//g' "$OUT_FILE" \
+            | tr -d '\r' \
+            | sed -E '/^###/d; /^$/d; s/\[[^]]*\][[:space:]]*//g' \
             | tr '\n' ' ' \
             | sed -E 's/[[:space:]]+/ /g; s/^ //; s/ $//'
     )
@@ -118,9 +125,18 @@ rm -f "$OUT_FILE" "$PID_FILE"
 log "START model=$MODEL lang=$LANG_CODE"
 
 # Flags do whisper-stream:
-#   --step 0          — modo "VAD" (só processa em silêncio, sem partial duplo)
-#   --length 5000     — janela máxima por chunk (ms)
-#   --keep 200        — overlap (ms) entre chunks para evitar cortes a meio
+#   --step 3000       — commit periódico a cada 3s. Antes usávamos `--step 0`
+#                       (modo VAD: só comitar em silêncio detectado), mas
+#                       upstream do whisper.cpp partiu o trigger de VAD
+#                       (rebuild de 2026-05-09): apenas o flush final do
+#                       SIGTERM produzia 1 commit, perdendo tudo o que
+#                       ficava antes da última janela `--length`.
+#   --length 3000     — janela igual ao step: cada commit encode 3s frescos
+#                       sem overlap, evitando duplicados ("7 8" a aparecer
+#                       em dois chunks consecutivos quando step<length).
+#   --keep 200        — 200 ms de áudio do chunk anterior são pré-carregados
+#                       no buffer só para contexto de attention do whisper
+#                       (não voltam a aparecer transcritos)
 #   -t $THREADS       — threads de inferência
 #   -l $LANG_CODE     — língua (pt aqui; 'auto' deixa whisper detectar)
 #   -m <bin>          — modelo ggml; o .mlmodelc encoder é carregado
@@ -129,8 +145,8 @@ nohup "$WHISPER_STREAM" \
     -m "$MODEL_BIN" \
     -t "$THREADS" \
     -l "$LANG_CODE" \
-    --step 0 \
-    --length 5000 \
+    --step 3000 \
+    --length 3000 \
     --keep 200 \
     > "$OUT_FILE" 2>>"$LOG" &
 

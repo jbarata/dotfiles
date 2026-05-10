@@ -42,6 +42,83 @@ fi
 
 echo "  Python: $(command -v "$PYTHON") ($($PYTHON --version))"
 
+# --- 1b. Patch pyexpat se libexpat do sistema não tiver os símbolos novos ---
+# macOS 26.0–26.2 (Tahoe pré-26.3): /usr/lib/libexpat.1.dylib do Apple é
+# antigo e não exporta _XML_SetAllocTrackerActivationThreshold. Os pyexpat.so
+# das bottles Homebrew Python (3.11+) ligam contra essa libexpat por nome
+# directo e falham `import pyexpat` em runtime — o que parte pip, requests,
+# whisperx, etc. Fix oficial (ver Homebrew/homebrew-core#277330): apontar
+# pyexpat.so ao libexpat do Homebrew (`brew install expat` → ≥2.7) via
+# install_name_tool + re-assinar (codesign ad-hoc) por causa do hardened
+# runtime. Apple corrigiu /usr/lib em macOS 26.3+; o patch é idempotente
+# (skip quando `import pyexpat` já passa).
+fix_pyexpat_if_broken() {
+    local py="$1"
+    if "$py" -c "import pyexpat" 2>/dev/null; then
+        return 0
+    fi
+
+    local err
+    err=$("$py" -c "import pyexpat" 2>&1 || true)
+    if ! echo "$err" | grep -q "_XML_SetAllocTrackerActivationThreshold"; then
+        echo "  pyexpat falha com erro inesperado:" >&2
+        echo "$err" >&2
+        return 1
+    fi
+
+    echo "  pyexpat partido (libexpat do macOS sem símbolo novo, conhecido em 26.0–26.2)"
+    echo "  A aplicar patch: install_name_tool → expat do Homebrew..."
+
+    if ! command -v brew &>/dev/null; then
+        echo "  ✗ brew não disponível; impossível obter expat moderno" >&2
+        return 1
+    fi
+
+    if ! brew list --formula expat &>/dev/null; then
+        echo "  brew install expat..."
+        brew install expat
+    fi
+
+    local expat_lib
+    expat_lib="$(brew --prefix expat)/lib/libexpat.1.dylib"
+    if [[ ! -f "$expat_lib" ]]; then
+        echo "  ✗ libexpat.1.dylib não encontrado em $expat_lib" >&2
+        return 1
+    fi
+
+    local lib_dynload pyexpat_so
+    lib_dynload=$("$py" -c 'import sys, os; print(os.path.join(sys.prefix, "lib", f"python{sys.version_info.major}.{sys.version_info.minor}", "lib-dynload"))' 2>/dev/null)
+    if [[ -z "$lib_dynload" || ! -d "$lib_dynload" ]]; then
+        echo "  ✗ lib-dynload não encontrado para $py" >&2
+        return 1
+    fi
+    pyexpat_so=$(ls "$lib_dynload"/pyexpat.cpython-*-darwin.so 2>/dev/null | head -1)
+    if [[ -z "$pyexpat_so" || ! -f "$pyexpat_so" ]]; then
+        echo "  ✗ pyexpat.so não encontrado em $lib_dynload" >&2
+        return 1
+    fi
+
+    echo "  Patching: $pyexpat_so"
+    install_name_tool -change /usr/lib/libexpat.1.dylib "$expat_lib" "$pyexpat_so"
+    codesign --sign - --force "$pyexpat_so"
+
+    if "$py" -c "import pyexpat" 2>/dev/null; then
+        echo "  pyexpat OK após patch ✓"
+        return 0
+    fi
+    echo "  ✗ pyexpat ainda partido após patch" >&2
+    return 1
+}
+
+if ! fix_pyexpat_if_broken "$PYTHON"; then
+    echo ""
+    echo "  ⚠️  whisperx setup saltado: pyexpat de $PYTHON não funciona."
+    echo "     Ver: https://github.com/Homebrew/homebrew-core/issues/277330"
+    echo "     Fix definitivo: actualizar para macOS 26.3+ (Apple corrige libexpat)."
+    echo "     Depois, retomar: bash $DOTFILES/setup/whisperx.sh"
+    exit 0
+fi
+
 # --- 2. Recriar venv se foi feito com outro Python (ex.: brew upgrade) --
 if [[ -d "$WHISPERX_VENV" && ! -x "$WHISPERX_VENV/bin/$PYTHON" ]]; then
     echo "  Venv existente com outro Python — a recriar..."
