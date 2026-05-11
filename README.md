@@ -598,7 +598,7 @@ brew bundle cleanup --file=brew/Brewfile   # remover pacotes não no Brewfile (c
     ├── ubersicht.sh                # Symlink pasta de widgets Übersicht
     ├── skhd.sh                     # Arranca/reinicia serviço skhd
     ├── ssh-auth-sock.sh            # Instala LaunchAgent SSH_AUTH_SOCK (1Password)
-    ├── cob-tools.sh                # clone/npm-link de cob-cli, cob-md-to-pdf e cob-aia
+    ├── cob-tools.sh                # clone/npm-link de cob-cli, cob-pdf e cob-aia
     ├── whisper.sh                  # Build whisper.cpp + modelo + Core ML (Apple Silicon)
     ├── whisperx.sh                 # Venv whisperx (diarização) — pyannote + faster-whisper
     └── macos-defaults.sh           # defaults write

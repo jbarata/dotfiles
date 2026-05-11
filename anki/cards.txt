@@ -294,7 +294,7 @@ whA1eDcT5p	skhd: toggle de ditado — 1ª pressão arranca whisper-stream em bac
 whB7nFkR3w	dictate.sh: que binário usa para captura + transcrição contínua?	whisper-stream (do whisper.cpp, compilado com WHISPER_SDL2=ON)	whisper dictate
 whC4vJsM2x	Porque compilar whisper.cpp em vez de usar `brew "whisper-cpp"`?	A fórmula brew não inclui whisper-stream (binário SDL2) nem activa Core ML — sem streaming nem aceleração ANE	whisper
 whD9rXqT6k	Que flags cmake são usadas no setup/whisper.sh?	-DWHISPER_SDL2=ON (sempre) + -DWHISPER_COREML=1 (só em arm64)	whisper
-whE2bYcW8h	Onde fica o repo whisper.cpp clonado?	~/.local/src/whisper.cpp/ (mesmo padrão que cob-md-to-pdf)	whisper
+whE2bYcW8h	Onde fica o repo whisper.cpp clonado?	~/.local/src/whisper.cpp/ (mesmo padrão que cob-pdf)	whisper
 whF6sPnB1q	Onde ficam os modelos ggml descarregados?	~/.local/share/whisper-models/ggml-&lt;modelo&gt;.bin (e .mlmodelc ao lado em arm64)	whisper
 whG3kHzL5j	Modelo default do dictate?	medium (multilingue, ~1.5 GB) — accuracy notável em PT, ainda fluido no M2 Max em Metal puro com latência maior nas pausas	whisper
 whH8mNgQ4d	Porque medium e não small ou base.en?	base.en cobre mal PT (LANG=pt_PT); small reconhecia mal fala em PT no microfone integrado (visto: "não tem a salvaver com pedem nada"); medium melhora drasticamente nomes próprios e pontuação à custa de ~3× mais lento — ainda fluido no M2 Max	whisper
