@@ -162,9 +162,11 @@ if command -v fzf >/dev/null 2>&1; then
     if command -v fd >/dev/null 2>&1; then
         _fzf_alt_c_cache="${HOME}/.cache/fzf-dirs-cache"
 
-        # Gerar cache se não existir ou tiver mais de 24h
+        # Gerar cache se não existir, tiver mais de 24h, ou contiver paths
+        # relativos (cache antigo, pré-fix do bug do Alt+C).
         if [[ ! -f "$_fzf_alt_c_cache" ]] || \
-           [[ -n "$(find "$_fzf_alt_c_cache" -mmin +1440 2>/dev/null)" ]]; then
+           [[ -n "$(find "$_fzf_alt_c_cache" -mmin +1440 2>/dev/null)" ]] || \
+           [[ "$(head -n1 "$_fzf_alt_c_cache" 2>/dev/null)" != /* ]]; then
             eval "$FZF_ALT_C_GENERATE" > "$_fzf_alt_c_cache" 2>/dev/null &!
         fi
 
