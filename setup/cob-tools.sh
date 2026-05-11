@@ -1,5 +1,5 @@
 #!/bin/bash
-# setup/cob-tools.sh — Instalar CLIs COB (cob-cli + cob-md-to-pdf + cob-aia linkados,
+# setup/cob-tools.sh — Instalar CLIs COB (cob-cli + cob-pdf + cob-aia linkados,
 # Utils/cob + cob-health, cmd-line-importer)
 set -euo pipefail
 
@@ -7,8 +7,8 @@ SRC_DIR="$HOME/.local/src"
 BIN_DIR="$HOME/.local/bin"
 CLI_DIR="$SRC_DIR/cob-cli"
 CLI_REPO="git@github.com:cob/cob-cli.git"
-MD_TO_PDF_DIR="$SRC_DIR/cob-md-to-pdf"
-MD_TO_PDF_REPO="git@github.com:cob/cob-md-to-pdf.git"
+PDF_DIR="$SRC_DIR/cob-pdf"
+PDF_REPO="git@github.com:cob/cob-pdf.git"
 AIA_DIR="$SRC_DIR/cob-aia"
 AIA_REPO="git@github.com:cob/cob-aia.git"
 UTILS_DIR="$SRC_DIR/Utils"
@@ -32,7 +32,7 @@ fi
 HAVE_NPM=true
 if ! command -v npm >/dev/null 2>&1; then
     HAVE_NPM=false
-    echo "  AVISO: npm não encontrado. Saltam-se cob-cli/cob-md-to-pdf/cob-aia (instala node via nvm + alias default)."
+    echo "  AVISO: npm não encontrado. Saltam-se cob-cli/cob-pdf/cob-aia (instala node via nvm + alias default)."
 else
     echo "  npm: $(command -v npm)"
 fi
@@ -132,8 +132,8 @@ if $HAVE_NPM; then
     fi
     link_cob_repo "cob-cli" "$CLI_REPO" "$CLI_DIR" "" "beta"
 
-    # --- cob-md-to-pdf (clone + npm i + npm link) ---
-    link_cob_repo "cob-md-to-pdf" "$MD_TO_PDF_REPO" "$MD_TO_PDF_DIR"
+    # --- cob-pdf (clone + npm i + npm link) ---
+    link_cob_repo "cob-pdf" "$PDF_REPO" "$PDF_DIR"
 
     # --- cob-aia (clone + npm i + npm link) ---
     link_cob_repo "cob-aia" "$AIA_REPO" "$AIA_DIR" build
@@ -223,10 +223,10 @@ if $HAVE_NPM; then
     # Markdown Preview Enhanced (MPE) lê ~/.local/state/crossnote/style.less e compila-o como Less. Em vez de
     # fazer symlink do style.less para um .css (que pode confundir o compilador),
     # escrevemos um style.less real que faz @import (inline) do editor-preview.css
-    # mantido em cob-md-to-pdf — assim o preview do VSCode bate certo com o PDF
+    # mantido em cob-pdf — assim o preview do VSCode bate certo com o PDF
     # gerado pela CLI.
     CROSSNOTE_STYLE="$HOME/.local/state/crossnote/style.less"
-    EDITOR_PREVIEW_CSS="$MD_TO_PDF_DIR/conf/editor-preview.css"
+    EDITOR_PREVIEW_CSS="$PDF_DIR/conf/editor-preview.css"
 
     if [[ ! -f "$EDITOR_PREVIEW_CSS" ]]; then
         echo "  AVISO: $EDITOR_PREVIEW_CSS não existe; a saltar link do style.less."
