@@ -45,6 +45,7 @@ render: -> """
             <div class="item"><kbd>O</kbd><span>Do</span></div>
             <div class="item"><kbd>R</kbd><span>Review</span></div>
             <div class="item"><kbd>D</kbd><span>Dogfooding</span></div>
+            <div class="item"><kbd>V</kbd><span>Vendas</span></div>
           </div>
           <div class="section">
             <div class="section-title">Leader <kbd>⌃⌥⌘ P</kbd> · personal</div>
