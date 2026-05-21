@@ -258,14 +258,15 @@ skK7aG4pQs	skhd: abrir Ghostty (ou activar a janela se já estiver aberta) via `
 skEE6aL9nB	skhd: abrir Safari (ou activar a janela se já estiver aberta) via `open -a "Safari"`	Ctrl+Alt+Cmd+B	skhd shortcuts
 skFF7bM0oC	skhd: abrir Google Chrome (ou activar a janela se já estiver aberta) via `open -a "Google Chrome"`	Shift+Ctrl+Alt+Cmd+B	skhd shortcuts
 skB9eS2qJw	skhd: abrir Calendário (open_calendar.scpt do focus.widget)	Ctrl+Alt+Cmd+T	skhd shortcuts
-skCnY7hM8v	skhd: entrar no modo "cob" (leader); depois p/o/r/d → Plan/Do/Review/Dogfooding	Ctrl+Alt+Cmd+D	skhd shortcuts
+skCnY7hM8v	skhd: entrar no modo "cob" (leader); depois p/o/r/d/v → Plan/Do/Review/Dogfooding/Vendas	Ctrl+Alt+Cmd+D	skhd shortcuts
 skH8mQr5Tj	skhd: entrar no modo "review"; depois t/d/w/m/q/y escolhem Today/Daily/Weekly/Monthly/Quarterly/Yearly; o alterna o painel (toggle)	Ctrl+Alt+Cmd+R	skhd shortcuts
 skT4yW9sPm	skhd review: como lançar Daily vs Weekly vs Quarterly?	R → D (daily), R → W (weekly), R → Q (quarterly)	skhd shortcuts
 skU2cN6hXk	skhd review: que ficheiro é o IPC para o focus.widget?	/tmp/focus-review-cmd (tokens: toggle, open, close, today, daily, weekly, monthly, quarterly, year)	skhd
 skV5bQ1jFe	focus.widget: como é que o trigger específico (ex. Weekly) é despachado?	O widget polla /tmp/focus-review-cmd, garante que o painel está aberto (click em .review-open) e depois clica .&lt;tipo&gt;-review-trigger (ou .today-plan-trigger)	skhd
 skW8fR3dPj	skhd: como abrir o painel de ajuda com todos os atalhos?	Ctrl+Alt+Cmd+' alterna o skhd-help.widget do Übersicht (apóstrofo é directo no teclado PT)	skhd shortcuts
 skX1mS6gBn	skhd: porque a tecla '?	No teclado PT o apóstrofo é acessível directamente (sem shift); escolhido por ser ergonómico e mnemónico (abrir/fechar aspas ≈ abrir/fechar ajuda)	skhd
-skD1uK6rZp	skhd: dentro do modo cob, que teclas abrem os dashboards?	p → Plan, o → Do, r → Review, d → Dogfooding home; esc cancela	skhd shortcuts
+skD1uK6rZp	skhd: dentro do modo cob, que teclas abrem os dashboards?	p → Plan, o → Do, r → Review, d → Dogfooding home, v → Vendas; esc cancela	skhd shortcuts
+skVe7nD3xR	skhd cob: como abrir Vendas?	D → V (directo; dogfooding/Visão Geral/dash)	skhd shortcuts
 skE4gX5lBq	skhd: como abrir Mimes — Dia a Dia pelo leader?	Ctrl+Alt+Cmd+P depois m (modo "personal")	skhd shortcuts
 skF2iC8vNt	skhd: como abrir BudgetBakers pelo leader?	Ctrl+Alt+Cmd+P depois b (modo "personal")	skhd shortcuts
 skG0sH3dWx	skhd: como correr o Atalho iOS AnyList pelo leader?	Ctrl+Alt+Cmd+P depois l (modo "personal")	skhd shortcuts
