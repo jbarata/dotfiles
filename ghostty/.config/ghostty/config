@@ -51,7 +51,8 @@ keybind = cmd+shift+i=prompt_surface_title
 # Shell
 # =========================================================
 shell-integration = zsh
-# ssh-terminfo instala o terminfo xterm-ghostty no host remoto na 1ª
-# ligação; ssh-env garante um TERM compatível durante a sessão. Resolve o
-# "WARNING: terminal is not fully functional" ao fazer ssh. (Ghostty ≥ 1.2.0)
-shell-integration-features = ssh-env,ssh-terminfo
+# ssh-env define TERM=xterm-256color na sessão ssh — um terminfo que o
+# remoto já conhece — resolvendo o "terminal is not fully functional" SEM
+# instalar nada no host. (Sem ssh-terminfo, que tentaria escrever o
+# terminfo xterm-ghostty no remoto.) Requer Ghostty ≥ 1.2.0.
+shell-integration-features = ssh-env
