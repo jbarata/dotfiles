@@ -294,13 +294,6 @@ listening 8080      # filtrar por porta
 zsh_startup_time    # medir tempo de arranque (5x)
 ```
 
-### Segredos via 1Password
-
-```bash
-op read "op://Vault/Item/field"   # ler segredo
-sops <args>                        # wrapper que carrega SOPS_AGE_KEY lazy
-```
-
 ---
 
 ## Instalação
@@ -694,13 +687,6 @@ Histórico das decisões tomadas e seu racional, para contexto futuro.
 | 1Password agent | Sem chaves no disco |
 | Hosts de trabalho no repo (privado) | Sincronização entre máquinas |
 | `ServerAliveInterval 30` | Evita disconnect em sessões longas |
-
-### 1Password / SOPS — 2026-04-17
-
-| Decisão | Racional |
-|---|---|
-| `sops()` wrapper com lazy auth | Evita prompt 1Password a cada shell nova |
-| `op read` on-demand | Segredos nunca em ficheiros |
 
 ### SSH_AUTH_SOCK para apps GUI — 2026-04-18
 

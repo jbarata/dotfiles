@@ -112,12 +112,6 @@ ssA3McUd43	Que script versiona o SSH_AUTH_SOCK LaunchAgent?	setup/ssh-auth-sock.
 ssA4NdVe54	Como debug ao SSH_AUTH_SOCK divergente entre terminal e Fork?	ps eww -p $(pgrep -f Fork.app/Contents/MacOS/Fork) | tr ' ' '\\n' | grep SSH_AUTH_SOCK	1password ssh
 
 # =========================================================
-# SOPS
-# =========================================================
-u4ulBLW2Ch	Como é que o sops obtém a chave AGE?	Wrapper zsh carrega via op read na primeira chamada	sops
-cJ4yA3VO6x	Porque não carregar SOPS_AGE_KEY no arranque da shell?	Pediria autenticação 1Password a cada terminal novo	sops
-
-# =========================================================
 # NVM — Node Version Manager
 # =========================================================
 TyqRgItbXE	Como funciona o NVM lazy loading?	Stubs para nvm/node/npm/npx — só carrega no primeiro uso	nvm

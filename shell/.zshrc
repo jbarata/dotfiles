@@ -236,10 +236,3 @@ zsh_startup_time() {
         time zsh -i -c exit
     done
 }
-
-sops() {
-    if [[ -z "$SOPS_AGE_KEY" ]]; then
-        export SOPS_AGE_KEY="$(op read "op://Private/Mimes personal Age Key/notesPlain")"
-    fi
-    command sops "$@"
-}
