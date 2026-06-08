@@ -37,8 +37,11 @@ mouse-hide-while-typing = true
 # =========================================================
 # macOS
 # =========================================================
-# Crítico: sem isto Alt+C (fzf) não funciona
-macos-option-as-alt = true
+# Só o Option ESQUERDO age como Alt (necessário para o Alt+C do fzf).
+# O Option DIREITO fica livre como tecla de composição, para escrever
+# "@" (⌥+2) e outros caracteres especiais do teclado português — com
+# `true` o ⌥+2 enviava ESC+2 e tirava-te do modo insert do vi.
+macos-option-as-alt = left
 
 # =========================================================
 # Keybindings (teclado português — sem [ e ])
