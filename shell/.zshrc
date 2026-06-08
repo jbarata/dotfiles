@@ -220,7 +220,7 @@ rtmux() {
     local server=$1
     shift
     autossh -M 0 -t "$server" "$@" \
-        "tmux -qu has -t mimes && tmux -qu attach -t mimes || tmux -qu new -s mimes"
+        "export TERM=xterm-256color; tmux -qu has -t mimes && tmux -qu attach -t mimes || tmux -qu new -s mimes"
 }
 
 listening() {
