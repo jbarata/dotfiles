@@ -1,0 +1,116 @@
+# Starship — prompt cross-shell
+# Gerido por: https://github.com/mimes70/dotfiles
+#
+# Layout em duas linhas (estilo Powerlevel10k), SEM Nerd Font:
+#   linha 1:  user  path  (branch) [git status]      …      took 1s  14:32:05
+#   linha 2:  ❯  (escreves o comando aqui)
+#
+# Cores a condizer com o tema do ghostty (Catppuccin Mocha).
+
+"$schema" = 'https://starship.rs/config-schema.json'
+
+palette = "catppuccin_mocha"
+
+format = """
+$username\
+$hostname\
+$directory\
+$git_branch\
+$git_status\
+$git_state\
+$fill\
+$cmd_duration\
+$time\
+$line_break\
+$character"""
+
+# Linha em branco antes de cada prompt (respira melhor)
+add_newline = true
+
+# --- Preenchimento que empurra a hora/duração para a direita ---
+[fill]
+symbol = " "
+
+# --- Utilizador (só destaca; @host apenas em SSH) ---
+[username]
+show_always = true
+style_user = "bold mauve"
+style_root = "bold red"
+format = "[$user]($style) "
+
+[hostname]
+ssh_only = true
+style = "bold green"
+format = "[@$hostname]($style) "
+
+# --- Path (trunca a 3 níveis, relativo ao repo) ---
+[directory]
+style = "bold blue"
+truncation_length = 3
+truncate_to_repo = true
+read_only = " ro"
+read_only_style = "red"
+format = "[$path]($style)[$read_only]($read_only_style) "
+
+# --- Git: branch entre parênteses (como o teu vcs_info antigo) ---
+[git_branch]
+symbol = ""
+style = "bold mauve"
+format = "[($branch)]($style) "
+
+[git_status]
+style = "bold red"
+format = '([$all_status$ahead_behind]($style)) '
+
+[git_state]
+style = "bold yellow"
+format = '\([$state( $progress_current/$progress_total)]($style)\) '
+
+# --- Infos do lado direito ---
+[cmd_duration]
+min_time = 500
+style = "bold yellow"
+format = "took [$duration]($style) "
+
+[time]
+disabled = false
+time_format = "%H:%M:%S"
+style = "bold subtext0"
+format = "[$time]($style)"
+
+# --- Símbolo do prompt (linha 2). ❯ é unicode simples, sem Nerd Font ---
+[character]
+success_symbol = "[❯](bold green)"
+error_symbol = "[❯](bold red)"
+vimcmd_symbol = "[❮](bold yellow)"
+
+# =========================================================
+# Paleta Catppuccin Mocha
+# =========================================================
+[palettes.catppuccin_mocha]
+rosewater = "#f5e0dc"
+flamingo = "#f2cdcd"
+pink = "#f5c2e7"
+mauve = "#cba6f7"
+red = "#f38ba8"
+maroon = "#eba0ac"
+peach = "#fab387"
+yellow = "#f9e2af"
+green = "#a6e3a1"
+teal = "#94e2d5"
+sky = "#89dceb"
+sapphire = "#74c7ec"
+blue = "#89b4fa"
+lavender = "#b4befe"
+text = "#cdd6f4"
+subtext1 = "#bac2de"
+subtext0 = "#a6adc8"
+overlay2 = "#9399b2"
+overlay1 = "#7f849c"
+overlay0 = "#6c7086"
+surface2 = "#585b70"
+surface1 = "#45475a"
+surface0 = "#313244"
+base = "#1e1e2e"
+mantle = "#181825"
+crust = "#11111b"

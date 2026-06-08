@@ -85,12 +85,17 @@ else
 fi
 
 # =========================================================
-# 7. Prompt (ultra fast, sem frameworks)
+# 7. Prompt — Starship (config em ~/.config/starship.toml)
 # =========================================================
-autoload -Uz vcs_info
-precmd() { vcs_info 2>/dev/null }
-zstyle ':vcs_info:git:*' formats '(%b)'
-PROMPT='%F{yellow}%m%f %F{cyan}%1~%f %F{magenta}${vcs_info_msg_0_}%f%# '
+if command -v starship >/dev/null 2>&1; then
+    eval "$(starship init zsh)"
+else
+    # Fallback ultra-fast (sem frameworks) se o starship não estiver instalado
+    autoload -Uz vcs_info
+    precmd() { vcs_info 2>/dev/null }
+    zstyle ':vcs_info:git:*' formats '(%b)'
+    PROMPT='%F{yellow}%m%f %F{cyan}%1~%f %F{magenta}${vcs_info_msg_0_}%f%# '
+fi
 
 # =========================================================
 # 8. Vi mode (turbo)
@@ -98,9 +103,10 @@ PROMPT='%F{yellow}%m%f %F{cyan}%1~%f %F{magenta}${vcs_info_msg_0_}%f%# '
 bindkey -v
 export KEYTIMEOUT=1
 
-# Cursor diferente por modo
+# Cursor diferente por modo (+ refresh do prompt para o símbolo vi do starship)
 zle-keymap-select() {
     [[ $KEYMAP == vicmd ]] && print -n "\e[1 q" || print -n "\e[5 q"
+    command -v starship >/dev/null 2>&1 && zle reset-prompt
 }
 zle -N zle-keymap-select
 

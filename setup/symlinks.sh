@@ -82,6 +82,9 @@ link_config "$DOTFILES/ghostty/.config/ghostty/config" "$HOME/.config/ghostty/co
 echo "  skhd config..."
 link_config "$DOTFILES/skhd/.config/skhd/skhdrc" "$HOME/.config/skhd/skhdrc"
 
+echo "  Starship config..."
+link_config "$DOTFILES/starship/.config/starship.toml" "$HOME/.config/starship.toml"
+
 # Ghostty themes (linka todos os ficheiros na pasta themes)
 if [[ -d "$DOTFILES/ghostty/.config/ghostty/themes" ]]; then
     for theme in "$DOTFILES/ghostty/.config/ghostty/themes/"*; do

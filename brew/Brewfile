@@ -25,6 +25,9 @@ brew "expat"                 # libexpat moderno (≥2.7) para patchar pyexpat da
                              # este expat (Apple corrigiu em macOS 26.3+).
 brew "go"                    # Compilador Go (cob-health, em Utils/cob-health)
 
+# Prompt
+brew "starship"              # Prompt cross-shell (config em ~/.config/starship.toml)
+
 # Zsh plugins
 brew "zsh-autosuggestions"
 brew "zsh-syntax-highlighting"
