@@ -109,8 +109,8 @@ clients < l ; lidl
 clients < r : open "https://rentelecom.cultofbits.com"; skhd -k "escape"
 clients < escape ; default
 
-mello < p : open "https://mdados.cultofbits.com"; skhd -k "escape"
-mello < q : open "https://mdados-qual.cultofbits.com"; skhd -k "escape"
+mello < p : open "https://jm-priv.cultofbits.com"; skhd -k "escape"
+mello < q : open "https://jm-priv-qual.cultofbits.com"; skhd -k "escape"
 mello < escape ; default
 
 winestone < p : open "https://winestone.cultofbits.com"; skhd -k "escape"
