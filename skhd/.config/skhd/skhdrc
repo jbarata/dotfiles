@@ -7,8 +7,8 @@
 #     Mac (Calendar usa 't' e ChatGPT junta shift, para desambiguar com
 #     Claude). Uma tecla, uma acção.
 #   - ctrl + alt + cmd - d        : leader do modo "cob"
-#                                   (p/o/r/d/v → Plan/Do/Review/Dogfooding/
-#                                    Vendas).
+#                                   (p/o/r/d/v/t → Plan/Do/Review/
+#                                    Dogfooding/Vendas/Tempo).
 #   - ctrl + alt + cmd - p        : leader do modo "personal"
 #                                   (m/b/l → Mimes/BudgetBakers/AnyList).
 #   - ctrl + alt + cmd - k        : leader do modo "clients" (aninhado)
@@ -43,7 +43,7 @@
 # @ = capture: teclas não ligadas ficam bloqueadas, evitando surpresas.
 # Cada modo escreve em /tmp/skhd-mode (lido pelo skhd-hud.widget).
 :: default :     echo "" > /tmp/skhd-mode
-:: cob @ :       echo "cob|Plan (p) | Do (o) | Review (r) | Dogfooding (d) | Vendas (v) | sair (esc)" > /tmp/skhd-mode
+:: cob @ :       echo "cob|Plan (p) | Do (o) | Review (r) | Dogfooding (d) | Vendas (v) | Tempo (t) | sair (esc)" > /tmp/skhd-mode
 :: personal @ :  echo "personal|Mimes (m) | BudgetBakers (b) | AnyList (l) | sair (esc)" > /tmp/skhd-mode
 :: clients @ :   echo "clients|Mello (m) | Winestone (w) | Lidl (l) | Rentelecom (r) | sair (esc)" > /tmp/skhd-mode
 :: mello @ :     echo "clients › mello|Produção (p) | Qualidade (q) | sair (esc)" > /tmp/skhd-mode
@@ -91,6 +91,7 @@ cob < o : open "https://dogfooding.cultofbits.com/recordm/index.html#/cob.custom
 cob < r : open "https://dogfooding.cultofbits.com/recordm/index.html#/cob.custom-resource/Review/dash?"; skhd -k "escape"
 cob < d : open "https://dogfooding.cultofbits.com"; skhd -k "escape"
 cob < v : open "https://dogfooding.cultofbits.com/recordm/index.html#/cob.custom-resource/Visão Geral/dash"; skhd -k "escape"
+cob < t : open "https://dogfooding.cultofbits.com/recordm/#/definitions/427/q=username%3Amimes"; skhd -k "escape"
 cob < escape ; default
 
 # --- Modo personal (atalhos pessoais) ------------------------------------
