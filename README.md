@@ -101,6 +101,7 @@ D → O                   # Do
 D → R                   # Review
 D → D                   # Dogfooding (home)
 D → V                   # Vendas (Visão Geral)
+D → T                   # Tempo (definição 427, q=username:mimes)
 
 # Leader "personal" (Ctrl+Alt+Cmd+P seguido de...):
 P → M                   # Mimes (Dia a Dia)
