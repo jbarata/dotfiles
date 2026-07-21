@@ -139,7 +139,8 @@ set noteBody to "<p><a href=\"" & currentURL & "\">" & currentURL & "</a></p>" &
 tell application "Notes"
 	activate
 	try
-		make new note with properties {name:currentTitle, body:noteBody}
+		set newNote to make new note with properties {name:currentTitle, body:noteBody}
+		show newNote
 	on error errMsg
 		my notify("Safari → Notes", "Falha a criar nota: " & errMsg)
 		error errMsg number 1010
