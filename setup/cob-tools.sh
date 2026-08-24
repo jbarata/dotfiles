@@ -140,8 +140,8 @@ if $HAVE_NPM; then
     # --- cob-aia (clone + npm i + npm link) ---
     link_cob_repo "cob-aia" "$AIA_REPO" "$AIA_DIR" build
 
-    # --- cob-press (clone + npm i + npm link) ---
-    link_cob_repo "cob-press" "$PRESS_REPO" "$PRESS_DIR"
+    # --- cob-press (clone + npm i + npm run build + npm link) ---
+    link_cob_repo "cob-press" "$PRESS_REPO" "$PRESS_DIR" build
 
     # --- cob-aia zsh completion (autoloaded via fpath em ~/.zsh/completions) ---
     AIA_COMP_SRC="$AIA_DIR/completions/cob-aia.zsh"

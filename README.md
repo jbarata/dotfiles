@@ -823,7 +823,7 @@ Histórico das decisões tomadas e seu racional, para contexto futuro.
 
 | Decisão | Racional |
 |---|---|
-| `cob-press` instalado pelo mesmo `setup/cob-tools.sh` (clone → `~/.local/src/cob-press`, `npm install`, `npm link`) | Mesmo padrão do `cob-pdf`: repo privado da org `cob` via SSH, sem passo de build nem branch preferida. `npm link` deixa o comando `cob-press` sempre a apontar para o working copy, e o `git pull --ff-only` do setup actualiza-o em cada bootstrap |
+| `cob-press` instalado pelo mesmo `setup/cob-tools.sh` (clone → `~/.local/src/cob-press`, `npm install`, `npm run build`, `npm link`) | Mesmo padrão do `cob-aia`: repo privado da org `cob` via SSH, com passo de build e sem branch preferida. `npm link` deixa o comando `cob-press` sempre a apontar para o working copy, e o `git pull --ff-only` do setup actualiza-o em cada bootstrap |
 
 ### Übersicht widgets — 2026-04-18
 
