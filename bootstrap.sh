@@ -316,13 +316,14 @@ if [[ -f "$DOTFILES/setup/ssh-auth-sock.sh" ]]; then
     fi
 fi
 
-# --- 9d. CLIs COB (cob-cli + cob-pdf + cob-aia linkados, Utils/cob, cmd-line-importer) ---
+# --- 9d. CLIs COB (cob-cli + cob-pdf + cob-aia + cob-press linkados, Utils/cob, cmd-line-importer) ---
 if [[ -f "$DOTFILES/setup/cob-tools.sh" ]]; then
     echo "==> A instalar CLIs COB..."
     if $DRY_RUN; then
         echo "  [dry-run] git clone cob-cli → \$HOME/.local/src/ && npm i && npm link (checkout beta se existir)"
         echo "  [dry-run] git clone cob-pdf → \$HOME/.local/src/ && npm i && npm link"
         echo "  [dry-run] git clone cob-aia → \$HOME/.local/src/ && npm i && npm link"
+        echo "  [dry-run] git clone cob-press → \$HOME/.local/src/ && npm i && npm run build && npm link"
         echo "  [dry-run] git clone Utils → \$HOME/.local/src/ (cob via PATH; cob-health via 'go build' + symlink em ~/.local/bin)"
         echo "  [dry-run] git clone cmd-line-importer → \$HOME/.local/src/ && symlinks searcher/processor/executor em ~/.local/bin"
     else

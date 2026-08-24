@@ -593,7 +593,7 @@ brew bundle cleanup --file=brew/Brewfile   # remover pacotes não no Brewfile (c
     ├── ubersicht.sh                # Symlink pasta de widgets Übersicht
     ├── skhd.sh                     # Arranca/reinicia serviço skhd
     ├── ssh-auth-sock.sh            # Instala LaunchAgent SSH_AUTH_SOCK (1Password)
-    ├── cob-tools.sh                # clone/npm-link de cob-cli, cob-pdf e cob-aia
+    ├── cob-tools.sh                # clone/npm-link de cob-cli, cob-pdf, cob-aia e cob-press
     ├── whisper.sh                  # Build whisper.cpp + modelo + Core ML (Apple Silicon)
     ├── whisperx.sh                 # Venv whisperx (diarização) — pyannote + faster-whisper
     └── macos-defaults.sh           # defaults write
@@ -818,6 +818,12 @@ Histórico das decisões tomadas e seu racional, para contexto futuro.
 | `PYTHONWARNINGS=ignore::UserWarning` exportado por defeito | `pyannote.audio` importa `torchcodec` para decode acelerado, que falha a carregar as dylibs `libavutil.X.dylib` do ffmpeg do brew (rpath mismatch) e cai em soundfile/librosa silenciosamente. Funciona à mesma mas o warning aparece a cada invocação a poluir output útil. Suprimir todos os UserWarning é mais simples que filtrar por módulo e raramente esconde algo accionável em uso CLI; `PYTHONWARNINGS=default` reverte para debug |
 | Modelo de diarização default `pyannote/speaker-diarization-community-1` (não `speaker-diarization-3.1`) | whisperx mudou recentemente o default de diarização do `3.1` para o `community-1` — modelo novo, licença mais permissiva e activo no upstream. Aceitar T&C do `3.1` (instinto óbvio dada a versão na documentação antiga) não basta; o pipeline pede o `community-1` em runtime e dá `403 GatedRepoError`. Doc + mensagem de erro do script foram alinhadas com o default actual para evitar este round-trip |
 | `--output_format all` + cleanup, em vez de `--output_format srt --output_format txt` | whisperx CLI aceita **apenas um** valor em `--output_format` (último ganha quando passados múltiplos — argparse com `choices`, não `action='append'`). Passar dois flags resultava em só o último (`txt`) ser gerado e o `.srt` desaparecer silenciosamente, falhando a post-flight check com mensagem enganadora. `all` gera todos os formatos (txt, srt, vtt, json, tsv, aud); apagamos os 4 extras para manter o output igual ao do `transcribe.sh` (txt + srt) |
+
+### CLIs COB — 2026-08-24
+
+| Decisão | Racional |
+|---|---|
+| `cob-press` instalado pelo mesmo `setup/cob-tools.sh` (clone → `~/.local/src/cob-press`, `npm install`, `npm run build`, `npm link`) | Mesmo padrão do `cob-aia`: repo privado da org `cob` via SSH, com passo de build e sem branch preferida. `npm link` deixa o comando `cob-press` sempre a apontar para o working copy, e o `git pull --ff-only` do setup actualiza-o em cada bootstrap |
 
 ### Übersicht widgets — 2026-04-18
 
