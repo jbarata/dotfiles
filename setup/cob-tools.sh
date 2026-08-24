@@ -41,6 +41,44 @@ fi
 
 mkdir -p "$SRC_DIR"
 
+# Verificar `engines` do package.json antes do npm install. Alguns repos COB
+# (ex: cob-press) exigem node/npm mais recentes do que os instalados e trazem
+# `engine-strict` — o npm aborta com EBADENGINE em vez de só avisar, e o
+# `set -e` deste script matava todo o resto do setup (Utils, cmd-line-importer).
+# npm aquém do exigido actualiza-se sozinho (fica na versão de node activa do
+# nvm); node aquém é avisado e o repo saltado — trocar de node é decisão do
+# utilizador, não deste setup.
+check_engines() {
+    local name="$1"
+    local dir="$2"
+    local pkg="$dir/package.json"
+    [[ -f "$pkg" ]] || return 0
+
+    # Extrair o primeiro número semver do range (">=24" → "24", "^11.16.0" → "11.16.0")
+    local req_node req_npm
+    req_node="$(node -p "const e=(require('$pkg').engines||{}).node||'';const m=e.match(/\d+(?:\.\d+)*/);m?m[0]:''" 2>/dev/null || true)"
+    req_npm="$(node -p "const e=(require('$pkg').engines||{}).npm||'';const m=e.match(/\d+(?:\.\d+)*/);m?m[0]:''" 2>/dev/null || true)"
+
+    if [[ -n "$req_node" ]]; then
+        local cur_node
+        cur_node="$(node -p 'process.versions.node')"
+        if [[ "$(printf '%s\n%s\n' "$req_node" "$cur_node" | sort -V | head -n1)" != "$req_node" ]]; then
+            echo "  AVISO: $name exige node >= $req_node (tens $cur_node); a saltar."
+            echo "         Actualiza com 'nvm install $req_node && nvm alias default $req_node' e corre este setup outra vez."
+            return 1
+        fi
+    fi
+
+    if [[ -n "$req_npm" ]]; then
+        local cur_npm
+        cur_npm="$(npm --version)"
+        if [[ "$(printf '%s\n%s\n' "$req_npm" "$cur_npm" | sort -V | head -n1)" != "$req_npm" ]]; then
+            echo "  npm $cur_npm < $req_npm (exigido por $name); a actualizar npm..."
+            npm install -g "npm@$req_npm"
+        fi
+    fi
+}
+
 # Clone (ou actualizar) + checkout opcional da branch remota mais recente
 # (committerdate) cujo nome contenha "branch_pref" como substring + npm
 # install + npm link
@@ -77,6 +115,8 @@ link_cob_repo() {
             echo "  Nenhuma branch com '$branch_pref' no nome em $name; a manter branch atual."
         fi
     fi
+
+    check_engines "$name" "$dir" || return 0
 
     echo "  npm install em $name..."
     (cd "$dir" && npm install)
