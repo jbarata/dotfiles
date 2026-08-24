@@ -1,6 +1,6 @@
 #!/bin/bash
-# setup/cob-tools.sh — Instalar CLIs COB (cob-cli + cob-pdf + cob-aia linkados,
-# Utils/cob + cob-health, cmd-line-importer)
+# setup/cob-tools.sh — Instalar CLIs COB (cob-cli + cob-pdf + cob-aia + cob-press
+# linkados, Utils/cob + cob-health, cmd-line-importer)
 set -euo pipefail
 
 SRC_DIR="$HOME/.local/src"
@@ -11,6 +11,8 @@ PDF_DIR="$SRC_DIR/cob-pdf"
 PDF_REPO="git@github.com:cob/cob-pdf.git"
 AIA_DIR="$SRC_DIR/cob-aia"
 AIA_REPO="git@github.com:cob/cob-aia.git"
+PRESS_DIR="$SRC_DIR/cob-press"
+PRESS_REPO="git@github.com:cob/cob-press.git"
 UTILS_DIR="$SRC_DIR/Utils"
 UTILS_REPO="git@github.com:cob/Utils.git"
 IMPORTER_DIR="$SRC_DIR/cmd-line-importer"
@@ -32,7 +34,7 @@ fi
 HAVE_NPM=true
 if ! command -v npm >/dev/null 2>&1; then
     HAVE_NPM=false
-    echo "  AVISO: npm não encontrado. Saltam-se cob-cli/cob-pdf/cob-aia (instala node via nvm + alias default)."
+    echo "  AVISO: npm não encontrado. Saltam-se cob-cli/cob-pdf/cob-aia/cob-press (instala node via nvm + alias default)."
 else
     echo "  npm: $(command -v npm)"
 fi
@@ -137,6 +139,9 @@ if $HAVE_NPM; then
 
     # --- cob-aia (clone + npm i + npm link) ---
     link_cob_repo "cob-aia" "$AIA_REPO" "$AIA_DIR" build
+
+    # --- cob-press (clone + npm i + npm link) ---
+    link_cob_repo "cob-press" "$PRESS_REPO" "$PRESS_DIR"
 
     # --- cob-aia zsh completion (autoloaded via fpath em ~/.zsh/completions) ---
     AIA_COMP_SRC="$AIA_DIR/completions/cob-aia.zsh"
