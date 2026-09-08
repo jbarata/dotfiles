@@ -681,6 +681,7 @@ Histórico das decisões tomadas e seu racional, para contexto futuro.
 | `git.path: "git"` | Usa o git do PATH (Homebrew em ambas as máquinas) |
 | Dicionário PT pré-acordo no repo | Sincronização entre máquinas |
 | Markdown editor com CSS custom | Branding |
+| `setup/vscode-extensions.sh` mostra o stderr do `code` — 2026-09-08 | O `2>/dev/null` no `code --install-extension` engolia a razão da falha e sobrava só `AVISO: falhou <ext>`, impossível de diagnosticar. Agora o output vem indentado e no fim há um resumo das que falharam |
 
 ### SSH — 2026-04-17
 
