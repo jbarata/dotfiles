@@ -2,13 +2,37 @@
 # bootstrap.sh — Setup one-command para novo Mac
 # Uso: git clone https://github.com/mimes70/dotfiles.git ~/.dotfiles && ~/.dotfiles/bootstrap.sh
 # Dry-run: ~/.dotfiles/bootstrap.sh --dry-run
+# Upgrade: ~/.dotfiles/bootstrap.sh --upgrade   (actualiza também o que já está instalado)
 set -euo pipefail
 
 DOTFILES="${DOTFILES:-$HOME/.dotfiles}"
 DRY_RUN=false
+DO_UPGRADE=false
 
-if [[ "${1:-}" == "--dry-run" ]]; then
-    DRY_RUN=true
+usage() {
+    cat <<'USAGE'
+Uso: bootstrap.sh [--dry-run] [--upgrade]
+
+  --dry-run   Mostra o que seria feito, sem alterar nada
+  --upgrade   Deixa o 'brew bundle' actualizar fórmulas/casks já instalados.
+              Por defeito só instala o que falta: em Macs Intel já não há
+              bottles para as versões recentes do macOS, e um upgrade de
+              ffmpeg/gcalcli/llvm compila do source durante horas.
+  -h, --help  Esta ajuda
+USAGE
+}
+
+while [[ $# -gt 0 ]]; do
+    case "$1" in
+        --dry-run) DRY_RUN=true ;;
+        --upgrade) DO_UPGRADE=true ;;
+        -h|--help) usage; exit 0 ;;
+        *) echo "!! Opção desconhecida: $1"; echo ""; usage; exit 1 ;;
+    esac
+    shift
+done
+
+if $DRY_RUN; then
     echo "==> MODO DRY-RUN: nenhuma alteração será feita"
     echo ""
 fi
@@ -67,11 +91,23 @@ else
 fi
 
 # --- 2. Instalar dependências via Brewfile ---
-echo "==> A instalar pacotes Homebrew..."
-run brew bundle --file="$DOTFILES/brew/Brewfile" || true
+# `--no-upgrade` por defeito: o bootstrap instala o que falta e não mexe no que
+# já está instalado. Sem bottles para Mac Intel, um upgrade de ffmpeg/gcalcli
+# arrasta llvm/python/rust e compila do source durante horas — passa a ser uma
+# decisão explícita, com `--upgrade`.
+# `--verbose` porque o `brew bundle` esconde o output dos installs: sem isto uma
+# compilação de horas é indistinguível de um script pendurado.
+BUNDLE_ARGS=(--verbose)
+if $DO_UPGRADE; then
+    echo "==> A instalar/actualizar pacotes Homebrew (--upgrade)..."
+else
+    BUNDLE_ARGS+=(--no-upgrade)
+    echo "==> A instalar pacotes Homebrew (sem upgrade — usa --upgrade para actualizar)..."
+fi
+run brew bundle "${BUNDLE_ARGS[@]}" --file="$DOTFILES/brew/Brewfile" || true
 if [[ -f "$DOTFILES/brew/Brewfile.$MACHINE" ]]; then
     echo "==> A instalar pacotes específicos ($MACHINE)..."
-    run brew bundle --file="$DOTFILES/brew/Brewfile.$MACHINE" || true
+    run brew bundle "${BUNDLE_ARGS[@]}" --file="$DOTFILES/brew/Brewfile.$MACHINE" || true
 fi
 
 # --- 3. Instalar NVM ---
@@ -320,14 +356,17 @@ fi
 if [[ -f "$DOTFILES/setup/cob-tools.sh" ]]; then
     echo "==> A instalar CLIs COB..."
     if $DRY_RUN; then
-        echo "  [dry-run] git clone cob-cli → \$HOME/.local/src/ && npm i && npm link (checkout beta se existir)"
+        echo "  [dry-run] git clone cob-cli → \$HOME/.local/src/ && npm i && npm link (checkout master)"
         echo "  [dry-run] git clone cob-pdf → \$HOME/.local/src/ && npm i && npm link"
         echo "  [dry-run] git clone cob-aia → \$HOME/.local/src/ && npm i && npm link"
         echo "  [dry-run] git clone cob-press → \$HOME/.local/src/ && npm i && npm run build && npm link"
         echo "  [dry-run] git clone Utils → \$HOME/.local/src/ (cob via PATH; cob-health via 'go build' + symlink em ~/.local/bin)"
         echo "  [dry-run] git clone cmd-line-importer → \$HOME/.local/src/ && symlinks searcher/processor/executor em ~/.local/bin"
     else
-        bash "$DOTFILES/setup/cob-tools.sh"
+        # Não fatal: um repo COB inacessível ou com trabalho por commitar não
+        # pode matar o que vem a seguir (whisper, whisperx, macOS defaults).
+        bash "$DOTFILES/setup/cob-tools.sh" \
+            || echo "  AVISO: setup/cob-tools.sh falhou; o resto do bootstrap continua."
     fi
 fi
 

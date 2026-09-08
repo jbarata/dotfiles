@@ -306,11 +306,12 @@ git clone git@github.com:mimes70/dotfiles.git ~/.dotfiles
 cd ~/.dotfiles
 ./bootstrap.sh --dry-run    # pré-visualizar
 ./bootstrap.sh              # executar
+./bootstrap.sh --upgrade    # executar + actualizar pacotes Homebrew já instalados
 ```
 
 O bootstrap:
 1. Instala Homebrew (se não existir)
-2. `brew bundle` (brew/Brewfile + brew/Brewfile.<machine>)
+2. `brew bundle` (brew/Brewfile + brew/Brewfile.<machine>) — instala o que falta; só actualiza o que já lá está com `--upgrade`
 3. Instala NVM (se não existir)
 4. Detecta ficheiros existentes, mostra **diff vs repo**, pede confirmação
 5. Faz backup centralizado em `~/dotfiles-backup/pre-bootstrap-<timestamp>/`
@@ -680,6 +681,8 @@ Histórico das decisões tomadas e seu racional, para contexto futuro.
 | `git.path: "git"` | Usa o git do PATH (Homebrew em ambas as máquinas) |
 | Dicionário PT pré-acordo no repo | Sincronização entre máquinas |
 | Markdown editor com CSS custom | Branding |
+| `setup/vscode-extensions.sh` mostra o stderr do `code` — 2026-09-08 | O `2>/dev/null` no `code --install-extension` engolia a razão da falha e sobrava só `AVISO: falhou <ext>`, impossível de diagnosticar. Agora o output vem indentado e no fim há um resumo das que falharam |
+| Extensão embutida no VS Code não conta como falha — 2026-09-08 | O `github.copilot-chat` passou a ser distribuído com o próprio VS Code (0.64.1) e o marketplace só tem a 0.48.1 — o `code` recusa o downgrade. Foi tirado do `vscode/extensions.txt` (o `vscode-export` também não o listaria, porque o `code --list-extensions` não mostra embutidas) e o setup passa a reconhecer o caso, com nota em vez de aviso |
 
 ### SSH — 2026-04-17
 
@@ -709,6 +712,8 @@ Histórico das decisões tomadas e seu racional, para contexto futuro.
 | Detecta symlinks "stale" e remove-os | Stow recusa overwrite de symlinks externos |
 | `bash` em vez de `source` para sub-scripts | Evita `set -e` matar shell pai |
 | Compatível com Bash 3.2 (macOS default) | Sem `declare -A` |
+| `brew bundle --no-upgrade` por defeito, upgrades atrás de `--upgrade` — 2026-09-08 | O Homebrew deixou de publicar bottles para Mac Intel, por isso no iMac qualquer upgrade compila do source: um `brew bundle` normal arrastava `gcalcli` → `pydantic-core` (Rust), `ffmpeg`, `llvm@22`, `python@3.13/3.14` e ficava horas a compilar. Um bootstrap deve pôr a máquina a funcionar, não gastar a tarde a actualizar o que já funciona |
+| `brew bundle --verbose` — 2026-09-08 | O `brew bundle` engole o output de cada install/upgrade e imprime o plano todo de uma vez: uma compilação de horas era indistinguível de um script pendurado |
 
 ### Stow — 2026-04-17
 
@@ -825,6 +830,9 @@ Histórico das decisões tomadas e seu racional, para contexto futuro.
 |---|---|
 | `cob-press` instalado pelo mesmo `setup/cob-tools.sh` (clone → `~/.local/src/cob-press`, `npm install`, `npm run build`, `npm link`) | Mesmo padrão do `cob-aia`: repo privado da org `cob` via SSH, com passo de build e sem branch preferida. `npm link` deixa o comando `cob-press` sempre a apontar para o working copy, e o `git pull --ff-only` do setup actualiza-o em cada bootstrap |
 | `check_engines` antes do `npm install` em cada repo COB | O `cob-press` declara `engines: {node: ">=24", npm: ">=11.16.0"}` com `engine-strict` — o npm sai com **EBADENGINE** (erro, não aviso) e o `set -e` do setup matava tudo o que vinha a seguir (Utils, cob-health, cmd-line-importer). O check lê o `engines` do `package.json` já clonado: npm aquém actualiza-se sozinho (`npm i -g npm@<mínimo>`, dentro da versão de node activa do nvm); node aquém dá aviso com o comando `nvm` a correr e salta **só** esse repo |
+| `cob-cli` a seguir a branch `master` (era a branch `beta` mais recente) — 2026-09-08 | Queremos a versão estável instalada, não a pré-release. A resolução de branch no `link_cob_repo` passa a preferir a branch remota com o nome **exacto** e só depois cai no match por substring/mais recente (o `beta` → `beta-1.2.3` continua a funcionar). O `git pull` inicial passou para **depois** do checkout: clones antigos ficaram numa branch beta que pode já não existir no remoto e o pull rebentava com o `set -e` |
+| `package-lock.json` descartado antes do checkout/pull dos repos COB — 2026-09-08 | O `npm install` do próprio setup reescreve o lock (npm/node diferentes de quem o gerou) e no bootstrap seguinte o `git checkout` recusava trocar de branch — e o `set -e` levava com o resto do bootstrap à frente. Descarta-se **só** o lock e **só** se o `package.json` estiver limpo: com o `package.json` alterado é mudança de dependências a sério. Qualquer outra alteração por commitar faz saltar o checkout/pull com aviso, em vez de ser deitada fora |
+| `setup/cob-tools.sh` não fatal no `bootstrap.sh` — 2026-09-08 | Um repo COB inacessível ou com trabalho por commitar deixava de fora tudo o que vinha a seguir (whisper, whisperx, macOS defaults). Agora avisa e o bootstrap continua |
 
 ### Übersicht widgets — 2026-04-18
 
