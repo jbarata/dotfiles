@@ -79,6 +79,79 @@ check_engines() {
     fi
 }
 
+# Ficheiros que as ferramentas regeneram sozinhas e que sujam a working copy.
+# O `npm install` deste script reescreve quase sempre o package-lock.json (npm/
+# node diferentes de quem gerou o lock) e no bootstrap seguinte o `git checkout`
+# recusa-se a trocar de branch. Descartamo-los antes de tocar no git — o
+# `npm install` volta a gerá-los logo a seguir.
+REGENERATED_FILES=("package-lock.json")
+
+discard_regenerated() {
+    local dir="$1"
+    local f st
+
+    # Se o package.json também está alterado, o lock pode ser uma mudança de
+    # dependências a sério — não é este setup que a deita fora.
+    if [[ -n "$(git -C "$dir" status --porcelain -- package.json)" ]]; then
+        return 0
+    fi
+
+    for f in "${REGENERATED_FILES[@]}"; do
+        st="$(git -C "$dir" status --porcelain -- "$f")"
+        [[ -z "$st" ]] && continue
+        [[ "$st" == "??"* ]] && continue   # untracked: não é nosso para apagar
+        echo "  A descartar $f (regenerado pelo npm install)..."
+        git -C "$dir" checkout --quiet HEAD -- "$f"
+    done
+}
+
+# Alterações locais em ficheiros versionados (untracked não contam — não
+# impedem checkout nem pull)
+repo_is_dirty() {
+    [[ -n "$(git -C "$1" status --porcelain --untracked-files=no)" ]]
+}
+
+report_dirty() {
+    local name="$1"
+    local dir="$2"
+    local what="$3"
+    echo "  AVISO: $name tem alterações locais por commitar — a saltar $what:"
+    git -C "$dir" status --short --untracked-files=no | sed 's/^/    /'
+}
+
+# Resolver e fazer checkout da branch preferida. "branch_pref": se existir uma
+# branch remota com esse nome exacto é essa; senão a mais recente
+# (committerdate) cujo nome o contenha como substring ("beta" → "beta-1.2.3").
+checkout_branch() {
+    local name="$1"
+    local dir="$2"
+    local branch_pref="$3"
+
+    git -C "$dir" fetch --quiet --prune origin
+    local match=""
+    if git -C "$dir" show-ref --verify --quiet "refs/remotes/origin/$branch_pref"; then
+        match="$branch_pref"
+        echo "  Checkout de $match em $name..."
+    else
+        match="$(git -C "$dir" for-each-ref \
+            --format='%(refname:lstrip=3)' \
+            --sort=-committerdate \
+            refs/remotes/origin/ \
+            | grep -v '^HEAD$' \
+            | { grep -F -- "$branch_pref" || true; } \
+            | head -n1)"
+        if [[ -z "$match" ]]; then
+            echo "  Nenhuma branch com '$branch_pref' no nome em $name; a manter branch atual."
+            git -C "$dir" pull --quiet --ff-only \
+                || echo "  AVISO: pull falhou em $name; a manter estado local."
+            return 0
+        fi
+        echo "  Checkout de $match em $name (mais recente com '$branch_pref' no nome)..."
+    fi
+    git -C "$dir" checkout --quiet "$match"
+    git -C "$dir" pull --quiet --ff-only
+}
+
 # Clone (ou actualizar) + checkout opcional de branch + npm install + npm link.
 # "branch_pref" resolve-se assim: se existir uma branch remota com esse nome
 # exacto é essa; senão usa-se a mais recente (committerdate) cujo nome o
@@ -91,42 +164,25 @@ link_cob_repo() {
     local branch_pref="${5:-}"
 
     if [[ -d "$dir/.git" ]]; then
-        # Com branch_pref o update faz-se depois do checkout: a branch actual do
-        # clone pode já não existir no remoto (ex: clones antigos numa branch
-        # beta entretanto apagada) e o pull rebentava com o script todo.
-        if [[ -z "$branch_pref" ]]; then
+        discard_regenerated "$dir"
+        if repo_is_dirty "$dir"; then
+            # Trabalho por commitar: não é este setup que o descarta nem que
+            # rebenta com o bootstrap todo por causa dele.
+            report_dirty "$name" "$dir" "checkout/pull"
+        elif [[ -n "$branch_pref" ]]; then
+            # Com branch_pref o update faz-se dentro do checkout_branch: a
+            # branch actual do clone pode já não existir no remoto (ex: clones
+            # antigos numa branch beta apagada) e o pull rebentava com tudo.
+            checkout_branch "$name" "$dir" "$branch_pref"
+        else
             echo "  A actualizar $dir..."
             git -C "$dir" pull --quiet --ff-only
         fi
     else
         echo "  A clonar $repo → $dir..."
         git clone --quiet "$repo" "$dir"
-    fi
-
-    if [[ -n "$branch_pref" ]]; then
-        git -C "$dir" fetch --quiet --prune origin
-        local match=""
-        if git -C "$dir" show-ref --verify --quiet "refs/remotes/origin/$branch_pref"; then
-            match="$branch_pref"
-            echo "  Checkout de $match em $name..."
-        else
-            match="$(git -C "$dir" for-each-ref \
-                --format='%(refname:lstrip=3)' \
-                --sort=-committerdate \
-                refs/remotes/origin/ \
-                | grep -v '^HEAD$' \
-                | { grep -F -- "$branch_pref" || true; } \
-                | head -n1)"
-            [[ -n "$match" ]] && \
-                echo "  Checkout de $match em $name (mais recente com '$branch_pref' no nome)..."
-        fi
-        if [[ -n "$match" ]]; then
-            git -C "$dir" checkout --quiet "$match"
-            git -C "$dir" pull --quiet --ff-only
-        else
-            echo "  Nenhuma branch com '$branch_pref' no nome em $name; a manter branch atual."
-            git -C "$dir" pull --quiet --ff-only \
-                || echo "  AVISO: pull falhou em $name; a manter estado local."
+        if [[ -n "$branch_pref" ]]; then
+            checkout_branch "$name" "$dir" "$branch_pref"
         fi
     fi
 
@@ -150,8 +206,13 @@ clone_or_pull() {
     local dir="$2"
 
     if [[ -d "$dir/.git" ]]; then
-        echo "  A actualizar $dir..."
-        git -C "$dir" pull --quiet --ff-only
+        discard_regenerated "$dir"
+        if repo_is_dirty "$dir"; then
+            report_dirty "$(basename "$dir")" "$dir" "pull"
+        else
+            echo "  A actualizar $dir..."
+            git -C "$dir" pull --quiet --ff-only
+        fi
     else
         echo "  A clonar $repo → $dir..."
         git clone --quiet "$repo" "$dir"

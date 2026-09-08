@@ -363,7 +363,10 @@ if [[ -f "$DOTFILES/setup/cob-tools.sh" ]]; then
         echo "  [dry-run] git clone Utils → \$HOME/.local/src/ (cob via PATH; cob-health via 'go build' + symlink em ~/.local/bin)"
         echo "  [dry-run] git clone cmd-line-importer → \$HOME/.local/src/ && symlinks searcher/processor/executor em ~/.local/bin"
     else
-        bash "$DOTFILES/setup/cob-tools.sh"
+        # Não fatal: um repo COB inacessível ou com trabalho por commitar não
+        # pode matar o que vem a seguir (whisper, whisperx, macOS defaults).
+        bash "$DOTFILES/setup/cob-tools.sh" \
+            || echo "  AVISO: setup/cob-tools.sh falhou; o resto do bootstrap continua."
     fi
 fi
 
