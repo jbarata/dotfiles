@@ -306,11 +306,12 @@ git clone git@github.com:mimes70/dotfiles.git ~/.dotfiles
 cd ~/.dotfiles
 ./bootstrap.sh --dry-run    # pré-visualizar
 ./bootstrap.sh              # executar
+./bootstrap.sh --upgrade    # executar + actualizar pacotes Homebrew já instalados
 ```
 
 O bootstrap:
 1. Instala Homebrew (se não existir)
-2. `brew bundle` (brew/Brewfile + brew/Brewfile.<machine>)
+2. `brew bundle` (brew/Brewfile + brew/Brewfile.<machine>) — instala o que falta; só actualiza o que já lá está com `--upgrade`
 3. Instala NVM (se não existir)
 4. Detecta ficheiros existentes, mostra **diff vs repo**, pede confirmação
 5. Faz backup centralizado em `~/dotfiles-backup/pre-bootstrap-<timestamp>/`
@@ -709,6 +710,8 @@ Histórico das decisões tomadas e seu racional, para contexto futuro.
 | Detecta symlinks "stale" e remove-os | Stow recusa overwrite de symlinks externos |
 | `bash` em vez de `source` para sub-scripts | Evita `set -e` matar shell pai |
 | Compatível com Bash 3.2 (macOS default) | Sem `declare -A` |
+| `brew bundle --no-upgrade` por defeito, upgrades atrás de `--upgrade` — 2026-09-08 | O Homebrew deixou de publicar bottles para Mac Intel, por isso no iMac qualquer upgrade compila do source: um `brew bundle` normal arrastava `gcalcli` → `pydantic-core` (Rust), `ffmpeg`, `llvm@22`, `python@3.13/3.14` e ficava horas a compilar. Um bootstrap deve pôr a máquina a funcionar, não gastar a tarde a actualizar o que já funciona |
+| `brew bundle --verbose` — 2026-09-08 | O `brew bundle` engole o output de cada install/upgrade e imprime o plano todo de uma vez: uma compilação de horas era indistinguível de um script pendurado |
 
 ### Stow — 2026-04-17
 
