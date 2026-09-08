@@ -825,6 +825,7 @@ Histórico das decisões tomadas e seu racional, para contexto futuro.
 |---|---|
 | `cob-press` instalado pelo mesmo `setup/cob-tools.sh` (clone → `~/.local/src/cob-press`, `npm install`, `npm run build`, `npm link`) | Mesmo padrão do `cob-aia`: repo privado da org `cob` via SSH, com passo de build e sem branch preferida. `npm link` deixa o comando `cob-press` sempre a apontar para o working copy, e o `git pull --ff-only` do setup actualiza-o em cada bootstrap |
 | `check_engines` antes do `npm install` em cada repo COB | O `cob-press` declara `engines: {node: ">=24", npm: ">=11.16.0"}` com `engine-strict` — o npm sai com **EBADENGINE** (erro, não aviso) e o `set -e` do setup matava tudo o que vinha a seguir (Utils, cob-health, cmd-line-importer). O check lê o `engines` do `package.json` já clonado: npm aquém actualiza-se sozinho (`npm i -g npm@<mínimo>`, dentro da versão de node activa do nvm); node aquém dá aviso com o comando `nvm` a correr e salta **só** esse repo |
+| `cob-cli` a seguir a branch `master` (era a branch `beta` mais recente) — 2026-09-08 | Queremos a versão estável instalada, não a pré-release. A resolução de branch no `link_cob_repo` passa a preferir a branch remota com o nome **exacto** e só depois cai no match por substring/mais recente (o `beta` → `beta-1.2.3` continua a funcionar). O `git pull` inicial passou para **depois** do checkout: clones antigos ficaram numa branch beta que pode já não existir no remoto e o pull rebentava com o `set -e` |
 
 ### Übersicht widgets — 2026-04-18
 

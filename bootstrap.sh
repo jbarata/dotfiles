@@ -320,7 +320,7 @@ fi
 if [[ -f "$DOTFILES/setup/cob-tools.sh" ]]; then
     echo "==> A instalar CLIs COB..."
     if $DRY_RUN; then
-        echo "  [dry-run] git clone cob-cli → \$HOME/.local/src/ && npm i && npm link (checkout beta se existir)"
+        echo "  [dry-run] git clone cob-cli → \$HOME/.local/src/ && npm i && npm link (checkout master)"
         echo "  [dry-run] git clone cob-pdf → \$HOME/.local/src/ && npm i && npm link"
         echo "  [dry-run] git clone cob-aia → \$HOME/.local/src/ && npm i && npm link"
         echo "  [dry-run] git clone cob-press → \$HOME/.local/src/ && npm i && npm run build && npm link"
