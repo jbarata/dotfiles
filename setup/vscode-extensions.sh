@@ -38,15 +38,31 @@ fi
 
 echo "  A instalar ${#MISSING[@]} extensão(ões) em falta (de $TOTAL)..."
 FAILED=()
+BUILTIN=()
 for ext in "${MISSING[@]}"; do
     echo "    → $ext"
-    # Sem `2>/dev/null`: é no stderr que o `code` diz *porquê* (incompatibilidade
-    # com a versão do VS Code, dependência em falta, rede, extensão que passou a
-    # vir embutida). Escondê-lo deixava só "falhou <ext>", sem por onde pegar.
-    if ! code --install-extension "$ext" --force 2>&1 | sed 's/^/      /'; then
+    # Capturamos stdout+stderr em vez de os deitar fora: é no stderr que o
+    # `code` diz *porquê* falhou (versão incompatível, dependência em falta,
+    # rede). Sem isso sobrava "falhou <ext>", sem por onde pegar.
+    if out="$(code --install-extension "$ext" --force 2>&1)"; then
+        printf '%s\n' "$out" | sed 's/^/      /'
+    elif printf '%s' "$out" | grep -q 'is a built-in extension'; then
+        # A extensão passou a ser distribuída com o próprio VS Code (foi o caso
+        # do github.copilot-chat) e a versão do marketplace é mais antiga — o
+        # VS Code recusa o downgrade. Não é falha: é uma linha obsoleta na
+        # lista, que o próximo `vscode-export` limpa.
+        echo "      Já vem embutida no VS Code — nada a instalar."
+        BUILTIN+=("$ext")
+    else
+        printf '%s\n' "$out" | sed 's/^/      /'
         FAILED+=("$ext")
     fi
 done
+
+if [[ ${#BUILTIN[@]} -gt 0 ]]; then
+    echo "  NOTA: ${#BUILTIN[@]} extensão(ões) já vêm com o VS Code: ${BUILTIN[*]}"
+    echo "        Tira-as de vscode/extensions.txt (ou corre 'vscode-export')."
+fi
 
 if [[ ${#FAILED[@]} -gt 0 ]]; then
     echo "  AVISO: falhou a instalação de ${#FAILED[@]} extensão(ões): ${FAILED[*]}"

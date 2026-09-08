@@ -682,6 +682,7 @@ Histórico das decisões tomadas e seu racional, para contexto futuro.
 | Dicionário PT pré-acordo no repo | Sincronização entre máquinas |
 | Markdown editor com CSS custom | Branding |
 | `setup/vscode-extensions.sh` mostra o stderr do `code` — 2026-09-08 | O `2>/dev/null` no `code --install-extension` engolia a razão da falha e sobrava só `AVISO: falhou <ext>`, impossível de diagnosticar. Agora o output vem indentado e no fim há um resumo das que falharam |
+| Extensão embutida no VS Code não conta como falha — 2026-09-08 | O `github.copilot-chat` passou a ser distribuído com o próprio VS Code (0.64.1) e o marketplace só tem a 0.48.1 — o `code` recusa o downgrade. Foi tirado do `vscode/extensions.txt` (o `vscode-export` também não o listaria, porque o `code --list-extensions` não mostra embutidas) e o setup passa a reconhecer o caso, com nota em vez de aviso |
 
 ### SSH — 2026-04-17
 

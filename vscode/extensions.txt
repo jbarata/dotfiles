@@ -9,7 +9,6 @@ docker.docker
 editorconfig.editorconfig
 esbenp.prettier-vscode
 formulahendry.auto-complete-tag
-github.copilot-chat
 github.vscode-github-actions
 github.vscode-pull-request-github
 grapecity.gc-excelviewer
